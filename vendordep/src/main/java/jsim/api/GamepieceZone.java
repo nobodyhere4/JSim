@@ -5,6 +5,8 @@
 package jsim.api;
 
 import edu.wpi.first.math.geometry.Rotation3d;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 /**
  * Simulation-side gamepiece interaction zone.
@@ -28,6 +30,9 @@ public class GamepieceZone {
   private double exitVelocity;
   private Rotation3d exitRotation = new Rotation3d();
   private Mode mode = Mode.DISABLED;
+  private Supplier<Mode> modeSupplier;
+  private DoubleSupplier exitVelocitySupplier;
+  private Supplier<Rotation3d> exitRotationSupplier;
 
   /**
    * Creates a zone attached to a robot.
@@ -36,6 +41,7 @@ public class GamepieceZone {
    */
   public GamepieceZone(SimRobot robot) {
     this.robot = robot;
+    StateManager.registerGamepieceZone(this);
   }
 
   /**
@@ -57,6 +63,13 @@ public class GamepieceZone {
   }
 
   /**
+   * Disables gamepiece interaction for this zone.
+   */
+  public void disable() {
+    setMode(Mode.DISABLED);
+  }
+
+  /**
    * Sets the gamepiece exit parameters for this zone.
    *
    * @param velocity the launch velocity in meters per second
@@ -65,6 +78,79 @@ public class GamepieceZone {
   public void setExitParameters(double velocity, Rotation3d rotation) {
     this.exitVelocity = velocity;
     this.exitRotation = rotation;
+  }
+
+  /**
+   * Sets the gamepiece exit velocity with a default zero rotation.
+   *
+   * @param velocity the launch velocity in meters per second
+   */
+  public void setExitParameters(double velocity) {
+    setExitParameters(velocity, new Rotation3d());
+  }
+
+  /**
+   * Configures the zone to intake gamepieces.
+   *
+   * @param velocity the launch velocity in meters per second
+   * @param rotation the launch rotation
+   */
+  public void intake(double velocity, Rotation3d rotation) {
+    setExitParameters(velocity, rotation);
+    setMode(Mode.INTAKE);
+  }
+
+  /**
+   * Configures the zone to outtake gamepieces.
+   *
+   * @param velocity the launch velocity in meters per second
+   * @param rotation the launch rotation
+   */
+  public void outtake(double velocity, Rotation3d rotation) {
+    setExitParameters(velocity, rotation);
+    setMode(Mode.OUTTAKE);
+  }
+
+  /**
+   * Configures the zone to shoot gamepieces.
+   *
+   * @param velocity the launch velocity in meters per second
+   * @param rotation the launch rotation
+   */
+  public void shoot(double velocity, Rotation3d rotation) {
+    setExitParameters(velocity, rotation);
+    setMode(Mode.SHOOT);
+  }
+
+  /**
+   * Configures this zone from suppliers that can be refreshed each simulation step.
+   *
+   * @param modeSupplier supplies the current interaction mode
+   * @param exitVelocitySupplier supplies the current exit velocity
+   * @param exitRotationSupplier supplies the current exit rotation
+   */
+  public void configure(
+      Supplier<Mode> modeSupplier,
+      DoubleSupplier exitVelocitySupplier,
+      Supplier<Rotation3d> exitRotationSupplier) {
+    this.modeSupplier = modeSupplier;
+    this.exitVelocitySupplier = exitVelocitySupplier;
+    this.exitRotationSupplier = exitRotationSupplier;
+  }
+
+  /**
+   * Refreshes this zone from its configured suppliers, if present.
+   */
+  public void refresh() {
+    if (modeSupplier != null) {
+      setMode(modeSupplier.get());
+    }
+    if (exitVelocitySupplier != null) {
+      exitVelocity = exitVelocitySupplier.getAsDouble();
+    }
+    if (exitRotationSupplier != null) {
+      exitRotation = exitRotationSupplier.get();
+    }
   }
 
   /**

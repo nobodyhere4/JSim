@@ -19,7 +19,7 @@ public class FlywheelSubsystemExample {
    */
   public FlywheelSubsystemExample(SimRobot robot) {
     this.flywheelZone = new GamepieceZone(robot);
-    this.flywheelZone.setMode(GamepieceZone.Mode.DISABLED);
+    this.flywheelZone.disable();
   }
 
   /**
@@ -40,15 +40,14 @@ public class FlywheelSubsystemExample {
    */
   public void shoot() {
     double avgVelocity = (leftMotorVelocity + rightMotorVelocity) / 2.0;
-    flywheelZone.setExitParameters(avgVelocity, exitAngle);
-    flywheelZone.setMode(GamepieceZone.Mode.SHOOT);
+    flywheelZone.shoot(avgVelocity, exitAngle);
   }
 
   /**
    * Stop the flywheel shooter.
    */
   public void stop() {
-    flywheelZone.setMode(GamepieceZone.Mode.DISABLED);
+    flywheelZone.disable();
   }
 
   public GamepieceZone getGamepieceZone() {
@@ -72,7 +71,7 @@ class FlywheelHoodSubsystem {
   public FlywheelHoodSubsystem(SimRobot robot) {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.backspinRollerZone = new GamepieceZone(robot);
-    this.backspinRollerZone.setMode(GamepieceZone.Mode.DISABLED);
+    this.backspinRollerZone.disable();
   }
 
   /**
@@ -94,8 +93,7 @@ class FlywheelHoodSubsystem {
    */
   public void shoot() {
     flywheel.shoot();
-    backspinRollerZone.setExitParameters(backspinVelocity, exitAngle);
-    backspinRollerZone.setMode(GamepieceZone.Mode.SHOOT);
+    backspinRollerZone.shoot(backspinVelocity, exitAngle);
   }
 
   /**
@@ -103,7 +101,7 @@ class FlywheelHoodSubsystem {
    */
   public void stop() {
     flywheel.stop();
-    backspinRollerZone.setMode(GamepieceZone.Mode.DISABLED);
+    backspinRollerZone.disable();
   }
 
   public FlywheelSubsystemExample getFlywheel() {

@@ -15,7 +15,7 @@ public class FlywheelHoodExample {
   public FlywheelHoodExample(SimRobot robot) {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.hoodZone = new GamepieceZone(robot);
-    this.hoodZone.setMode(GamepieceZone.Mode.DISABLED);
+    this.hoodZone.disable();
   }
 
   public void setShot(double left, double right, Rotation3d angle) {
@@ -25,13 +25,12 @@ public class FlywheelHoodExample {
 
   public void fire() {
     flywheel.shoot();
-    hoodZone.setExitParameters(0.0, hoodAngle);
-    hoodZone.setMode(GamepieceZone.Mode.SHOOT);
+    hoodZone.shoot(0.0, hoodAngle);
   }
 
   public void stop() {
     flywheel.stop();
-    hoodZone.setMode(GamepieceZone.Mode.DISABLED);
+    hoodZone.disable();
   }
 
   public FlywheelSubsystemExample getFlywheel() {

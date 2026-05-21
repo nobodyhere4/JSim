@@ -37,7 +37,7 @@ public class IntakeSubsystem {
     // Configure the zone for intake/outtake behavior.
     // The rotation is typically zero, as it's a direct pickup/ejection.
     // The velocity is the speed of the rollers.
-    this.intakeZone.setExitParameters(intakeSpeed, null);
+    this.intakeZone.setExitParameters(intakeSpeed);
   }
 
   /**
@@ -55,7 +55,7 @@ public class IntakeSubsystem {
         break;
       case DISABLED:
       default:
-        intakeZone.setMode(GamepieceZone.Mode.DISABLED);
+        intakeZone.disable();
         break;
     }
   }

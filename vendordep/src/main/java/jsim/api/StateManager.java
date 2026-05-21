@@ -3,9 +3,11 @@ package jsim.api;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import jsim.PhysicsBody;
 import jsim.PhysicsWorld;
@@ -22,6 +24,7 @@ public class StateManager {
     private static final StateManager INSTANCE = new StateManager();
 
     private final Map<RobotID, FieldState<SimRobot.RobotState>> robotStates = new HashMap<>();
+    private final List<GamepieceZone> gamepieceZones = new ArrayList<>();
     private PhysicsWorld physicsWorld;
     private PhysicsBody robotBody;
     private FieldTelemetryPublisher telemetryPublisher;
@@ -100,6 +103,15 @@ public class StateManager {
     }
 
     /**
+     * Registers a gamepiece zone to be refreshed on each simulation step.
+     *
+     * @param gamepieceZone the zone to register
+     */
+    public static void registerGamepieceZone(GamepieceZone gamepieceZone) {
+        INSTANCE.registerGamepieceZoneInternal(gamepieceZone);
+    }
+
+    /**
      * Advances the tracked physics world and refreshes telemetry.
      */
     public static void stepPhysics() {
@@ -174,9 +186,22 @@ public class StateManager {
         }
     }
 
+    private synchronized void registerGamepieceZoneInternal(GamepieceZone gamepieceZone) {
+        if (gamepieceZone != null && !gamepieceZones.contains(gamepieceZone)) {
+            gamepieceZones.add(gamepieceZone);
+        }
+    }
+
+    private synchronized void refreshGamepieceZonesInternal() {
+        for (GamepieceZone gamepieceZone : gamepieceZones) {
+            gamepieceZone.refresh();
+        }
+    }
+
     private synchronized void stepPhysicsInternal() {
         if (physicsWorld != null) {
             physicsWorld.step();
+            refreshGamepieceZonesInternal();
             if (telemetryPublisher != null) {
                 telemetryPublisher.publishFrame();
             }

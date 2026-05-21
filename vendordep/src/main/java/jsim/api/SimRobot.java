@@ -48,6 +48,15 @@ public class SimRobot {
     }
 
     /**
+     * Creates a gamepiece zone tied to this robot.
+     *
+     * @return a new zone registered for simulation refreshes
+     */
+    public GamepieceZone createGamepieceZone() {
+        return new GamepieceZone(this);
+    }
+
+    /**
      * Retrieves the current field-relative odometry pose. 
      * Pulled strictly from the StateManager snapshot.
      * @return the current pose of the robot.
