@@ -14,9 +14,13 @@ public class GamepieceZone {
    * Interaction mode for the zone.
    */
   public enum Mode {
+    /** Intake a gamepiece into the robot. */
     INTAKE,
+    /** Outtake a gamepiece using a single roller. */
     OUTTAKE,
+    /** Outtake a gamepiece using a shooter-style mechanism. */
     SHOOT,
+    /** Disable gamepiece interaction. */
     DISABLED
   }
 
