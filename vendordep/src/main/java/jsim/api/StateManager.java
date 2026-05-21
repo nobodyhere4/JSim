@@ -2,12 +2,15 @@ package jsim.api;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import jsim.field.FieldConfig;
-
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import jsim.PhysicsBody;
+import jsim.PhysicsWorld;
+import jsim.field.FieldConfig;
+import jsim.nt.FieldTelemetryPublisher;
 
 /**
  * System Rules:
@@ -19,6 +22,9 @@ public class StateManager {
     private static final StateManager INSTANCE = new StateManager();
 
     private final Map<RobotID, FieldState<SimRobot.RobotState>> robotStates = new HashMap<>();
+    private PhysicsWorld physicsWorld;
+    private PhysicsBody robotBody;
+    private FieldTelemetryPublisher telemetryPublisher;
 
     private StateManager() {}
 
@@ -28,6 +34,76 @@ public class StateManager {
      */
     public static StateManager getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Sets the active physics world managed by the simulation layer.
+     *
+     * @param physicsWorld the physics world to store
+     */
+    public static void setPhysicsWorld(PhysicsWorld physicsWorld) {
+        INSTANCE.setPhysicsWorldInternal(physicsWorld);
+    }
+
+    /**
+     * Returns the active physics world managed by the simulation layer.
+     *
+     * @return the current physics world, or {@code null} if none is registered
+     */
+    public static PhysicsWorld getPhysicsWorld() {
+        return INSTANCE.getPhysicsWorldInternal();
+    }
+
+    /**
+     * Sets the robot body tracked by the simulation layer.
+     *
+     * @param robotBody the robot body to store
+     */
+    public static void setRobotBody(PhysicsBody robotBody) {
+        INSTANCE.setRobotBodyInternal(robotBody);
+    }
+
+    /**
+     * Returns the tracked robot body.
+     *
+     * @return the current robot body, or {@code null} if none is registered
+     */
+    public static PhysicsBody getRobotBody() {
+        return INSTANCE.getRobotBodyInternal();
+    }
+
+    /**
+     * Sets the telemetry publisher used to mirror simulation state.
+     *
+     * @param telemetryPublisher the telemetry publisher to store
+     */
+    public static void setTelemetryPublisher(FieldTelemetryPublisher telemetryPublisher) {
+        INSTANCE.setTelemetryPublisherInternal(telemetryPublisher);
+    }
+
+    /**
+     * Returns the tracked telemetry publisher.
+     *
+     * @return the current telemetry publisher, or {@code null} if none is registered
+     */
+    public static FieldTelemetryPublisher getTelemetryPublisher() {
+        return INSTANCE.getTelemetryPublisherInternal();
+    }
+
+    /**
+     * Applies a chassis-speed command to the tracked robot body.
+     *
+     * @param speeds the commanded chassis speeds
+     */
+    public static void setPhysicsVelocity(ChassisSpeeds speeds) {
+        INSTANCE.setPhysicsVelocityInternal(speeds);
+    }
+
+    /**
+     * Advances the tracked physics world and refreshes telemetry.
+     */
+    public static void stepPhysics() {
+        INSTANCE.stepPhysicsInternal();
     }
 
     /**
@@ -66,5 +142,44 @@ public class StateManager {
             poses.put(entry.getKey(), entry.getValue().get().pose);
         }
         return Collections.unmodifiableMap(poses);
+    }
+
+    private synchronized void setPhysicsWorldInternal(PhysicsWorld physicsWorld) {
+        this.physicsWorld = physicsWorld;
+    }
+
+    private synchronized PhysicsWorld getPhysicsWorldInternal() {
+        return physicsWorld;
+    }
+
+    private synchronized void setRobotBodyInternal(PhysicsBody robotBody) {
+        this.robotBody = robotBody;
+    }
+
+    private synchronized PhysicsBody getRobotBodyInternal() {
+        return robotBody;
+    }
+
+    private synchronized void setTelemetryPublisherInternal(FieldTelemetryPublisher telemetryPublisher) {
+        this.telemetryPublisher = telemetryPublisher;
+    }
+
+    private synchronized FieldTelemetryPublisher getTelemetryPublisherInternal() {
+        return telemetryPublisher;
+    }
+
+    private synchronized void setPhysicsVelocityInternal(ChassisSpeeds speeds) {
+        if (robotBody != null) {
+            robotBody.setLinearVelocity(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 0.0);
+        }
+    }
+
+    private synchronized void stepPhysicsInternal() {
+        if (physicsWorld != null) {
+            physicsWorld.step();
+            if (telemetryPublisher != null) {
+                telemetryPublisher.publishFrame();
+            }
+        }
     }
 }
