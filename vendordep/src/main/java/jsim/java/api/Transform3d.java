@@ -19,4 +19,13 @@ public class Transform3d {
         this.translation = translation;
         this.rotation = rotation;
     }
+
+    /**
+     * Returns the rotation component of this transform.
+     *
+     * @return the stored rotation
+     */
+    public Rotation3d getRotation() {
+        return rotation;
+    }
 }

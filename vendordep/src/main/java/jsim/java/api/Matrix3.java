@@ -14,6 +14,15 @@ public class Matrix3 {
     }
 
     /**
+     * Creates a new identity matrix.
+     *
+     * @return a newly constructed identity matrix
+     */
+    public static Matrix3 identity() {
+        return new Matrix3();
+    }
+
+    /**
      * Multiplies this matrix by a vector.
      */
     public Vector3 multiply(Vector3 v) {
