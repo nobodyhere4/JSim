@@ -79,6 +79,9 @@ public class SimRobot {
             Transform3d[] zoneDimensions,
             Translation3d robotCenterOffset,
             Rotation3d robotRotation) {
+        if (name != null && gamepieceZones.containsKey(name)) {
+            throw new IllegalArgumentException("Gamepiece zone already exists: " + name);
+        }
         GamepieceZone zone = new GamepieceZone(this, name, zoneDimensions, robotCenterOffset, robotRotation);
         if (name != null) {
             gamepieceZones.put(name, zone);

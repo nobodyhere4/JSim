@@ -51,7 +51,7 @@ public class GamepieceZone {
     final Mode mode;
     final Supplier<Boolean> enter;
     final Supplier<Boolean> exit;
-    final Supplier<Double> rate;
+    final Supplier<Double> exitRateMetersPerSecondSupplier;
     final Supplier<Rotation3d> rot;
     final Supplier<Translation3d> trans;
 
@@ -59,13 +59,13 @@ public class GamepieceZone {
         Mode mode,
         Supplier<Boolean> enter,
         Supplier<Boolean> exit,
-        Supplier<Double> rate,
+        Supplier<Double> exitRateMetersPerSecondSupplier,
         Supplier<Rotation3d> rot,
         Supplier<Translation3d> trans) {
       this.mode = mode;
       this.enter = enter;
       this.exit = exit;
-      this.rate = rate;
+      this.exitRateMetersPerSecondSupplier = exitRateMetersPerSecondSupplier;
       this.rot = rot;
       this.trans = trans;
     }
@@ -181,8 +181,8 @@ public class GamepieceZone {
   /**
    * Sets the gamepiece exit parameters for this zone.
    *
-    * @param velocity the launch velocity
-    * @param rotation the launch rotation relative to the robot
+   * @param velocity the launch velocity
+   * @param rotation the launch rotation relative to the robot
    */
   public void setExitParameters(LinearVelocity velocity, Rotation3d rotation) {
     this.exitVelocity = velocity;
@@ -197,32 +197,6 @@ public class GamepieceZone {
    */
   public void setExitParameters(LinearVelocity velocity) {
     setExitParameters(velocity, new Rotation3d());
-  }
-
-  /**
-   * Sets the gamepiece exit parameters using a numeric exit rate and rotation.
-   *
-   * @param rate the launch rate in meters per second
-   * @param rotation the launch rotation relative to the robot
-   */
-  public void setExitParameters(double rate, Rotation3d rotation) {
-    this.exitRate = rate;
-    this.exitVelocity = MetersPerSecond.of(rate);
-    this.exitRotation = rotation;
-  }
-
-  /**
-   * Sets the gamepiece exit parameters using a numeric exit rate, rotation, and translation.
-   *
-   * @param rate the launch rate in meters per second
-   * @param rotation the launch rotation relative to the robot
-   * @param translation the launch translation relative to the robot
-   */
-  public void setExitParameters(double rate, Rotation3d rotation, Translation3d translation) {
-    this.exitRate = rate;
-    this.exitVelocity = MetersPerSecond.of(rate);
-    this.exitRotation = rotation;
-    this.exitTranslation = translation;
   }
 
   /**
@@ -285,9 +259,15 @@ public class GamepieceZone {
   public void configure(
       Supplier<Boolean> enterCondition,
       Supplier<Boolean> exitCondition,
-      Supplier<Double> exitRateSupplier,
+      Supplier<Double> exitRateMetersPerSecondSupplier,
       Supplier<Rotation3d> rotationSupplier) {
-    addRule(Mode.INTAKE, enterCondition, exitCondition, exitRateSupplier, rotationSupplier, null);
+    addRule(
+        Mode.INTAKE,
+        enterCondition,
+        exitCondition,
+        exitRateMetersPerSecondSupplier,
+        rotationSupplier,
+        null);
   }
 
   /**
@@ -304,10 +284,16 @@ public class GamepieceZone {
       Mode mode,
       Supplier<Boolean> enterCondition,
       Supplier<Boolean> exitCondition,
-      Supplier<Double> exitRateSupplier,
+      Supplier<Double> exitRateMetersPerSecondSupplier,
       Supplier<Rotation3d> rotationSupplier,
       Supplier<Translation3d> translationSupplier) {
-    addRule(mode, enterCondition, exitCondition, exitRateSupplier, rotationSupplier, translationSupplier);
+    addRule(
+        mode,
+        enterCondition,
+        exitCondition,
+        exitRateMetersPerSecondSupplier,
+        rotationSupplier,
+        translationSupplier);
   }
 
   /**
@@ -324,10 +310,17 @@ public class GamepieceZone {
       Mode mode,
       Supplier<Boolean> enterCondition,
       Supplier<Boolean> exitCondition,
-      Supplier<Double> exitRateSupplier,
+      Supplier<Double> exitRateMetersPerSecondSupplier,
       Supplier<Rotation3d> rotationSupplier,
       Supplier<Translation3d> translationSupplier) {
-    rules.add(new Rule(mode, enterCondition, exitCondition, exitRateSupplier, rotationSupplier, translationSupplier));
+    rules.add(
+        new Rule(
+            mode,
+            enterCondition,
+            exitCondition,
+            exitRateMetersPerSecondSupplier,
+            rotationSupplier,
+            translationSupplier));
   }
 
   /**
@@ -354,8 +347,8 @@ public class GamepieceZone {
     for (var rule : rules) {
       if (rule.enter != null && rule.enter.get()) {
         this.mode = rule.mode;
-        if (rule.rate != null) {
-          this.exitRate = rule.rate.get();
+        if (rule.exitRateMetersPerSecondSupplier != null) {
+          this.exitRate = rule.exitRateMetersPerSecondSupplier.get();
           this.exitVelocity = MetersPerSecond.of(exitRate);
         }
         if (rule.rot != null) {
