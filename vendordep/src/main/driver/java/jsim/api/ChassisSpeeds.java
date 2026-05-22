@@ -1,4 +1,4 @@
-package api;
+package jsim.api;
 
 public class ChassisSpeeds {
     public double vx, vy, omega;

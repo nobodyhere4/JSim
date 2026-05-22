@@ -1,6 +1,6 @@
-import api.GamePieceState;
-import api.GamePieceType;
-import api.Rotation3d;
+import jsim.api.GamePieceState;
+import jsim.api.GamePieceType;
+import jsim.api.Rotation3d;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

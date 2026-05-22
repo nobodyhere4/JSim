@@ -1,4 +1,4 @@
-package api;
+package jsim.api;
 
 /**
  * Native Matrix3 backed by C++ core (JNI).
@@ -6,33 +6,19 @@ package api;
 public class Matrix3 {
     private long nativePtr;
 
-    /**
-     * Constructs a native identity matrix.
-     */
     public Matrix3() {
         nativePtr = nativeCreate();
     }
 
-    /**
-     * Creates a new identity matrix.
-     *
-     * @return a newly constructed identity matrix
-     */
     public static Matrix3 identity() {
         return new Matrix3();
     }
 
-    /**
-     * Multiplies this matrix by a vector.
-     */
     public Vector3 multiply(Vector3 v) {
         long ptr = nativeMultiply(this.nativePtr, v.getNativePtr());
         return new Vector3(ptr);
     }
 
-    /**
-     * Releases native memory.
-     */
     public void dispose() {
         nativeDelete(nativePtr);
         nativePtr = 0;

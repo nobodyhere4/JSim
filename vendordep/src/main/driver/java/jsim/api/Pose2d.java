@@ -1,4 +1,4 @@
-package api;
+package jsim.api;
 
 public class Pose2d {
     public final double x, y, theta;

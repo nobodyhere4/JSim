@@ -168,7 +168,7 @@ def driverWpilibCExcludes = [
 sourceSets {
     main {
         java {
-            srcDir "src/main/java/"
+            srcDirs "src/main/java/", "src/main/driver/java/"
         }
     }
     //    test {

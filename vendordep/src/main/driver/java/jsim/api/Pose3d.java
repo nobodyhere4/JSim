@@ -1,4 +1,4 @@
-package api;
+package jsim.api;
 
 public class Pose3d {
     public final double x, y, z, roll, pitch, yaw;

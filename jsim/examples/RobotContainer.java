@@ -1,7 +1,7 @@
 package examples;
 
-import api.SimRobot;
-import api.Rotation3d;
+import jsim.api.SimRobot;
+import jsim.api.Rotation3d;
 
 /**
  * Example RobotContainer for wiring up FRC-style subsystems and commands.

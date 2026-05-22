@@ -1,9 +1,9 @@
 package frc.robot.sim.core;
 
-import api.GamePieceState;
-import api.GamePieceType;
-import api.Rotation3d;
-import api.RobotID;
+import jsim.api.GamePieceState;
+import jsim.api.GamePieceType;
+import jsim.api.Rotation3d;
+import jsim.api.RobotID;
 
 import java.util.ArrayList;
 import java.util.HashMap;

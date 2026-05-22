@@ -1,11 +1,11 @@
 package frc.robot.sim.core;
 
-import api.ChassisSpeeds;
-import api.FieldState;
-import api.Pose2d;
-import api.RobotID;
-import api.RobotState;
-import api.Translation2d;
+import jsim.api.ChassisSpeeds;
+import jsim.api.FieldState;
+import jsim.api.Pose2d;
+import jsim.api.RobotID;
+import jsim.api.RobotState;
+import jsim.api.Translation2d;
 
 import java.util.HashMap;
 import java.util.Map;

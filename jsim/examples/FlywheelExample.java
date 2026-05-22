@@ -1,7 +1,7 @@
 package examples;
 
-import api.Rotation3d;
-import api.SimRobot;
+import jsim.api.Rotation3d;
+import jsim.api.SimRobot;
 
 /**
  * Simple example wrapper around a generic FlywheelSubsystem.

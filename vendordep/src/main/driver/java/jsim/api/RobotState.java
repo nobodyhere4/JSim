@@ -1,4 +1,4 @@
-package api;
+package jsim.api;
 
 public class RobotState {
 

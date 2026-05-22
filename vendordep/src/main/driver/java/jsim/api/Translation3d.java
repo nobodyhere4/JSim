@@ -1,4 +1,4 @@
-package api;
+package jsim.api;
 
 public class Translation3d {
     public final double x, y, z;

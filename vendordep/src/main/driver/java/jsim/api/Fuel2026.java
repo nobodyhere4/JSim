@@ -1,4 +1,4 @@
-package api;
+package jsim.api;
 
 /**
  * Represents a 2026 Fuel game piece.
@@ -19,9 +19,6 @@ public class Fuel2026 extends GamePieceState {
     public void shoot(Translation3d relativeStart, double timeOfFlight, Rotation3d exitAngle) {
         setExitAngle(exitAngle);
 
-        // Convert Translation3d to Vector3
-    // Vector3 start = new Vector3(relativeStart.x, relativeStart.y, relativeStart.z); // Unused
-
         // Convert Rotation3d to Quaternion (assuming ZYX order)
         Quaternion q = quaternionFromRotation3d(exitAngle);
 
@@ -31,17 +28,9 @@ public class Fuel2026 extends GamePieceState {
 
         // Example: use a matrix for further transformation (identity for now)
         Matrix3 m = Matrix3.identity();
-    // Vector3 transformed = m.multiply(rotatedVelocity); // Unused
-
-        // Store or use the result as needed (for now, just a placeholder)
-        // setExitVelocity(new Translation3d(transformed.x, transformed.y, transformed.z));
     }
 
-    /**
-     * Converts a Rotation3d (roll, pitch, yaw) to a Quaternion (ZYX order).
-     */
     private static Quaternion quaternionFromRotation3d(Rotation3d r) {
-        // ZYX Euler to Quaternion
         double cy = Math.cos(r.yaw * 0.5);
         double sy = Math.sin(r.yaw * 0.5);
         double cp = Math.cos(r.pitch * 0.5);

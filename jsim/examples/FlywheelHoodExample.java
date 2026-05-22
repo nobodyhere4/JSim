@@ -1,10 +1,10 @@
 package examples;
 
-import api.GamepieceZone;
-import api.Rotation3d;
-import api.SimRobot;
-import api.Transform3d;
-import api.Translation3d;
+import jsim.api.GamepieceZone;
+import jsim.api.Rotation3d;
+import jsim.api.SimRobot;
+import jsim.api.Transform3d;
+import jsim.api.Translation3d;
 
 /**
  * Example that models a flywheel plus an adjustable hood for aiming.
