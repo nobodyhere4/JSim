@@ -14,7 +14,7 @@ public class FlywheelHoodExample {
 
   public FlywheelHoodExample(SimRobot robot) {
     this.flywheel = new FlywheelSubsystemExample(robot);
-    this.hoodZone = new GamepieceZone(robot);
+    this.hoodZone = robot.createGamepieceZone();
     this.hoodZone.disable();
   }
 

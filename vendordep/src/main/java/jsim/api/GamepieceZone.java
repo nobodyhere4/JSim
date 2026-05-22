@@ -41,7 +41,7 @@ public class GamepieceZone {
    *
    * @param robot the simulated robot that owns this zone
    */
-  public GamepieceZone(SimRobot robot) {
+  GamepieceZone(SimRobot robot) {
     this.robot = robot;
     StateManager.getInstance().registerGamepieceZone(this);
   }

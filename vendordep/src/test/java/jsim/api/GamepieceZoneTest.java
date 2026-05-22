@@ -25,7 +25,7 @@ class GamepieceZoneTest {
           new Translation2d(0.5, 0.0),
           new Translation2d(0.5, 0.5)
         });
-    GamepieceZone zone = new GamepieceZone(robot);
+    GamepieceZone zone = robot.createGamepieceZone();
 
     zone.intake(MetersPerSecond.of(2.5), new Rotation3d(0.1, 0.2, 0.3));
 
@@ -52,7 +52,7 @@ class GamepieceZoneTest {
           new Translation2d(0.5, 0.0),
           new Translation2d(0.5, 0.5)
         });
-    GamepieceZone zone = new GamepieceZone(robot);
+    GamepieceZone zone = robot.createGamepieceZone();
     AtomicReference<GamepieceZone.Mode> mode = new AtomicReference<>(GamepieceZone.Mode.OUTTAKE);
         AtomicReference<LinearVelocity> velocity = new AtomicReference<>(MetersPerSecond.of(4.25));
     AtomicReference<Rotation3d> rotation = new AtomicReference<>(new Rotation3d(1.0, 2.0, 3.0));

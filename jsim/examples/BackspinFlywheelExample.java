@@ -15,7 +15,7 @@ public class BackspinFlywheelExample {
 
   public BackspinFlywheelExample(SimRobot robot) {
     this.flywheel = new FlywheelSubsystemExample(robot);
-    this.backspinRollerZone = new GamepieceZone(robot);
+    this.backspinRollerZone = robot.createGamepieceZone();
     this.backspinRollerZone.setMode(GamepieceZone.Mode.DISABLED);
   }
 

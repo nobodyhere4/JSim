@@ -33,7 +33,7 @@ public class IntakeSubsystem {
    *     out game pieces. A positive value is used for both intake and outtake directions.
    */
   public IntakeSubsystem(SimRobot robot, double intakeSpeed) {
-    this.intakeZone = new GamepieceZone(robot);
+    this.intakeZone = robot.createGamepieceZone();
     // Configure the zone for intake/outtake behavior.
     // The rotation is typically zero, as it's a direct pickup/ejection.
     // The velocity is the speed of the rollers.

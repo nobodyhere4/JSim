@@ -18,7 +18,7 @@ public class FlywheelSubsystemExample {
    * @param robot The simulated robot this subsystem is attached to.
    */
   public FlywheelSubsystemExample(SimRobot robot) {
-    this.flywheelZone = new GamepieceZone(robot);
+    this.flywheelZone = robot.createGamepieceZone();
     this.flywheelZone.disable();
   }
 
@@ -70,7 +70,7 @@ class FlywheelHoodSubsystem {
    */
   public FlywheelHoodSubsystem(SimRobot robot) {
     this.flywheel = new FlywheelSubsystemExample(robot);
-    this.backspinRollerZone = new GamepieceZone(robot);
+    this.backspinRollerZone = robot.createGamepieceZone();
     this.backspinRollerZone.disable();
   }
 
