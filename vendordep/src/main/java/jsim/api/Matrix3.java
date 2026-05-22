@@ -62,6 +62,11 @@ public class Matrix3 {
         this.m22 = m22;
     }
 
+    /**
+     * Returns the identity matrix.
+     *
+     * @return an identity matrix
+     */
     public static Matrix3 identity() {
         return new Matrix3();
     }

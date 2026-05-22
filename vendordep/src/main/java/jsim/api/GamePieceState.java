@@ -33,65 +33,82 @@ public class GamePieceState {
         this.type = type;
     }
 
-    /** Returns the piece type. */
     /**
      * Returns the piece type.
      *
      * @return the game piece type
      */
     public GamePieceType getType() { return type; }
-    /** Sets the scalar velocity. */
     /**
      * Sets the scalar velocity.
      *
      * @param velocity scalar exit velocity
      */
     public void setVelocity(double velocity) { this.velocity = velocity; }
-    /** Sets the rotation. */
     /**
      * Sets the rotation.
      *
      * @param rotation piece rotation
      */
     public void setRotation(Rotation3d rotation) { this.rotation = rotation; }
-    /** Returns the scalar velocity. */
     /**
      * Returns the scalar velocity.
      *
      * @return the scalar velocity
      */
     public double getVelocity() { return velocity; }
-    /** Returns the rotation. */
     /**
      * Returns the rotation.
      *
      * @return the piece rotation
      */
     public Rotation3d getRotation() { return rotation; }
-    /** Sets the robot offset start. */
     /**
      * Sets the robot offset start.
      *
      * @param offset starting offset in robot coordinates
      */
     public void setRobotOffsetStart(Translation2d offset) { this.robotOffsetStart = offset; }
-    /** Returns the robot offset start. */
     /**
      * Returns the robot offset start.
      *
      * @return the starting offset in robot coordinates
      */
     public Translation2d getRobotOffsetStart() { return robotOffsetStart; }
-    /** Sets the exit velocity vector. */
+    /**
+     * Sets the exit velocity vector.
+     *
+     * @param velocity exit velocity vector
+     */
     public void setExitVelocity(Translation3d velocity) { this.exitVelocity = velocity; }
-    /** Returns the exit velocity vector. */
+    /**
+     * Returns the exit velocity vector.
+     *
+     * @return the exit velocity vector
+     */
     public Translation3d getExitVelocity() { return exitVelocity; }
-    /** Sets the exit angle. */
+    /**
+     * Sets the exit angle.
+     *
+     * @param angle exit angle
+     */
     public void setExitAngle(Rotation3d angle) { this.exitAngle = angle; }
-    /** Returns the exit angle. */
+    /**
+     * Returns the exit angle.
+     *
+     * @return the exit angle
+     */
     public Rotation3d getExitAngle() { return exitAngle; }
-    /** Sets the intake polygon area. */
+    /**
+     * Sets the intake polygon area.
+     *
+     * @param intakeArea intake polygon area
+     */
     public void intakeZone(Translation3d[] intakeArea) { this.intakeArea = intakeArea; }
-    /** Returns the intake polygon area. */
+    /**
+     * Returns the intake polygon area.
+     *
+     * @return the intake polygon area
+     */
     public Translation3d[] getIntakeArea() { return intakeArea; }
 }
