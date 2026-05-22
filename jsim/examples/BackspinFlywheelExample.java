@@ -3,7 +3,6 @@ package examples;
 import jsim.api.GamepieceZone;
 import jsim.api.Rotation3d;
 import jsim.api.SimRobot;
-import jsim.api.Transform3d;
 import jsim.api.Translation3d;
 
 /**
@@ -27,18 +26,10 @@ public class BackspinFlywheelExample {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.backspinRollerZone = robot.createGamepieceZone(
         "backspinRoller",
-      createZoneDimensions(BACKSPIN_ZONE_POINTS),
+        ExampleGeometry.createZoneDimensions(ZERO_ROTATION, BACKSPIN_ZONE_POINTS),
         new Translation3d(0.15, 0.0, 0.0),
         ZERO_ROTATION);
     this.backspinRollerZone.setMode(GamepieceZone.Mode.DISABLED);
-  }
-
-  private static Transform3d[] createZoneDimensions(Translation3d[] translations) {
-    Transform3d[] transforms = new Transform3d[translations.length];
-    for (int i = 0; i < translations.length; i++) {
-      transforms[i] = new Transform3d(translations[i], ZERO_ROTATION);
-    }
-    return transforms;
   }
 
   public void setShot(double left, double right, double backspin, Rotation3d angle) {

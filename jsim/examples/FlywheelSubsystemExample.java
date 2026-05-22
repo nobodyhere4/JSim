@@ -3,7 +3,6 @@ package examples;
 import jsim.api.GamepieceZone;
 import jsim.api.SimRobot;
 import jsim.api.Rotation3d;
-import jsim.api.Transform3d;
 import jsim.api.Translation3d;
 
 /**
@@ -24,7 +23,8 @@ public class FlywheelSubsystemExample {
   public FlywheelSubsystemExample(SimRobot robot) {
     this.flywheelZone = robot.createGamepieceZone(
         "flywheel",
-        createZoneDimensions(
+        ExampleGeometry.createZoneDimensions(
+            ZERO_ROTATION,
             new Translation3d(0.0, 0.0, 0.0),
             new Translation3d(0.25, 0.0, 0.0),
             new Translation3d(0.25, 0.12, 0.0),
@@ -32,14 +32,6 @@ public class FlywheelSubsystemExample {
         new Translation3d(0.18, 0.0, 0.0),
         ZERO_ROTATION);
     this.flywheelZone.disable();
-  }
-
-  private static Transform3d[] createZoneDimensions(Translation3d... translations) {
-    Transform3d[] transforms = new Transform3d[translations.length];
-    for (int i = 0; i < translations.length; i++) {
-      transforms[i] = new Transform3d(translations[i], ZERO_ROTATION);
-    }
-    return transforms;
   }
 
   /**
@@ -94,7 +86,8 @@ class FlywheelHoodSubsystem {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.backspinRollerZone = robot.createGamepieceZone(
         "backspinRoller",
-        createZoneDimensions(
+        ExampleGeometry.createZoneDimensions(
+            ZERO_ROTATION,
             new Translation3d(0.0, 0.0, 0.0),
             new Translation3d(0.2, 0.0, 0.0),
             new Translation3d(0.2, 0.15, 0.0),
@@ -102,14 +95,6 @@ class FlywheelHoodSubsystem {
         new Translation3d(0.14, -0.02, 0.0),
         ZERO_ROTATION);
     this.backspinRollerZone.disable();
-  }
-
-  private static Transform3d[] createZoneDimensions(Translation3d... translations) {
-    Transform3d[] transforms = new Transform3d[translations.length];
-    for (int i = 0; i < translations.length; i++) {
-      transforms[i] = new Transform3d(translations[i], ZERO_ROTATION);
-    }
-    return transforms;
   }
 
   /**

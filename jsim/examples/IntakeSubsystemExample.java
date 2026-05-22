@@ -3,7 +3,6 @@ package examples;
 import jsim.api.GamepieceZone;
 import jsim.api.Rotation3d;
 import jsim.api.SimRobot;
-import jsim.api.Transform3d;
 import jsim.api.Translation3d;
 
 /**
@@ -39,7 +38,8 @@ public class IntakeSubsystem {
   public IntakeSubsystem(SimRobot robot, double intakeSpeed) {
     this.intakeZone = robot.createGamepieceZone(
         "intake",
-        createZoneDimensions(
+      ExampleGeometry.createZoneDimensions(
+        ZERO_ROTATION,
             new Translation3d(0.0, 0.0, 0.0),
             new Translation3d(0.22, 0.0, 0.0),
             new Translation3d(0.22, 0.16, 0.0),
@@ -50,14 +50,6 @@ public class IntakeSubsystem {
     // The rotation is typically zero, as it's a direct pickup/ejection.
     // The velocity is the speed of the rollers.
     this.intakeZone.setExitParameters(intakeSpeed);
-  }
-
-  private static Transform3d[] createZoneDimensions(Translation3d... translations) {
-    Transform3d[] transforms = new Transform3d[translations.length];
-    for (int i = 0; i < translations.length; i++) {
-      transforms[i] = new Transform3d(translations[i], ZERO_ROTATION);
-    }
-    return transforms;
   }
 
   /**

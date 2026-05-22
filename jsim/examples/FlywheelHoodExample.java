@@ -3,7 +3,6 @@ package examples;
 import jsim.api.GamepieceZone;
 import jsim.api.Rotation3d;
 import jsim.api.SimRobot;
-import jsim.api.Transform3d;
 import jsim.api.Translation3d;
 
 /**
@@ -20,7 +19,8 @@ public class FlywheelHoodExample {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.hoodZone = robot.createGamepieceZone(
         "hood",
-        createZoneDimensions(
+        ExampleGeometry.createZoneDimensions(
+            ZERO_ROTATION,
             new Translation3d(0.0, 0.0, 0.0),
             new Translation3d(0.18, 0.0, 0.0),
             new Translation3d(0.18, 0.14, 0.0),
@@ -28,14 +28,6 @@ public class FlywheelHoodExample {
         new Translation3d(0.12, 0.02, 0.0),
         ZERO_ROTATION);
     this.hoodZone.disable();
-  }
-
-  private static Transform3d[] createZoneDimensions(Translation3d... translations) {
-    Transform3d[] transforms = new Transform3d[translations.length];
-    for (int i = 0; i < translations.length; i++) {
-      transforms[i] = new Transform3d(translations[i], ZERO_ROTATION);
-    }
-    return transforms;
   }
 
   public void setShot(double left, double right, Rotation3d angle) {
