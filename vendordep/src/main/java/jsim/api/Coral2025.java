@@ -16,6 +16,6 @@ public class Coral2025 extends GamePieceState {
      * @param branch The pose where the coral is placed.
      */
     public void place(Pose3d branch) {
-        // TODO: Implement placement logic — placeholder to satisfy API surface.
+        // TODO: Implement placement logic - placeholder to satisfy API surface.
     }
 }
