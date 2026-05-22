@@ -1,5 +1,7 @@
 package api;
 
+import java.util.function.Supplier;
+
 /**
  * Represents a polygonal interaction zone on a simulated robot used for intake/outtake
  * interactions with gamepieces.
@@ -31,6 +33,9 @@ public class GamepieceZone {
     private Rotation3d exitRotation; // fallback rotation-only exit
     private Transform3d exitTransform; // optional full exit transform
     private Mode mode = Mode.DISABLED;
+    private Supplier<Mode> modeSupplier;
+    private Supplier<Double> exitVelocitySupplier;
+    private Supplier<Rotation3d> exitRotationSupplier;
 
     /**
      * Creates a new gamepiece zone.
@@ -83,6 +88,7 @@ public class GamepieceZone {
     /** Sets the active interaction mode for this zone. */
     public void setMode(Mode mode) {
         this.mode = mode;
+        this.modeSupplier = null;
     }
 
     /** Sets the exit parameters using a rotation-only exit orientation. Velocity is meters/second. */
@@ -90,6 +96,8 @@ public class GamepieceZone {
         this.exitVelocity = velocity;
         this.exitRotation = rotation;
         this.exitTransform = null;
+        this.exitVelocitySupplier = null;
+        this.exitRotationSupplier = null;
     }
 
     /** Sets the exit parameters using a full {@link Transform3d} for exit pose. Velocity is meters/second. */
@@ -97,15 +105,40 @@ public class GamepieceZone {
         this.exitVelocity = velocity;
         this.exitTransform = transform;
         this.exitRotation = transform == null ? null : transform.getRotation();
+        this.exitVelocitySupplier = null;
+        this.exitRotationSupplier = null;
+    }
+
+    /**
+     * Configures this zone from suppliers so the active mode and exit parameters can be derived
+     * from subsystem state without mutating the zone in the caller.
+     *
+     * @param modeSupplier supplies the current interaction mode
+     * @param exitVelocitySupplier supplies the current exit velocity in meters per second
+     * @param exitRotationSupplier supplies the current exit rotation
+     */
+    public void configure(
+            Supplier<Mode> modeSupplier,
+            Supplier<Double> exitVelocitySupplier,
+            Supplier<Rotation3d> exitRotationSupplier) {
+        this.modeSupplier = modeSupplier;
+        this.exitVelocitySupplier = exitVelocitySupplier;
+        this.exitRotationSupplier = exitRotationSupplier;
     }
 
     /** Returns the configured exit velocity in meters per second. */
     public double getExitVelocity() {
+        if (exitVelocitySupplier != null) {
+            return exitVelocitySupplier.get();
+        }
         return exitVelocity;
     }
 
     /** Returns the exit orientation as a {@link Rotation3d}, if configured (may be {@code null}). */
     public Rotation3d getExitRotation() {
+        if (exitRotationSupplier != null) {
+            return exitRotationSupplier.get();
+        }
         return exitRotation;
     }
 
@@ -121,6 +154,9 @@ public class GamepieceZone {
 
     /** Returns the current mode. */
     public Mode getMode() {
+        if (modeSupplier != null) {
+            return modeSupplier.get();
+        }
         return mode;
     }
 }
