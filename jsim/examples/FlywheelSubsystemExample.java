@@ -10,6 +10,21 @@ import edu.wpi.first.math.geometry.Translation3d;
  * This is a common FRC design for launching balls.
  */
 public class FlywheelSubsystemExample {
+  private static final Translation3d[] FLYWHEEL_ZONE_POINTS = {
+    new Translation3d(0.0, 0.0, 0.0),
+    new Translation3d(0.25, 0.0, 0.0),
+    new Translation3d(0.25, 0.12, 0.0),
+    new Translation3d(0.0, 0.12, 0.0)
+  };
+  private static final Translation3d FLYWHEEL_ROBOT_CENTER_OFFSET = new Translation3d(0.18, 0.0, 0.0);
+  private static final Translation3d[] BACKSPIN_ZONE_POINTS = {
+    new Translation3d(0.0, 0.0, 0.0),
+    new Translation3d(0.2, 0.0, 0.0),
+    new Translation3d(0.2, 0.15, 0.0),
+    new Translation3d(0.0, 0.15, 0.0)
+  };
+  private static final Translation3d BACKSPIN_ROBOT_CENTER_OFFSET = new Translation3d(0.14, -0.02, 0.0);
+
   private final GamepieceZone flywheelZone;
   private double leftMotorVelocity = 0.0;
   private double rightMotorVelocity = 0.0;
@@ -21,15 +36,9 @@ public class FlywheelSubsystemExample {
   public FlywheelSubsystemExample(SimRobot robot) {
     this.flywheelZone = robot.createGamepieceZone(
         "flywheel",
-        GamepieceZone.createZoneDimensions(
-        Rotation3d.kZero,
-            new Translation3d(0.0, 0.0, 0.0),
-            new Translation3d(0.25, 0.0, 0.0),
-            new Translation3d(0.25, 0.12, 0.0),
-            new Translation3d(0.0, 0.12, 0.0)),
-        new Translation3d(0.18, 0.0, 0.0),
-      Rotation3d.kZero);
-    this.flywheelZone.disable();
+        GamepieceZone.createZoneDimensions(Rotation3d.kZero, FLYWHEEL_ZONE_POINTS),
+        FLYWHEEL_ROBOT_CENTER_OFFSET,
+        Rotation3d.kZero);
   }
 
   /**
@@ -82,15 +91,9 @@ class FlywheelHoodSubsystem {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.backspinRollerZone = robot.createGamepieceZone(
         "backspinRoller",
-        GamepieceZone.createZoneDimensions(
-        Rotation3d.kZero,
-            new Translation3d(0.0, 0.0, 0.0),
-            new Translation3d(0.2, 0.0, 0.0),
-            new Translation3d(0.2, 0.15, 0.0),
-            new Translation3d(0.0, 0.15, 0.0)),
-        new Translation3d(0.14, -0.02, 0.0),
-      Rotation3d.kZero);
-    this.backspinRollerZone.disable();
+        GamepieceZone.createZoneDimensions(Rotation3d.kZero, BACKSPIN_ZONE_POINTS),
+        BACKSPIN_ROBOT_CENTER_OFFSET,
+        Rotation3d.kZero);
   }
 
   /**

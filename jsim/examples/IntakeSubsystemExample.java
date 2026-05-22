@@ -12,6 +12,14 @@ import edu.wpi.first.math.geometry.Translation3d;
  * can be set to different modes for collecting game pieces from the field or ejecting them.
  */
 public class IntakeSubsystem {
+  private static final Translation3d[] INTAKE_ZONE_POINTS = {
+    new Translation3d(0.0, 0.0, 0.0),
+    new Translation3d(0.22, 0.0, 0.0),
+    new Translation3d(0.22, 0.16, 0.0),
+    new Translation3d(0.0, 0.16, 0.0)
+  };
+  private static final Translation3d INTAKE_ROBOT_CENTER_OFFSET = new Translation3d(0.1, 0.0, 0.0);
+
   private final GamepieceZone intakeZone;
 
   /**
@@ -36,13 +44,8 @@ public class IntakeSubsystem {
   public IntakeSubsystem(SimRobot robot, double intakeSpeed) {
     this.intakeZone = robot.createGamepieceZone(
         "intake",
-      GamepieceZone.createZoneDimensions(
-        Rotation3d.kZero,
-            new Translation3d(0.0, 0.0, 0.0),
-            new Translation3d(0.22, 0.0, 0.0),
-            new Translation3d(0.22, 0.16, 0.0),
-            new Translation3d(0.0, 0.16, 0.0)),
-        new Translation3d(0.1, 0.0, 0.0),
+      GamepieceZone.createZoneDimensions(Rotation3d.kZero, INTAKE_ZONE_POINTS),
+        INTAKE_ROBOT_CENTER_OFFSET,
         Rotation3d.kZero);
     // Configure the zone for intake/outtake behavior.
     // The rotation is typically zero, as it's a direct pickup/ejection.
