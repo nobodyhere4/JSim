@@ -1,6 +1,9 @@
 package api;
 
 import jsim.api.SimRobot;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import edu.wpi.first.units.measure.LinearVelocity;
 import java.util.function.Supplier;
 
 /**
@@ -35,7 +38,7 @@ public class GamepieceZone {
     private Transform3d exitTransform; // optional full exit transform
     private Mode mode = Mode.DISABLED;
     private Supplier<Mode> modeSupplier;
-    private Supplier<Double> exitVelocitySupplier;
+    private Supplier<LinearVelocity> exitVelocitySupplier;
     private Supplier<Rotation3d> exitRotationSupplier;
 
     /**
@@ -120,7 +123,7 @@ public class GamepieceZone {
      */
     public void configure(
             Supplier<Mode> modeSupplier,
-            Supplier<Double> exitVelocitySupplier,
+            Supplier<LinearVelocity> exitVelocitySupplier,
             Supplier<Rotation3d> exitRotationSupplier) {
         this.modeSupplier = modeSupplier;
         this.exitVelocitySupplier = exitVelocitySupplier;
@@ -130,7 +133,7 @@ public class GamepieceZone {
     /** Returns the configured exit velocity in meters per second. */
     public double getExitVelocity() {
         if (exitVelocitySupplier != null) {
-            return exitVelocitySupplier.get();
+            return exitVelocitySupplier.get().in(MetersPerSecond);
         }
         return exitVelocity;
     }
