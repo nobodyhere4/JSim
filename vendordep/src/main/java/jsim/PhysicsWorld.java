@@ -34,6 +34,25 @@ public final class PhysicsWorld implements AutoCloseable {
 			throw new JSimException("Failed to create native PhysicsWorld", 0,
 				"Ensure the native JSim library is available and that permissions allow loading it.");
 		}
+
+		/**
+		 * Returns the native world handle for interop (primarily for publishers).
+		 *
+		 * <p>This is intentionally provided so callers can create native-backed helpers
+		 * like telemetry publishers that require the raw handle.
+		 */
+		public long getNativeHandle() {
+			return worldHandle;
+		}
+
+		/**
+		 * Returns a reasonable default maximum number of bodies to export for telemetry.
+		 *
+		 * <p>Callers may use this value when constructing publishers that snapshot world state.
+		 */
+		public int getMaxBodies() {
+			return 128;
+		}
 	}
 
 	/**

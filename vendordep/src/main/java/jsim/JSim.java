@@ -8,12 +8,14 @@ import edu.wpi.first.math.geometry.Translation2d;
 import jsim.api.RobotID;
 import jsim.api.SimRobot;
 import jsim.api.StateManager;
+import jsim.nt.WorldPosePublisher;
 
 /**
  * Public entry point for common JSim accessors.
  */
 public final class JSim {
   private static PhysicsWorld physicsWorld;
+  private static WorldPosePublisher defaultWorldPublisher;
 
   private JSim() {}
 
@@ -58,6 +60,14 @@ public final class JSim {
     if (physicsWorld == null) {
       physicsWorld = new PhysicsWorld(fixedDtSeconds, enableGravity);
       StateManager.getInstance().setPhysicsWorld(physicsWorld);
+      try {
+        // Install default telemetry publisher for world pose exports.
+        defaultWorldPublisher = new WorldPosePublisher(
+            physicsWorld.getNativeHandle(), physicsWorld.getMaxBodies());
+        physicsWorld.addStepListener(() -> defaultWorldPublisher.publishFrame());
+      } catch (Throwable t) {
+        // Swallow errors to avoid breaking world creation when NT isn't available.
+      }
     }
     return physicsWorld;
   }
