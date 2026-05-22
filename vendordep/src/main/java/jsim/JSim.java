@@ -9,6 +9,10 @@ import jsim.api.RobotID;
 import jsim.api.SimRobot;
 import jsim.api.StateManager;
 import jsim.nt.WorldPosePublisher;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jsim.field.FieldDefinitionCatalog;
+import jsim.field.FieldConfig;
 
 /**
  * Public entry point for common JSim accessors.
@@ -18,6 +22,8 @@ public final class JSim {
   private static WorldPosePublisher defaultWorldPublisher;
 
   private JSim() {}
+
+  private static final ObjectMapper MAPPER = new ObjectMapper();
 
   /**
    * Returns the shared simulation state manager.
@@ -82,5 +88,21 @@ public final class JSim {
    */
   public static PhysicsWorld getPhysicsWorld() {
     return physicsWorld;
+  }
+
+  /**
+   * Loads a built-in field definition by year and initializes the simulation field state.
+   * This is part of the JSim public API so examples and user code call into the vendordep.
+   *
+   * @param year season year (e.g. 2026)
+   */
+  public static void initializeField(int year) {
+    JsonNode node = FieldDefinitionCatalog.loadFieldNode(year);
+    try {
+      FieldConfig cfg = MAPPER.treeToValue(node, FieldConfig.class);
+      StateManager.getInstance().initializeField(cfg);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to initialize field for year " + year, e);
+    }
   }
 }

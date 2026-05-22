@@ -15,13 +15,8 @@ public final class SimHelpers {
   private SimHelpers() {}
 
   public static void initializeField(int year) {
-    JsonNode node = FieldDefinitionCatalog.loadFieldNode(year);
-    try {
-      FieldConfig cfg = MAPPER.treeToValue(node, FieldConfig.class);
-      StateManager.getInstance().initializeField(cfg);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to initialize field for year " + year, e);
-    }
+    // Use the vendordep public API instead of duplicating initialization logic here.
+    jsim.JSim.initializeField(year);
   }
 
   /**

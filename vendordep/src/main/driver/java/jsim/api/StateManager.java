@@ -11,6 +11,9 @@ import java.util.Map;
 import jsim.PhysicsBody;
 import jsim.PhysicsWorld;
 import jsim.field.FieldConfig;
+import jsim.field.FieldElement;
+import java.util.Objects;
+import jsim.field.FieldConfig;
 
 /**
  * System Rules:
@@ -25,6 +28,7 @@ public class StateManager {
     private final Map<RobotID, SimRobot> robots = new EnumMap<>(RobotID.class);
     private final Map<RobotID, PhysicsBody> robotBodies = new EnumMap<>(RobotID.class);
     private final List<GamepieceZone> gamepieceZones = new ArrayList<>();
+    private final List<FieldElement> fieldElements = new ArrayList<>();
     private PhysicsWorld physicsWorld;
 
     private StateManager() {}
@@ -43,7 +47,27 @@ public class StateManager {
      * @param config The field configuration to initialize.
      */
     public void initializeField(FieldConfig config) {
-        // Build collision zones based on parsed config schemas
+        Objects.requireNonNull(config, "FieldConfig must not be null");
+        // Populate internal list of field elements from the parsed configuration.
+        synchronized (this) {
+            fieldElements.clear();
+            if (config.fieldElements != null) {
+                for (FieldElement e : config.fieldElements) {
+                    if (e != null) {
+                        fieldElements.add(e);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns an immutable view of the current field elements registered in the simulation.
+     *
+     * @return unmodifiable list of field elements
+     */
+    public synchronized List<FieldElement> getFieldElements() {
+        return Collections.unmodifiableList(new ArrayList<>(fieldElements));
     }
 
     /**
