@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,9 +23,10 @@ public class StateManager {
     private static final StateManager INSTANCE = new StateManager();
 
     private final Map<RobotID, FieldState<SimRobot.RobotState>> robotStates = new HashMap<>();
+    private final Map<RobotID, SimRobot> robots = new HashMap<>();
+    private final Map<RobotID, PhysicsBody> robotBodies = new HashMap<>();
     private final List<GamepieceZone> gamepieceZones = new ArrayList<>();
     private PhysicsWorld physicsWorld;
-    private PhysicsBody robotBody;
     private FieldTelemetryPublisher telemetryPublisher;
 
     private StateManager() {}
@@ -37,85 +37,6 @@ public class StateManager {
      */
     public static StateManager getInstance() {
         return INSTANCE;
-    }
-
-    /**
-     * Sets the active physics world managed by the simulation layer.
-     *
-     * @param physicsWorld the physics world to store
-     */
-    public static void setPhysicsWorld(PhysicsWorld physicsWorld) {
-        INSTANCE.setPhysicsWorldInternal(physicsWorld);
-    }
-
-    /**
-     * Returns the active physics world managed by the simulation layer.
-     *
-     * @return the current physics world, or {@code null} if none is registered
-     */
-    public static PhysicsWorld getPhysicsWorld() {
-        return INSTANCE.getPhysicsWorldInternal();
-    }
-
-    /**
-     * Sets the robot body tracked by the simulation layer.
-     *
-     * @param robotBody the robot body to store
-     */
-    public static void setRobotBody(PhysicsBody robotBody) {
-        INSTANCE.setRobotBodyInternal(robotBody);
-    }
-
-    /**
-     * Returns the tracked robot body.
-     *
-     * @return the current robot body, or {@code null} if none is registered
-     */
-    public static PhysicsBody getRobotBody() {
-        return INSTANCE.getRobotBodyInternal();
-    }
-
-    /**
-     * Sets the telemetry publisher used to mirror simulation state.
-     *
-     * @param telemetryPublisher the telemetry publisher to store
-     */
-    public static void setTelemetryPublisher(FieldTelemetryPublisher telemetryPublisher) {
-        INSTANCE.setTelemetryPublisherInternal(telemetryPublisher);
-    }
-
-    /**
-     * Returns the tracked telemetry publisher.
-     *
-     * @return the current telemetry publisher, or {@code null} if none is registered
-     */
-    public static FieldTelemetryPublisher getTelemetryPublisher() {
-        return INSTANCE.getTelemetryPublisherInternal();
-    }
-
-    /**
-     * Applies a chassis-speed command to the tracked robot body.
-     *
-     * @param speeds the commanded chassis speeds
-     */
-    public static void setPhysicsVelocity(ChassisSpeeds speeds) {
-        INSTANCE.setPhysicsVelocityInternal(speeds);
-    }
-
-    /**
-     * Registers a gamepiece zone to be refreshed on each simulation step.
-     *
-     * @param gamepieceZone the zone to register
-     */
-    public static void registerGamepieceZone(GamepieceZone gamepieceZone) {
-        INSTANCE.registerGamepieceZoneInternal(gamepieceZone);
-    }
-
-    /**
-     * Advances the tracked physics world and refreshes telemetry.
-     */
-    public static void stepPhysics() {
-        INSTANCE.stepPhysicsInternal();
     }
 
     /**
@@ -139,8 +60,19 @@ public class StateManager {
         
         FieldState<SimRobot.RobotState> stateRef = new FieldState<>(internalState);
         robotStates.put(id, stateRef);
+        SimRobot robot = new SimRobot(id, stateRef);
+        robots.put(id, robot);
+        return robot;
+    }
 
-        return new SimRobot(id, stateRef);
+    /**
+     * Returns the simulated robot registered for the given driver-station id.
+     *
+     * @param id the robot identifier
+     * @return the registered robot, or {@code null} if none exists
+     */
+    public synchronized SimRobot getRobot(RobotID id) {
+        return robots.get(id);
     }
 
     /**
@@ -149,59 +81,64 @@ public class StateManager {
      * @return immutable map of robot ids to poses
      */
     public Map<RobotID, Pose2d> getRobotPoses() {
-        Map<RobotID, Pose2d> poses = new EnumMap<>(RobotID.class);
+        Map<RobotID, Pose2d> poses = new HashMap<>();
         for (Map.Entry<RobotID, FieldState<SimRobot.RobotState>> entry : robotStates.entrySet()) {
             poses.put(entry.getKey(), entry.getValue().get().pose);
         }
         return Collections.unmodifiableMap(poses);
     }
 
-    private synchronized void setPhysicsWorldInternal(PhysicsWorld physicsWorld) {
+    public synchronized void setPhysicsWorld(PhysicsWorld physicsWorld) {
         this.physicsWorld = physicsWorld;
     }
 
-    private synchronized PhysicsWorld getPhysicsWorldInternal() {
+    public synchronized PhysicsWorld getPhysicsWorld() {
         return physicsWorld;
     }
 
-    private synchronized void setRobotBodyInternal(PhysicsBody robotBody) {
-        this.robotBody = robotBody;
+    public synchronized void setRobotBody(RobotID id, PhysicsBody robotBody) {
+        if (robotBody == null) {
+            robotBodies.remove(id);
+        } else {
+            robotBodies.put(id, robotBody);
+        }
     }
 
-    private synchronized PhysicsBody getRobotBodyInternal() {
-        return robotBody;
+    public synchronized PhysicsBody getRobotBody(RobotID id) {
+        return robotBodies.get(id);
     }
 
-    private synchronized void setTelemetryPublisherInternal(FieldTelemetryPublisher telemetryPublisher) {
+    public synchronized void setTelemetryPublisher(FieldTelemetryPublisher telemetryPublisher) {
         this.telemetryPublisher = telemetryPublisher;
     }
 
-    private synchronized FieldTelemetryPublisher getTelemetryPublisherInternal() {
+    public synchronized FieldTelemetryPublisher getTelemetryPublisher() {
         return telemetryPublisher;
     }
 
-    private synchronized void setPhysicsVelocityInternal(ChassisSpeeds speeds) {
+    public synchronized void setPhysicsVelocity(RobotID id, ChassisSpeeds speeds) {
+        PhysicsBody robotBody = robotBodies.get(id);
         if (robotBody != null) {
             robotBody.setLinearVelocity(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 0.0);
         }
     }
 
-    private synchronized void registerGamepieceZoneInternal(GamepieceZone gamepieceZone) {
+    public synchronized void registerGamepieceZone(GamepieceZone gamepieceZone) {
         if (gamepieceZone != null && !gamepieceZones.contains(gamepieceZone)) {
             gamepieceZones.add(gamepieceZone);
         }
     }
 
-    private synchronized void refreshGamepieceZonesInternal() {
+    private synchronized void refreshGamepieceZones() {
         for (GamepieceZone gamepieceZone : gamepieceZones) {
             gamepieceZone.refresh();
         }
     }
 
-    private synchronized void stepPhysicsInternal() {
+    public synchronized void stepPhysics() {
         if (physicsWorld != null) {
             physicsWorld.step();
-            refreshGamepieceZonesInternal();
+            refreshGamepieceZones();
             if (telemetryPublisher != null) {
                 telemetryPublisher.publishFrame();
             }

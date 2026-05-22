@@ -4,8 +4,10 @@
 
 package jsim.api;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.math.geometry.Rotation3d;
-import java.util.function.DoubleSupplier;
+import edu.wpi.first.units.measure.LinearVelocity;
 import java.util.function.Supplier;
 
 /**
@@ -27,11 +29,11 @@ public class GamepieceZone {
   }
 
   private final SimRobot robot;
-  private double exitVelocity;
+  private LinearVelocity exitVelocity = MetersPerSecond.of(0.0);
   private Rotation3d exitRotation = new Rotation3d();
   private Mode mode = Mode.DISABLED;
   private Supplier<Mode> modeSupplier;
-  private DoubleSupplier exitVelocitySupplier;
+  private Supplier<LinearVelocity> exitVelocitySupplier;
   private Supplier<Rotation3d> exitRotationSupplier;
 
   /**
@@ -41,7 +43,7 @@ public class GamepieceZone {
    */
   public GamepieceZone(SimRobot robot) {
     this.robot = robot;
-    StateManager.registerGamepieceZone(this);
+    StateManager.getInstance().registerGamepieceZone(this);
   }
 
   /**
@@ -72,10 +74,10 @@ public class GamepieceZone {
   /**
    * Sets the gamepiece exit parameters for this zone.
    *
-   * @param velocity the launch velocity in meters per second
+   * @param velocity the launch velocity
    * @param rotation the launch rotation
    */
-  public void setExitParameters(double velocity, Rotation3d rotation) {
+  public void setExitParameters(LinearVelocity velocity, Rotation3d rotation) {
     this.exitVelocity = velocity;
     this.exitRotation = rotation;
   }
@@ -83,19 +85,19 @@ public class GamepieceZone {
   /**
    * Sets the gamepiece exit velocity with a default zero rotation.
    *
-   * @param velocity the launch velocity in meters per second
+   * @param velocity the launch velocity
    */
-  public void setExitParameters(double velocity) {
+  public void setExitParameters(LinearVelocity velocity) {
     setExitParameters(velocity, new Rotation3d());
   }
 
   /**
    * Configures the zone to intake gamepieces.
    *
-   * @param velocity the launch velocity in meters per second
+   * @param velocity the launch velocity
    * @param rotation the launch rotation
    */
-  public void intake(double velocity, Rotation3d rotation) {
+  public void intake(LinearVelocity velocity, Rotation3d rotation) {
     setExitParameters(velocity, rotation);
     setMode(Mode.INTAKE);
   }
@@ -103,10 +105,10 @@ public class GamepieceZone {
   /**
    * Configures the zone to outtake gamepieces.
    *
-   * @param velocity the launch velocity in meters per second
+   * @param velocity the launch velocity
    * @param rotation the launch rotation
    */
-  public void outtake(double velocity, Rotation3d rotation) {
+  public void outtake(LinearVelocity velocity, Rotation3d rotation) {
     setExitParameters(velocity, rotation);
     setMode(Mode.OUTTAKE);
   }
@@ -114,10 +116,10 @@ public class GamepieceZone {
   /**
    * Configures the zone to shoot gamepieces.
    *
-   * @param velocity the launch velocity in meters per second
+   * @param velocity the launch velocity
    * @param rotation the launch rotation
    */
-  public void shoot(double velocity, Rotation3d rotation) {
+  public void shoot(LinearVelocity velocity, Rotation3d rotation) {
     setExitParameters(velocity, rotation);
     setMode(Mode.SHOOT);
   }
@@ -131,7 +133,7 @@ public class GamepieceZone {
    */
   public void configure(
       Supplier<Mode> modeSupplier,
-      DoubleSupplier exitVelocitySupplier,
+      Supplier<LinearVelocity> exitVelocitySupplier,
       Supplier<Rotation3d> exitRotationSupplier) {
     this.modeSupplier = modeSupplier;
     this.exitVelocitySupplier = exitVelocitySupplier;
@@ -146,7 +148,7 @@ public class GamepieceZone {
       setMode(modeSupplier.get());
     }
     if (exitVelocitySupplier != null) {
-      exitVelocity = exitVelocitySupplier.getAsDouble();
+      exitVelocity = exitVelocitySupplier.get();
     }
     if (exitRotationSupplier != null) {
       exitRotation = exitRotationSupplier.get();
@@ -158,7 +160,7 @@ public class GamepieceZone {
    *
    * @return the exit velocity in meters per second
    */
-  public double getExitVelocity() {
+  public LinearVelocity getExitVelocity() {
     return exitVelocity;
   }
 

@@ -17,6 +17,14 @@ class JSimFacadeTest {
   }
 
   @Test
+  void createPhysicsWorldReturnsSharedInstance() {
+    PhysicsWorld world = JSim.createPhysicsWorld(0.01, true);
+
+    assertSame(world, JSim.getPhysicsWorld());
+    assertSame(world, StateManager.getInstance().getPhysicsWorld());
+  }
+
+  @Test
   void createRobotDelegatesToSharedStateManager() {
     Translation2d[] frameDimensions = new Translation2d[] {
       new Translation2d(0.0, 0.0),
@@ -28,5 +36,7 @@ class JSimFacadeTest {
 
     assertNotNull(robot);
     assertEquals(RobotID.BLUE_1, robot.getRobotID());
+    assertSame(robot, JSim.getRobot(RobotID.BLUE_1));
+    assertSame(robot, SimRobot.getRobot(RobotID.BLUE_1));
   }
 }

@@ -13,6 +13,8 @@ import jsim.api.StateManager;
  * Public entry point for common JSim accessors.
  */
 public final class JSim {
+  private static PhysicsWorld physicsWorld;
+
   private JSim() {}
 
   /**
@@ -36,6 +38,16 @@ public final class JSim {
   }
 
   /**
+   * Returns the simulated robot registered for the given driver-station id.
+   *
+   * @param id the robot identifier
+   * @return the registered simulated robot, or {@code null} if none exists
+   */
+  public static SimRobot getRobot(RobotID id) {
+    return StateManager.getInstance().getRobot(id);
+  }
+
+  /**
    * Creates a new physics world.
    *
    * @param fixedDtSeconds fixed simulation timestep in seconds
@@ -43,6 +55,19 @@ public final class JSim {
    * @return the created physics world
    */
   public static PhysicsWorld createPhysicsWorld(double fixedDtSeconds, boolean enableGravity) {
-    return new PhysicsWorld(fixedDtSeconds, enableGravity);
+    if (physicsWorld == null) {
+      physicsWorld = new PhysicsWorld(fixedDtSeconds, enableGravity);
+      StateManager.getInstance().setPhysicsWorld(physicsWorld);
+    }
+    return physicsWorld;
+  }
+
+  /**
+   * Returns the shared physics world, if one has been created.
+   *
+   * @return the shared physics world, or {@code null} if none exists yet
+   */
+  public static PhysicsWorld getPhysicsWorld() {
+    return physicsWorld;
   }
 }

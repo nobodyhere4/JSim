@@ -48,6 +48,16 @@ public class SimRobot {
     }
 
     /**
+     * Retrieves a previously created robot by driver-station id.
+     *
+     * @param id the robot identifier
+     * @return the registered robot, or {@code null} if none exists
+     */
+    public static SimRobot getRobot(RobotID id) {
+        return StateManager.getInstance().getRobot(id);
+    }
+
+    /**
      * Creates a gamepiece zone tied to this robot.
      *
      * @return a new zone registered for simulation refreshes
