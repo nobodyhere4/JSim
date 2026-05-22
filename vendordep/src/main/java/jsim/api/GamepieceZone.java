@@ -61,7 +61,7 @@ public class GamepieceZone {
   private final Rotation3d robotRotation;
   private double exitRate = 0.0;
   private LinearVelocity exitVelocity = MetersPerSecond.of(0.0);
-  private Rotation3d exitRotation = new Rotation3d();
+  private Rotation3d exitRotation = Rotation3d.kZero;
   private Translation3d exitTranslation = new Translation3d();
   private Mode mode = Mode.DISABLED;
   private Supplier<Mode> modeSupplier;
@@ -103,7 +103,7 @@ public class GamepieceZone {
    * @param ignored compatibility placeholder
    */
   public GamepieceZone(Object ignored) {
-    this(null, null, new Transform3d[0], new Translation3d(), new Rotation3d(), false);
+    this(null, null, new Transform3d[0], new Translation3d(), Rotation3d.kZero, false);
   }
 
   /**
@@ -176,7 +176,7 @@ public class GamepieceZone {
   }
 
   public void setExitParameters(LinearVelocity velocity) {
-    setExitParameters(velocity, new Rotation3d());
+    setExitParameters(velocity, Rotation3d.kZero);
   }
 
   public void intake(LinearVelocity velocity, Rotation3d rotation) {

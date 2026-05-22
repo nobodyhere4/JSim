@@ -261,7 +261,7 @@ public final class PhysicsWorld implements AutoCloseable {
 			throw new JSimException("Failed to get body position", rc,
 				"Verify the body index and that the world is initialized; check native logs for details.");
 		}
-		return new Pose3d(values[0], values[1], values[2], new Rotation3d());
+		return new Pose3d(values[0], values[1], values[2], Rotation3d.kZero);
 	}
 
 	/**
@@ -310,7 +310,7 @@ public final class PhysicsWorld implements AutoCloseable {
 			throw new JSimException("Failed to get ball position", rc,
 				"Verify the ball index and that the world is initialized; check native logs for details.");
 		}
-		return new Pose3d(values[0], values[1], values[2], new Rotation3d());
+		return new Pose3d(values[0], values[1], values[2], Rotation3d.kZero);
 	}
 	/**
 	 * Gets the world linear velocity for the given ball.
