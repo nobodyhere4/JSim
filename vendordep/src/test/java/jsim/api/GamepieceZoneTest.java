@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.LinearVelocity;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -96,5 +97,33 @@ class GamepieceZoneTest {
     assertEquals(GamepieceZone.Mode.SHOOT, zone.getMode());
     assertEquals(6.0, zone.getExitVelocity().in(MetersPerSecond), 1e-9);
     assertSame(updatedRotation, zone.getExitRotation());
+  }
+
+  /**
+   * Verifies the compatibility shim constructor and rule evaluation API work together.
+   */
+  @Test
+  void compatibilityConstructorAndRulesWork() {
+    GamepieceZone zone = new GamepieceZone(null);
+    AtomicBoolean enter = new AtomicBoolean(true);
+    AtomicBoolean exit = new AtomicBoolean(false);
+    AtomicReference<Double> rate = new AtomicReference<>(3.75);
+    AtomicReference<Rotation3d> rotation = new AtomicReference<>(new Rotation3d(0.4, 0.5, 0.6));
+    AtomicReference<Translation3d> translation = new AtomicReference<>(new Translation3d(0.7, 0.8, 0.9));
+
+    zone.configure(GamepieceZone.Mode.SHOOT, enter::get, exit::get, rate::get, rotation::get, translation::get);
+    zone.evaluate();
+
+    assertEquals(GamepieceZone.Mode.SHOOT, zone.getMode());
+    assertEquals(3.75, zone.getExitRate(), 1e-9);
+    assertEquals(3.75, zone.getExitVelocity().in(MetersPerSecond), 1e-9);
+    assertSame(rotation.get(), zone.getExitRotation());
+    assertSame(translation.get(), zone.getExitTranslation());
+
+    enter.set(false);
+    exit.set(true);
+    zone.evaluate();
+
+    assertEquals(GamepieceZone.Mode.DISABLED, zone.getMode());
   }
 }
