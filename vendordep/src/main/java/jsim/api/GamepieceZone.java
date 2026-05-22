@@ -64,6 +64,9 @@ public class GamepieceZone {
     /** Supplies the exit translation relative to the robot. */
     final Supplier<Translation3d> trans;
 
+    /**
+     * Creates a rule that updates the zone when the enter or exit conditions are met.
+     */
     Rule(
         Mode mode,
         Supplier<Boolean> enter,
