@@ -1,6 +1,7 @@
 package examples;
 
 import api.GamepieceZone;
+import api.Rotation3d;
 import api.SimRobot;
 import api.Translation3d;
 
