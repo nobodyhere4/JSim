@@ -10,24 +10,33 @@ import api.Translation3d;
  * Example that adds a compression/backspin roller to a generic flywheel.
  */
 public class BackspinFlywheelExample {
+  private static final Rotation3d ZERO_ROTATION = new Rotation3d();
+
   private final FlywheelSubsystemExample flywheel;
   private final GamepieceZone backspinRollerZone;
   private double backspinVelocity = 0.0;
-  private Rotation3d exitAngle = new Rotation3d(0, 0, 0);
+  private Rotation3d exitAngle = ZERO_ROTATION;
 
   public BackspinFlywheelExample(SimRobot robot) {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.backspinRollerZone = robot.createGamepieceZone(
         "backspinRoller",
-        new Transform3d[] {
-          new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
-          new Transform3d(new Translation3d(0.2, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
-          new Transform3d(new Translation3d(0.2, 0.15, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
-          new Transform3d(new Translation3d(0.0, 0.15, 0.0), new Rotation3d(0.0, 0.0, 0.0))
-        },
+        createZoneDimensions(
+            new Translation3d(0.0, 0.0, 0.0),
+            new Translation3d(0.2, 0.0, 0.0),
+            new Translation3d(0.2, 0.15, 0.0),
+            new Translation3d(0.0, 0.15, 0.0)),
         new Translation3d(0.15, 0.0, 0.0),
-        new Rotation3d(0.0, 0.0, 0.0));
+        ZERO_ROTATION);
     this.backspinRollerZone.setMode(GamepieceZone.Mode.DISABLED);
+  }
+
+  private static Transform3d[] createZoneDimensions(Translation3d... translations) {
+    Transform3d[] transforms = new Transform3d[translations.length];
+    for (int i = 0; i < translations.length; i++) {
+      transforms[i] = new Transform3d(translations[i], ZERO_ROTATION);
+    }
+    return transforms;
   }
 
   public void setShot(double left, double right, double backspin, Rotation3d angle) {

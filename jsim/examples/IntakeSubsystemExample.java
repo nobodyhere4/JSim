@@ -13,6 +13,7 @@ import api.Translation3d;
  * can be set to different modes for collecting game pieces from the field or ejecting them.
  */
 public class IntakeSubsystem {
+  private static final Rotation3d ZERO_ROTATION = new Rotation3d();
 
   private final GamepieceZone intakeZone;
 
@@ -38,18 +39,25 @@ public class IntakeSubsystem {
   public IntakeSubsystem(SimRobot robot, double intakeSpeed) {
     this.intakeZone = robot.createGamepieceZone(
         "intake",
-        new Transform3d[] {
-          new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
-          new Transform3d(new Translation3d(0.22, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
-          new Transform3d(new Translation3d(0.22, 0.16, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
-          new Transform3d(new Translation3d(0.0, 0.16, 0.0), new Rotation3d(0.0, 0.0, 0.0))
-        },
+        createZoneDimensions(
+            new Translation3d(0.0, 0.0, 0.0),
+            new Translation3d(0.22, 0.0, 0.0),
+            new Translation3d(0.22, 0.16, 0.0),
+            new Translation3d(0.0, 0.16, 0.0)),
         new Translation3d(0.1, 0.0, 0.0),
-        new Rotation3d(0.0, 0.0, 0.0));
+        ZERO_ROTATION);
     // Configure the zone for intake/outtake behavior.
     // The rotation is typically zero, as it's a direct pickup/ejection.
     // The velocity is the speed of the rollers.
     this.intakeZone.setExitParameters(intakeSpeed);
+  }
+
+  private static Transform3d[] createZoneDimensions(Translation3d... translations) {
+    Transform3d[] transforms = new Transform3d[translations.length];
+    for (int i = 0; i < translations.length; i++) {
+      transforms[i] = new Transform3d(translations[i], ZERO_ROTATION);
+    }
+    return transforms;
   }
 
   /**

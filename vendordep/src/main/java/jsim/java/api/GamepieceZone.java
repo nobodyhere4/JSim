@@ -1,5 +1,6 @@
 package api;
 
+import jsim.api.SimRobot;
 import java.util.function.Supplier;
 
 /**

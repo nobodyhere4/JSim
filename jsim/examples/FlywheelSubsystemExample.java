@@ -11,10 +11,12 @@ import api.Translation3d;
  * This is a common FRC design for launching balls.
  */
 public class FlywheelSubsystemExample {
+  private static final Rotation3d ZERO_ROTATION = new Rotation3d();
+
   private final GamepieceZone flywheelZone;
   private double leftMotorVelocity = 0.0;
   private double rightMotorVelocity = 0.0;
-  private Rotation3d exitAngle = new Rotation3d(0, 0, 0);
+  private Rotation3d exitAngle = ZERO_ROTATION;
 
   /**
    * @param robot The simulated robot this subsystem is attached to.
@@ -22,15 +24,22 @@ public class FlywheelSubsystemExample {
   public FlywheelSubsystemExample(SimRobot robot) {
     this.flywheelZone = robot.createGamepieceZone(
         "flywheel",
-        new Transform3d[] {
-          new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
-          new Transform3d(new Translation3d(0.25, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
-          new Transform3d(new Translation3d(0.25, 0.12, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
-          new Transform3d(new Translation3d(0.0, 0.12, 0.0), new Rotation3d(0.0, 0.0, 0.0))
-        },
+        createZoneDimensions(
+            new Translation3d(0.0, 0.0, 0.0),
+            new Translation3d(0.25, 0.0, 0.0),
+            new Translation3d(0.25, 0.12, 0.0),
+            new Translation3d(0.0, 0.12, 0.0)),
         new Translation3d(0.18, 0.0, 0.0),
-        new Rotation3d(0.0, 0.0, 0.0));
+        ZERO_ROTATION);
     this.flywheelZone.disable();
+  }
+
+  private static Transform3d[] createZoneDimensions(Translation3d... translations) {
+    Transform3d[] transforms = new Transform3d[translations.length];
+    for (int i = 0; i < translations.length; i++) {
+      transforms[i] = new Transform3d(translations[i], ZERO_ROTATION);
+    }
+    return transforms;
   }
 
   /**
@@ -71,10 +80,12 @@ public class FlywheelSubsystemExample {
  * This is a more advanced shooter that can impart backspin for higher arc shots.
  */
 class FlywheelHoodSubsystem {
+  private static final Rotation3d ZERO_ROTATION = new Rotation3d();
+
   private final FlywheelSubsystemExample flywheel;
   private final GamepieceZone backspinRollerZone;
   private double backspinVelocity = 0.0;
-  private Rotation3d exitAngle = new Rotation3d(0, 0, 0);
+  private Rotation3d exitAngle = ZERO_ROTATION;
 
   /**
    * @param robot The simulated robot this subsystem is attached to.
@@ -83,15 +94,22 @@ class FlywheelHoodSubsystem {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.backspinRollerZone = robot.createGamepieceZone(
         "backspinRoller",
-        new Transform3d[] {
-          new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
-          new Transform3d(new Translation3d(0.2, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
-          new Transform3d(new Translation3d(0.2, 0.15, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
-          new Transform3d(new Translation3d(0.0, 0.15, 0.0), new Rotation3d(0.0, 0.0, 0.0))
-        },
+        createZoneDimensions(
+            new Translation3d(0.0, 0.0, 0.0),
+            new Translation3d(0.2, 0.0, 0.0),
+            new Translation3d(0.2, 0.15, 0.0),
+            new Translation3d(0.0, 0.15, 0.0)),
         new Translation3d(0.14, -0.02, 0.0),
-        new Rotation3d(0.0, 0.0, 0.0));
+        ZERO_ROTATION);
     this.backspinRollerZone.disable();
+  }
+
+  private static Transform3d[] createZoneDimensions(Translation3d... translations) {
+    Transform3d[] transforms = new Transform3d[translations.length];
+    for (int i = 0; i < translations.length; i++) {
+      transforms[i] = new Transform3d(translations[i], ZERO_ROTATION);
+    }
+    return transforms;
   }
 
   /**
