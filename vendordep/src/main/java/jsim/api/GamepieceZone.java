@@ -7,6 +7,7 @@ package jsim.api;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.LinearVelocity;
 import java.util.function.Supplier;
 
@@ -29,6 +30,8 @@ public class GamepieceZone {
   }
 
   private final SimRobot robot;
+  private final Translation2d[] zoneDimensions;
+  private final Translation2d robotCenterOffset;
   private LinearVelocity exitVelocity = MetersPerSecond.of(0.0);
   private Rotation3d exitRotation = new Rotation3d();
   private Mode mode = Mode.DISABLED;
@@ -40,9 +43,13 @@ public class GamepieceZone {
    * Creates a zone attached to a robot.
    *
    * @param robot the simulated robot that owns this zone
+   * @param zoneDimensions the zone polygon dimensions relative to the robot center
+   * @param robotCenterOffset the zone offset from the robot center
    */
-  GamepieceZone(SimRobot robot) {
+  GamepieceZone(SimRobot robot, Translation2d[] zoneDimensions, Translation2d robotCenterOffset) {
     this.robot = robot;
+    this.zoneDimensions = zoneDimensions == null ? new Translation2d[0] : zoneDimensions.clone();
+    this.robotCenterOffset = robotCenterOffset;
     StateManager.getInstance().registerGamepieceZone(this);
   }
 
@@ -53,6 +60,24 @@ public class GamepieceZone {
    */
   public SimRobot getRobot() {
     return robot;
+  }
+
+  /**
+   * Returns the zone dimensions relative to the robot center.
+   *
+   * @return a copy of the zone dimensions
+   */
+  public Translation2d[] getZoneDimensions() {
+    return zoneDimensions.clone();
+  }
+
+  /**
+   * Returns the zone offset from the robot center.
+   *
+   * @return the robot-center offset for this zone
+   */
+  public Translation2d getRobotCenterOffset() {
+    return robotCenterOffset;
   }
 
   /**

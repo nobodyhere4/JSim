@@ -26,7 +26,14 @@ class GamepieceZoneTest {
           new Translation2d(0.5, 0.0),
           new Translation2d(0.5, 0.5)
         });
-    GamepieceZone zone = robot.createGamepieceZone();
+    Translation2d[] zoneDimensions = new Translation2d[] {
+      new Translation2d(0.0, 0.0),
+      new Translation2d(0.2, 0.0),
+      new Translation2d(0.2, 0.1),
+      new Translation2d(0.0, 0.1)
+    };
+    Translation2d robotCenterOffset = new Translation2d(0.25, 0.15);
+    GamepieceZone zone = robot.createGamepieceZone(zoneDimensions, robotCenterOffset);
 
     zone.intake(MetersPerSecond.of(2.5), new Rotation3d(0.1, 0.2, 0.3));
 
@@ -35,6 +42,8 @@ class GamepieceZoneTest {
     assertEquals(0.1, zone.getExitRotation().getX(), 1e-9);
     assertEquals(0.2, zone.getExitRotation().getY(), 1e-9);
     assertEquals(0.3, zone.getExitRotation().getZ(), 1e-9);
+    assertSame(robotCenterOffset, zone.getRobotCenterOffset());
+    assertEquals(4, zone.getZoneDimensions().length);
 
     zone.disable();
 
@@ -53,7 +62,14 @@ class GamepieceZoneTest {
           new Translation2d(0.5, 0.0),
           new Translation2d(0.5, 0.5)
         });
-    GamepieceZone zone = robot.createGamepieceZone();
+    GamepieceZone zone = robot.createGamepieceZone(
+        new Translation2d[] {
+          new Translation2d(0.0, 0.0),
+          new Translation2d(0.3, 0.0),
+          new Translation2d(0.3, 0.2),
+          new Translation2d(0.0, 0.2)
+        },
+        new Translation2d(0.1, 0.1));
     AtomicReference<GamepieceZone.Mode> mode = new AtomicReference<>(GamepieceZone.Mode.OUTTAKE);
     AtomicReference<LinearVelocity> velocity = new AtomicReference<>(MetersPerSecond.of(4.25));
     AtomicReference<Rotation3d> rotation = new AtomicReference<>(new Rotation3d(1.0, 2.0, 3.0));

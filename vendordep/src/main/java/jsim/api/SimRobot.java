@@ -60,10 +60,12 @@ public class SimRobot {
     /**
      * Creates a gamepiece zone tied to this robot.
      *
+     * @param zoneDimensions the zone polygon dimensions relative to the robot center
+     * @param robotCenterOffset the zone offset from the robot center
      * @return a new zone registered for simulation refreshes
      */
-    public GamepieceZone createGamepieceZone() {
-        return new GamepieceZone(this);
+    public GamepieceZone createGamepieceZone(Translation2d[] zoneDimensions, Translation2d robotCenterOffset) {
+        return new GamepieceZone(this, zoneDimensions, robotCenterOffset);
     }
 
     /**
