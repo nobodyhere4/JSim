@@ -28,9 +28,6 @@ if (project.hasProperty('releaseMode')) {
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-var javaVersion = "17"
 
 // Apply C++ configuration
 apply from: 'config.gradle'
@@ -82,10 +79,6 @@ javadoc {
     title = "JSim API"
 
     // Exclude helper/example API trees from published Javadocs.
-    // The legacy helper package lives under `src/main/java/jsim/java/**` and
-    // the moved lightweight API value types now live under
-    // `src/main/driver/java/jsim/api/**`.
-    exclude 'jsim/java/**', 'jsim/api/**'
 
     failOnError = true
     options {
@@ -168,7 +161,7 @@ def driverWpilibCExcludes = [
 sourceSets {
     main {
         java {
-            srcDirs "src/main/java/", "src/main/driver/java/"
+            srcDirs "src/main/java/"
         }
     }
     //    test {
