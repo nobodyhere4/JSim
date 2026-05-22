@@ -43,8 +43,8 @@ public class Matrix3 {
 
     public Translation3d multiply(Translation3d v) {
         return new Translation3d(
-                m00 * v.x + m01 * v.y + m02 * v.z,
-                m10 * v.x + m11 * v.y + m12 * v.z,
-                m20 * v.x + m21 * v.y + m22 * v.z);
+                m00 * v.getX() + m01 * v.getY() + m02 * v.getZ(),
+                m10 * v.getX() + m11 * v.getY() + m12 * v.getZ(),
+                m20 * v.getX() + m21 * v.getY() + m22 * v.getZ());
     }
 }

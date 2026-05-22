@@ -21,16 +21,18 @@ public class Quaternion {
     public static Quaternion fromAxisAngle(Translation3d axis, double angleRad) {
         double halfAngle = angleRad * 0.5;
         double sinHalf = Math.sin(halfAngle);
-        double magnitude = axis == null ? 0.0 : Math.sqrt(axis.x * axis.x + axis.y * axis.y + axis.z * axis.z);
+        double magnitude = axis == null
+                ? 0.0
+                : Math.sqrt(axis.getX() * axis.getX() + axis.getY() * axis.getY() + axis.getZ() * axis.getZ());
         if (magnitude == 0.0) {
             return new Quaternion(Math.cos(halfAngle), 0.0, 0.0, 0.0);
         }
 
         return new Quaternion(
                 Math.cos(halfAngle),
-                axis.x / magnitude * sinHalf,
-                axis.y / magnitude * sinHalf,
-                axis.z / magnitude * sinHalf);
+                axis.getX() / magnitude * sinHalf,
+                axis.getY() / magnitude * sinHalf,
+                axis.getZ() / magnitude * sinHalf);
     }
 
     public Quaternion multiply(Quaternion o) {
@@ -42,7 +44,7 @@ public class Quaternion {
     }
 
     public Translation3d rotate(Translation3d v) {
-        Quaternion vectorQuaternion = new Quaternion(0.0, v.x, v.y, v.z);
+        Quaternion vectorQuaternion = new Quaternion(0.0, v.getX(), v.getY(), v.getZ());
         Quaternion rotated = this.multiply(vectorQuaternion).multiply(conjugate());
         return new Translation3d(rotated.x, rotated.y, rotated.z);
     }
