@@ -81,6 +81,10 @@ def enableExternalJavadocLinks = !gradle.startParameter.isOffline() && System.ge
 javadoc {
     title = "JSim API"
 
+    // The jsim/java tree contains example-only helper APIs that are compiled but
+    // not part of the published vendordep JavaDoc surface.
+    exclude 'jsim/java/**'
+
     failOnError = true
     options {
         if (enableExternalJavadocLinks) {
