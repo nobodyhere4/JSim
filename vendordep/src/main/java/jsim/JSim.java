@@ -105,4 +105,20 @@ public final class JSim {
       throw new RuntimeException("Failed to initialize field for year " + year, e);
     }
   }
+
+  /**
+   * Silences WPILib joystick connection warnings if WPILib is present on the classpath.
+   * This uses reflection so callers don't need a compile-time dependency on WPILib.
+   */
+  public static void silenceJoystickWarnings() {
+    try {
+      Class<?> ds = Class.forName("edu.wpi.first.wpilibj.DriverStation");
+      java.lang.reflect.Method m = ds.getMethod("silenceJoystickConnectionWarning", boolean.class);
+      m.invoke(null, true);
+    } catch (ClassNotFoundException e) {
+      // WPILib not available; nothing to do.
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to silence joystick warnings", e);
+    }
+  }
 }

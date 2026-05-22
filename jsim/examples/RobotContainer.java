@@ -15,7 +15,7 @@ public class RobotContainer {
 
     public RobotContainer(SimRobot robot) {
         // Centralized small example initialization (silence WPILib warnings, load field)
-        SimHelpers.silenceJoystickWarnings();
+        jsim.JSim.silenceJoystickWarnings();
         jsim.JSim.initializeField(2026);
 
         this.robot = robot;
