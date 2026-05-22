@@ -4,8 +4,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import jsim.PhysicsBody;
@@ -22,9 +22,9 @@ import jsim.nt.FieldTelemetryPublisher;
 public class StateManager {
     private static final StateManager INSTANCE = new StateManager();
 
-    private final Map<RobotID, FieldState<SimRobot.RobotState>> robotStates = new HashMap<>();
-    private final Map<RobotID, SimRobot> robots = new HashMap<>();
-    private final Map<RobotID, PhysicsBody> robotBodies = new HashMap<>();
+    private final Map<RobotID, FieldState<SimRobot.RobotState>> robotStates = new EnumMap<>(RobotID.class);
+    private final Map<RobotID, SimRobot> robots = new EnumMap<>(RobotID.class);
+    private final Map<RobotID, PhysicsBody> robotBodies = new EnumMap<>(RobotID.class);
     private final List<GamepieceZone> gamepieceZones = new ArrayList<>();
     private PhysicsWorld physicsWorld;
     private FieldTelemetryPublisher telemetryPublisher;
@@ -83,7 +83,7 @@ public class StateManager {
      * @return immutable map of robot ids to poses
      */
     public Map<RobotID, Pose2d> getRobotPoses() {
-        Map<RobotID, Pose2d> poses = new HashMap<>();
+        Map<RobotID, Pose2d> poses = new EnumMap<>(RobotID.class);
         for (Map.Entry<RobotID, FieldState<SimRobot.RobotState>> entry : robotStates.entrySet()) {
             poses.put(entry.getKey(), entry.getValue().get().pose);
         }
