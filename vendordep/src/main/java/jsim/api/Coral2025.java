@@ -1,5 +1,7 @@
 package jsim.api;
 
+import edu.wpi.first.math.geometry.Pose3d;
+
 /**
  * Represents a 2025 Coral game piece.
  */
