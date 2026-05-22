@@ -18,7 +18,7 @@ public class FlywheelHoodExample {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.hoodZone = robot.createGamepieceZone(
         "hood",
-        ExampleGeometry.createZoneDimensions(
+        GamepieceZone.createZoneDimensions(
             ZERO_ROTATION,
             new Translation3d(0.0, 0.0, 0.0),
             new Translation3d(0.18, 0.0, 0.0),

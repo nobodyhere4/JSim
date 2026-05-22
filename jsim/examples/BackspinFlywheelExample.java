@@ -25,10 +25,10 @@ public class BackspinFlywheelExample {
   public BackspinFlywheelExample(SimRobot robot) {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.backspinRollerZone = robot.createGamepieceZone(
-        "backspinRoller",
-        ExampleGeometry.createZoneDimensions(ZERO_ROTATION, BACKSPIN_ZONE_POINTS),
-        new Translation3d(0.15, 0.0, 0.0),
-        ZERO_ROTATION);
+      "backspinRoller",
+      GamepieceZone.createZoneDimensions(ZERO_ROTATION, BACKSPIN_ZONE_POINTS),
+      new Translation3d(0.15, 0.0, 0.0),
+      ZERO_ROTATION);
     this.backspinRollerZone.setMode(GamepieceZone.Mode.DISABLED);
   }
 

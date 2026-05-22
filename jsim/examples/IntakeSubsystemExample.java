@@ -38,7 +38,7 @@ public class IntakeSubsystem {
   public IntakeSubsystem(SimRobot robot, double intakeSpeed) {
     this.intakeZone = robot.createGamepieceZone(
         "intake",
-      ExampleGeometry.createZoneDimensions(
+      GamepieceZone.createZoneDimensions(
         ZERO_ROTATION,
             new Translation3d(0.0, 0.0, 0.0),
             new Translation3d(0.22, 0.0, 0.0),

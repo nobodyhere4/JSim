@@ -23,7 +23,7 @@ public class FlywheelSubsystemExample {
   public FlywheelSubsystemExample(SimRobot robot) {
     this.flywheelZone = robot.createGamepieceZone(
         "flywheel",
-        ExampleGeometry.createZoneDimensions(
+        GamepieceZone.createZoneDimensions(
             ZERO_ROTATION,
             new Translation3d(0.0, 0.0, 0.0),
             new Translation3d(0.25, 0.0, 0.0),
@@ -86,7 +86,7 @@ class FlywheelHoodSubsystem {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.backspinRollerZone = robot.createGamepieceZone(
         "backspinRoller",
-        ExampleGeometry.createZoneDimensions(
+        GamepieceZone.createZoneDimensions(
             ZERO_ROTATION,
             new Translation3d(0.0, 0.0, 0.0),
             new Translation3d(0.2, 0.0, 0.0),
