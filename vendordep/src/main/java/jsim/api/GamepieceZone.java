@@ -124,6 +124,188 @@ public class GamepieceZone {
     this(robot, name, zoneDimensions, robotCenterOffset, robotRotation, true);
   }
 
+  /**
+   * Returns the robot that owns this zone.
+   *
+   * @return the owning robot, or {@code null} for compatibility instances
+   */
+  public SimRobot getRobot() {
+    return robot;
+  }
+
+  /**
+   * Returns the configured zone name.
+   *
+   * @return the zone name, or {@code null} if unnamed
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * Returns a copy of the zone polygon transforms.
+   *
+   * @return cloned zone dimension transforms
+   */
+  public Transform3d[] getZoneDimensions() {
+    return zoneDimensions.clone();
+  }
+
+  /**
+   * Returns the zone offset from the robot center.
+   *
+   * @return robot-center offset translation
+   */
+  public Translation3d getRobotCenterOffset() {
+    return robotCenterOffset;
+  }
+
+  /**
+   * Returns the zone rotation relative to the robot frame.
+   *
+   * @return robot-relative rotation
+   */
+  public Rotation3d getRobotRotation() {
+    return robotRotation;
+  }
+
+  /**
+   * Sets the zone mode directly.
+   *
+   * @param mode the new zone mode
+   */
+  public void setMode(Mode mode) {
+    this.mode = mode;
+  }
+
+  /**
+   * Disables gamepiece interaction for this zone.
+   */
+  public void disable() {
+    setMode(Mode.DISABLED);
+  }
+
+  /**
+   * Sets exit parameters using a velocity and explicit rotation.
+   *
+   * @param velocity exit speed
+   * @param rotation exit orientation
+   */
+  public void setExitParameters(LinearVelocity velocity, Rotation3d rotation) {
+    this.exitVelocity = velocity;
+    this.exitRate = velocity.in(MetersPerSecond);
+    this.exitRotation = rotation;
+  }
+
+  /**
+   * Sets exit parameters using a velocity and zero rotation.
+   *
+   * @param velocity exit speed
+   */
+  public void setExitParameters(LinearVelocity velocity) {
+    setExitParameters(velocity, Rotation3d.kZero);
+  }
+
+  /**
+   * Enables intake mode with the provided exit settings.
+   *
+   * @param velocity exit speed
+   * @param rotation exit orientation
+   */
+  public void intake(LinearVelocity velocity, Rotation3d rotation) {
+    setExitParameters(velocity, rotation);
+    setMode(Mode.INTAKE);
+  }
+
+  /**
+   * Enables outtake mode with the provided exit settings.
+   *
+   * @param velocity exit speed
+   * @param rotation exit orientation
+   */
+  public void outtake(LinearVelocity velocity, Rotation3d rotation) {
+    setExitParameters(velocity, rotation);
+    setMode(Mode.OUTTAKE);
+  }
+
+  /**
+   * Enables shoot mode with the provided exit settings.
+   *
+   * @param velocity exit speed
+   * @param rotation exit orientation
+   */
+  public void shoot(LinearVelocity velocity, Rotation3d rotation) {
+    setExitParameters(velocity, rotation);
+    setMode(Mode.SHOOT);
+  }
+
+  /**
+   * Installs suppliers used to refresh the zone state each simulation step.
+   *
+   * @param modeSupplier supplies the active mode
+   * @param exitVelocitySupplier supplies the exit velocity
+   * @param exitRotationSupplier supplies the exit rotation
+   */
+  public void configure(
+      Supplier<Mode> modeSupplier,
+      Supplier<LinearVelocity> exitVelocitySupplier,
+      Supplier<Rotation3d> exitRotationSupplier) {
+    this.modeSupplier = modeSupplier;
+    this.exitVelocitySupplier = exitVelocitySupplier;
+    this.exitRotationSupplier = exitRotationSupplier;
+  }
+
+  /**
+   * Returns the cached exit rate in meters per second.
+   *
+   * @return exit rate in meters per second
+   */
+  public double getExitRate() {
+    return exitRate;
+  }
+
+  /**
+   * Returns the configured or supplier-provided exit velocity.
+   *
+   * @return exit velocity
+   */
+  public LinearVelocity getExitVelocity() {
+    if (exitVelocitySupplier != null) {
+      return exitVelocitySupplier.get();
+    }
+    return exitVelocity;
+  }
+
+  /**
+   * Returns the configured or supplier-provided exit rotation.
+   *
+   * @return exit rotation
+   */
+  public Rotation3d getExitRotation() {
+    if (exitRotationSupplier != null) {
+      return exitRotationSupplier.get();
+    }
+    return exitRotation;
+  }
+
+  /**
+   * Returns the configured exit translation.
+   *
+   * @return exit translation
+   */
+  public Translation3d getExitTranslation() {
+    return exitTranslation;
+  }
+
+  /**
+   * Refreshes the zone mode from the configured supplier, if present.
+   */
+  public void refresh() {
+    if (modeSupplier != null) {
+      mode = modeSupplier.get();
+    }
+  }
+
   private GamepieceZone(
       SimRobot robot,
       String name,
@@ -139,68 +321,6 @@ public class GamepieceZone {
     if (register) {
       StateManager.getInstance().registerGamepieceZone(this);
     }
-  }
-
-  public SimRobot getRobot() {
-    return robot;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public Transform3d[] getZoneDimensions() {
-    return zoneDimensions.clone();
-  }
-
-  public Translation3d getRobotCenterOffset() {
-    return robotCenterOffset;
-  }
-
-  public Rotation3d getRobotRotation() {
-    return robotRotation;
-  }
-
-  public void setMode(Mode mode) {
-    this.mode = mode;
-  }
-
-  public void disable() {
-    setMode(Mode.DISABLED);
-  }
-
-  public void setExitParameters(LinearVelocity velocity, Rotation3d rotation) {
-    this.exitVelocity = velocity;
-    this.exitRate = velocity.in(MetersPerSecond);
-    this.exitRotation = rotation;
-  }
-
-  public void setExitParameters(LinearVelocity velocity) {
-    setExitParameters(velocity, Rotation3d.kZero);
-  }
-
-  public void intake(LinearVelocity velocity, Rotation3d rotation) {
-    setExitParameters(velocity, rotation);
-    setMode(Mode.INTAKE);
-  }
-
-  public void outtake(LinearVelocity velocity, Rotation3d rotation) {
-    setExitParameters(velocity, rotation);
-    setMode(Mode.OUTTAKE);
-  }
-
-  public void shoot(LinearVelocity velocity, Rotation3d rotation) {
-    setExitParameters(velocity, rotation);
-    setMode(Mode.SHOOT);
-  }
-
-  public void configure(
-      Supplier<Mode> modeSupplier,
-      Supplier<LinearVelocity> exitVelocitySupplier,
-      Supplier<Rotation3d> exitRotationSupplier) {
-    this.modeSupplier = modeSupplier;
-    this.exitVelocitySupplier = exitVelocitySupplier;
-    this.exitRotationSupplier = exitRotationSupplier;
   }
 
   /**
@@ -221,34 +341,6 @@ public class GamepieceZone {
       Supplier<Rotation3d> rot,
       Supplier<Translation3d> trans) {
     rules.add(new Rule(mode, enter, exit, exitRateMetersPerSecondSupplier, rot, trans));
-  }
-
-  public double getExitRate() {
-    return exitRate;
-  }
-
-  public LinearVelocity getExitVelocity() {
-    if (exitVelocitySupplier != null) {
-      return exitVelocitySupplier.get();
-    }
-    return exitVelocity;
-  }
-
-  public Rotation3d getExitRotation() {
-    if (exitRotationSupplier != null) {
-      return exitRotationSupplier.get();
-    }
-    return exitRotation;
-  }
-
-  public Translation3d getExitTranslation() {
-    return exitTranslation;
-  }
-
-  public void refresh() {
-    if (modeSupplier != null) {
-      mode = modeSupplier.get();
-    }
   }
 
   /**
@@ -281,6 +373,11 @@ public class GamepieceZone {
     }
   }
 
+  /**
+   * Returns the currently active zone mode.
+   *
+   * @return active mode, or the supplier-provided mode when configured
+   */
   public Mode getMode() {
     return modeSupplier != null ? modeSupplier.get() : mode;
   }
