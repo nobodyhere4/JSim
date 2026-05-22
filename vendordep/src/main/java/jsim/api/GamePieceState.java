@@ -34,18 +34,53 @@ public class GamePieceState {
     }
 
     /** Returns the piece type. */
+    /**
+     * Returns the piece type.
+     *
+     * @return the game piece type
+     */
     public GamePieceType getType() { return type; }
     /** Sets the scalar velocity. */
+    /**
+     * Sets the scalar velocity.
+     *
+     * @param velocity scalar exit velocity
+     */
     public void setVelocity(double velocity) { this.velocity = velocity; }
     /** Sets the rotation. */
+    /**
+     * Sets the rotation.
+     *
+     * @param rotation piece rotation
+     */
     public void setRotation(Rotation3d rotation) { this.rotation = rotation; }
     /** Returns the scalar velocity. */
+    /**
+     * Returns the scalar velocity.
+     *
+     * @return the scalar velocity
+     */
     public double getVelocity() { return velocity; }
     /** Returns the rotation. */
+    /**
+     * Returns the rotation.
+     *
+     * @return the piece rotation
+     */
     public Rotation3d getRotation() { return rotation; }
     /** Sets the robot offset start. */
+    /**
+     * Sets the robot offset start.
+     *
+     * @param offset starting offset in robot coordinates
+     */
     public void setRobotOffsetStart(Translation2d offset) { this.robotOffsetStart = offset; }
     /** Returns the robot offset start. */
+    /**
+     * Returns the robot offset start.
+     *
+     * @return the starting offset in robot coordinates
+     */
     public Translation2d getRobotOffsetStart() { return robotOffsetStart; }
     /** Sets the exit velocity vector. */
     public void setExitVelocity(Translation3d velocity) { this.exitVelocity = velocity; }
