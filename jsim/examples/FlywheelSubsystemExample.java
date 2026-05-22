@@ -2,8 +2,8 @@ package examples;
 
 import jsim.api.GamepieceZone;
 import jsim.api.SimRobot;
-import jsim.api.Rotation3d;
-import jsim.api.Translation3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 
 /**
  * FlywheelSubsystem simulates a basic flywheel shooter with a flywheel powerd by two motors facing each other.

@@ -32,6 +32,25 @@ public class GamepieceZone {
     DISABLED
   }
 
+  /**
+   * Helper to build an array of transform dimensions from a shared rotation and a list of
+   * translations. This is a small convenience for example code and users constructing zones.
+   *
+   * @param rotation the rotation to apply to every translation
+   * @param translations the vertex translations defining the zone polygon
+   * @return transforms with the provided rotation applied to each translation
+   */
+  public static edu.wpi.first.math.geometry.Transform3d[] createZoneDimensions(
+      edu.wpi.first.math.geometry.Rotation3d rotation,
+      edu.wpi.first.math.geometry.Translation3d... translations) {
+    edu.wpi.first.math.geometry.Transform3d[] transforms =
+        new edu.wpi.first.math.geometry.Transform3d[translations.length];
+    for (int i = 0; i < translations.length; i++) {
+      transforms[i] = new edu.wpi.first.math.geometry.Transform3d(translations[i], rotation);
+    }
+    return transforms;
+  }
+
   private final SimRobot robot;
   private final String name;
   private final Transform3d[] zoneDimensions;
