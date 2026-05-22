@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @file StateManager.java
- * @brief Central manager for game piece state across robots and the field.
+ * Central manager for game piece state across robots and the field.
  *
  * Handles:
  * - Robot inventories (what each robot is holding)
@@ -37,9 +36,7 @@ public class StateManager {
     /** Count of each game piece type currently on the field */
     private final Map<GamePieceType, Integer> fieldCounts = new HashMap<>();
 
-    /**
-     * @brief Configuration for a specific game piece type.
-     */
+    /** Configuration for a specific game piece type. */
     public static class PieceConfig {
         /** Maximum number allowed simultaneously on the field */
         public int maxOnField = Integer.MAX_VALUE;
@@ -55,7 +52,8 @@ public class StateManager {
     }
 
     /**
-     * @brief Sets the maximum capacity for a robot.
+     * Sets the maximum capacity for a robot.
+     *
      * @param robotId Unique robot identifier
      * @param capacity Maximum number of pieces the robot can hold
      */
@@ -64,7 +62,8 @@ public class StateManager {
     }
 
     /**
-     * @brief Gets the maximum capacity for a robot.
+     * Gets the maximum capacity for a robot.
+     *
      * @param robotId Unique robot identifier
      * @return Capacity, or unlimited if not set
      */
@@ -73,7 +72,8 @@ public class StateManager {
     }
 
     /**
-     * @brief Sets configuration for a game piece type.
+     * Sets configuration for a game piece type.
+     *
      * @param type Game piece type
      * @param config Configuration object
      */
@@ -82,7 +82,8 @@ public class StateManager {
     }
 
     /**
-     * @brief Gets how many pieces a robot is currently holding.
+     * Gets how many pieces a robot is currently holding.
+     *
      * @param robotId Unique robot identifier
      * @return Number of held pieces
      */
@@ -91,7 +92,8 @@ public class StateManager {
     }
 
     /**
-     * @brief Gets number of pieces of a given type on the field.
+     * Gets number of pieces of a given type on the field.
+     *
      * @param type Game piece type
      * @return Count on field
      */
@@ -110,7 +112,7 @@ public class StateManager {
     }
 
     /**
-     * @brief Intake a game piece into a robot.
+     * Intake a game piece into a robot.
      *
      * Removes the piece from the field and adds it to the robot's inventory
      * if capacity allows.
@@ -134,7 +136,7 @@ public class StateManager {
     }
 
     /**
-     * @brief Outtake a game piece from a robot onto the field.
+     * Outtake a game piece from a robot onto the field.
      *
      * Removes a matching piece from the robot's inventory and spawns a new
      * field piece with the given velocity and rotation.
@@ -171,7 +173,7 @@ public class StateManager {
     }
 
     /**
-     * @brief Spawns a new game piece on the field if allowed.
+     * Spawns a new game piece on the field if allowed.
      *
      * Enforces per-type limits on total spawns and concurrent field presence.
      *
