@@ -135,6 +135,9 @@ public class StateManager {
     /**
      * Stores the telemetry publisher used to mirror simulation state.
      *
+     * <p>This hook is for embedders that want to route telemetry to a custom
+     * NetworkTables instance, a different base topic, or a test double.
+     *
      * @param telemetryPublisher the telemetry publisher to store
      */
     public synchronized void setTelemetryPublisher(FieldTelemetryPublisher telemetryPublisher) {
