@@ -3,6 +3,7 @@ package examples;
 import api.GamepieceZone;
 import api.SimRobot;
 import api.Rotation3d;
+import api.Transform3d;
 import api.Translation3d;
 
 /**
@@ -21,11 +22,11 @@ public class FlywheelSubsystemExample {
   public FlywheelSubsystemExample(SimRobot robot) {
     this.flywheelZone = robot.createGamepieceZone(
         "flywheel",
-        new Translation3d[] {
-          new Translation3d(0.0, 0.0, 0.0),
-          new Translation3d(0.25, 0.0, 0.0),
-          new Translation3d(0.25, 0.12, 0.0),
-          new Translation3d(0.0, 0.12, 0.0)
+        new Transform3d[] {
+          new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
+          new Transform3d(new Translation3d(0.25, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
+          new Transform3d(new Translation3d(0.25, 0.12, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
+          new Transform3d(new Translation3d(0.0, 0.12, 0.0), new Rotation3d(0.0, 0.0, 0.0))
         },
         new Translation3d(0.18, 0.0, 0.0),
         new Rotation3d(0.0, 0.0, 0.0));
@@ -82,11 +83,11 @@ class FlywheelHoodSubsystem {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.backspinRollerZone = robot.createGamepieceZone(
         "backspinRoller",
-        new Translation3d[] {
-          new Translation3d(0.0, 0.0, 0.0),
-          new Translation3d(0.2, 0.0, 0.0),
-          new Translation3d(0.2, 0.15, 0.0),
-          new Translation3d(0.0, 0.15, 0.0)
+        new Transform3d[] {
+          new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
+          new Transform3d(new Translation3d(0.2, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
+          new Transform3d(new Translation3d(0.2, 0.15, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
+          new Transform3d(new Translation3d(0.0, 0.15, 0.0), new Rotation3d(0.0, 0.0, 0.0))
         },
         new Translation3d(0.14, -0.02, 0.0),
         new Rotation3d(0.0, 0.0, 0.0));

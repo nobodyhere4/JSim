@@ -3,6 +3,7 @@ package api;
 
 import api.Pose2d;
 import api.ChassisSpeeds;
+import api.Transform3d;
 import api.Translation2d;
 import api.Translation3d;
 import api.Rotation3d;
@@ -58,7 +59,7 @@ public final class SimRobot {
 
     public GamepieceZone createGamepieceZone(
             String name,
-            Translation3d[] zoneDimensions,
+            Transform3d[] zoneDimensions,
             Translation3d robotCenterOffset,
             Rotation3d robotRotation) {
         GamepieceZone zone = new GamepieceZone(this, name, zoneDimensions, robotCenterOffset, robotRotation);

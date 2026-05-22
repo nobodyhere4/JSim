@@ -1,10 +1,10 @@
 package jsim.api;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.geometry.Translation3d;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -75,7 +75,7 @@ public class SimRobot {
      */
     public GamepieceZone createGamepieceZone(
             String name,
-            Translation3d[] zoneDimensions,
+            Transform3d[] zoneDimensions,
             Translation3d robotCenterOffset,
             Rotation3d robotRotation) {
         GamepieceZone zone = new GamepieceZone(this, name, zoneDimensions, robotCenterOffset, robotRotation);

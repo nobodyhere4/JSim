@@ -17,19 +17,19 @@ public class GamepieceZone {
 
         private final SimRobot robot;
         private final String name;
-        private final Translation3d[] zoneDimensions;
+        private final Transform3d[] zoneDimensions;
         private final Translation3d robotCenterOffset;
         private final Rotation3d robotRotation;
         private final SimRobot robot;
         private final String name;
-        private final Translation3d[] zoneDimensions;
+        private final Transform3d[] zoneDimensions;
         private final Translation3d robotCenterOffset;
         private final Rotation3d robotRotation;
         private double exitVelocity;
         private Rotation3d exitRotation;
         private Mode mode = Mode.DISABLED;
 
-        public GamepieceZone(SimRobot robot, String name, Translation3d[] zoneDimensions, Translation3d robotCenterOffset, Rotation3d robotRotation) {
+        public GamepieceZone(SimRobot robot, String name, Transform3d[] zoneDimensions, Translation3d robotCenterOffset, Rotation3d robotRotation) {
             this.robot = robot;
             this.name = name;
             this.zoneDimensions = zoneDimensions;
@@ -45,7 +45,7 @@ public class GamepieceZone {
             return name;
         }
 
-        public Translation3d[] getZoneDimensions() {
+        public Transform3d[] getZoneDimensions() {
             return zoneDimensions;
         }
 
@@ -61,7 +61,7 @@ public class GamepieceZone {
             return name;
         }
 
-        public Translation3d[] getZoneDimensions() {
+        public Transform3d[] getZoneDimensions() {
             return zoneDimensions;
         }
 

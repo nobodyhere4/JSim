@@ -7,6 +7,7 @@ package jsim.api;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.LinearVelocity;
 import java.util.function.Supplier;
@@ -31,7 +32,7 @@ public class GamepieceZone {
 
   private final SimRobot robot;
   private final String name;
-  private final Translation3d[] zoneDimensions;
+  private final Transform3d[] zoneDimensions;
   private final Translation3d robotCenterOffset;
   private final Rotation3d robotRotation;
   private LinearVelocity exitVelocity = MetersPerSecond.of(0.0);
@@ -46,19 +47,19 @@ public class GamepieceZone {
    *
    * @param robot the simulated robot that owns this zone
    * @param name the zone name used for retrieval from the robot
-   * @param zoneDimensions the zone polygon dimensions relative to the robot center
+  * @param zoneDimensions the zone polygon transforms relative to the robot center
    * @param robotCenterOffset the zone offset from the robot center
    * @param robotRotation the zone rotation relative to the robot
    */
   GamepieceZone(
       SimRobot robot,
       String name,
-      Translation3d[] zoneDimensions,
+      Transform3d[] zoneDimensions,
       Translation3d robotCenterOffset,
       Rotation3d robotRotation) {
     this.robot = robot;
     this.name = name;
-    this.zoneDimensions = zoneDimensions == null ? new Translation3d[0] : zoneDimensions.clone();
+    this.zoneDimensions = zoneDimensions == null ? new Transform3d[0] : zoneDimensions.clone();
     this.robotCenterOffset = robotCenterOffset;
     this.robotRotation = robotRotation;
     StateManager.getInstance().registerGamepieceZone(this);
@@ -87,7 +88,7 @@ public class GamepieceZone {
    *
    * @return a copy of the zone dimensions
    */
-  public Translation3d[] getZoneDimensions() {
+  public Transform3d[] getZoneDimensions() {
     return zoneDimensions.clone();
   }
 
