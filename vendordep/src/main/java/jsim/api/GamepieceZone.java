@@ -47,12 +47,21 @@ public class GamepieceZone {
   private Supplier<Rotation3d> exitRotationSupplier;
 
   // Optional automatic configuration rules.
+  /**
+   * Internal rule record used to evaluate boolean enter and exit conditions.
+   */
   private static final class Rule {
+    /** The mode to activate when the enter condition becomes true. */
     final Mode mode;
+    /** Supplies the condition that enables the rule. */
     final Supplier<Boolean> enter;
+    /** Supplies the condition that disables the zone. */
     final Supplier<Boolean> exit;
+    /** Supplies the exit rate in meters per second. */
     final Supplier<Double> exitRateMetersPerSecondSupplier;
+    /** Supplies the exit rotation relative to the robot. */
     final Supplier<Rotation3d> rot;
+    /** Supplies the exit translation relative to the robot. */
     final Supplier<Translation3d> trans;
 
     Rule(
@@ -253,7 +262,7 @@ public class GamepieceZone {
    *
    * @param enterCondition supplies {@code true} when the rule should activate
    * @param exitCondition supplies {@code true} when the zone should disable
-   * @param exitRateSupplier supplies the exit rate in meters per second
+    * @param exitRateMetersPerSecondSupplier supplies the exit rate in meters per second
    * @param rotationSupplier supplies the exit rotation relative to the robot
    */
   public void configure(
@@ -276,7 +285,7 @@ public class GamepieceZone {
    * @param mode the interaction mode to enable when the enter condition is met
    * @param enterCondition supplies {@code true} when the rule should activate
    * @param exitCondition supplies {@code true} when the zone should disable
-   * @param exitRateSupplier supplies the exit rate in meters per second
+    * @param exitRateMetersPerSecondSupplier supplies the exit rate in meters per second
    * @param rotationSupplier supplies the exit rotation relative to the robot
    * @param translationSupplier supplies the exit translation relative to the robot
    */
@@ -302,7 +311,7 @@ public class GamepieceZone {
    * @param mode the interaction mode to set when the enter condition is met
    * @param enterCondition supplies {@code true} when the rule should activate
    * @param exitCondition supplies {@code true} when the zone should disable
-   * @param exitRateSupplier supplies the exit rate in meters per second
+    * @param exitRateMetersPerSecondSupplier supplies the exit rate in meters per second
    * @param rotationSupplier supplies the exit rotation relative to the robot
    * @param translationSupplier supplies the exit translation relative to the robot
    */
