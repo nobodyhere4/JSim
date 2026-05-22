@@ -6,11 +6,11 @@ package jsim.api;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import java.util.ArrayList;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.LinearVelocity;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
