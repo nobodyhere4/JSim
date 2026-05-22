@@ -60,6 +60,9 @@ public final class JSim {
     if (physicsWorld == null) {
       physicsWorld = new PhysicsWorld(fixedDtSeconds, enableGravity);
       StateManager.getInstance().setPhysicsWorld(physicsWorld);
+    }
+
+    if (defaultWorldPublisher == null) {
       try {
         // Install default telemetry publisher for world pose exports.
         defaultWorldPublisher = new WorldPosePublisher(
