@@ -32,6 +32,9 @@ public class GamepieceZone {
     DISABLED
   }
 
+  /** Common zero rotation constant for examples and callers. */
+  public static final Rotation3d ZERO_ROTATION = new Rotation3d();
+
   /**
    * Helper to build an array of transform dimensions from a shared rotation and a list of
    * translations. This is a small convenience for example code and users constructing zones.

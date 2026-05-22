@@ -12,8 +12,6 @@ import edu.wpi.first.math.geometry.Translation3d;
  * can be set to different modes for collecting game pieces from the field or ejecting them.
  */
 public class IntakeSubsystem {
-  private static final Rotation3d ZERO_ROTATION = new Rotation3d();
-
   private final GamepieceZone intakeZone;
 
   /**
@@ -39,13 +37,13 @@ public class IntakeSubsystem {
     this.intakeZone = robot.createGamepieceZone(
         "intake",
       GamepieceZone.createZoneDimensions(
-        ZERO_ROTATION,
+        jsim.JSim.rotationZero(),
             new Translation3d(0.0, 0.0, 0.0),
             new Translation3d(0.22, 0.0, 0.0),
             new Translation3d(0.22, 0.16, 0.0),
             new Translation3d(0.0, 0.16, 0.0)),
         new Translation3d(0.1, 0.0, 0.0),
-        ZERO_ROTATION);
+        jsim.JSim.rotationZero());
     // Configure the zone for intake/outtake behavior.
     // The rotation is typically zero, as it's a direct pickup/ejection.
     // The velocity is the speed of the rollers.

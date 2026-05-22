@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Translation3d;
  * Example that adds a compression/backspin roller to a generic flywheel.
  */
 public class BackspinFlywheelExample {
-  private static final Rotation3d ZERO_ROTATION = new Rotation3d();
   private static final Translation3d[] BACKSPIN_ZONE_POINTS = {
     new Translation3d(0.0, 0.0, 0.0),
     new Translation3d(0.2, 0.0, 0.0),
@@ -20,15 +19,15 @@ public class BackspinFlywheelExample {
   private final FlywheelSubsystemExample flywheel;
   private final GamepieceZone backspinRollerZone;
   private double backspinVelocity = 0.0;
-  private Rotation3d exitAngle = ZERO_ROTATION;
+  private Rotation3d exitAngle = jsim.JSim.rotationZero();
 
   public BackspinFlywheelExample(SimRobot robot) {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.backspinRollerZone = robot.createGamepieceZone(
       "backspinRoller",
-      GamepieceZone.createZoneDimensions(ZERO_ROTATION, BACKSPIN_ZONE_POINTS),
+      GamepieceZone.createZoneDimensions(jsim.JSim.rotationZero(), BACKSPIN_ZONE_POINTS),
       new Translation3d(0.15, 0.0, 0.0),
-      ZERO_ROTATION);
+      jsim.JSim.rotationZero());
     this.backspinRollerZone.setMode(GamepieceZone.Mode.DISABLED);
   }
 

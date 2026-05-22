@@ -10,12 +10,10 @@ import edu.wpi.first.math.geometry.Translation3d;
  * This is a common FRC design for launching balls.
  */
 public class FlywheelSubsystemExample {
-  private static final Rotation3d ZERO_ROTATION = new Rotation3d();
-
   private final GamepieceZone flywheelZone;
   private double leftMotorVelocity = 0.0;
   private double rightMotorVelocity = 0.0;
-  private Rotation3d exitAngle = ZERO_ROTATION;
+  private Rotation3d exitAngle = jsim.JSim.rotationZero();
 
   /**
    * @param robot The simulated robot this subsystem is attached to.
@@ -24,13 +22,13 @@ public class FlywheelSubsystemExample {
     this.flywheelZone = robot.createGamepieceZone(
         "flywheel",
         GamepieceZone.createZoneDimensions(
-            ZERO_ROTATION,
+            jsim.JSim.rotationZero(),
             new Translation3d(0.0, 0.0, 0.0),
             new Translation3d(0.25, 0.0, 0.0),
             new Translation3d(0.25, 0.12, 0.0),
             new Translation3d(0.0, 0.12, 0.0)),
         new Translation3d(0.18, 0.0, 0.0),
-        ZERO_ROTATION);
+        jsim.JSim.rotationZero());
     this.flywheelZone.disable();
   }
 
@@ -72,12 +70,10 @@ public class FlywheelSubsystemExample {
  * This is a more advanced shooter that can impart backspin for higher arc shots.
  */
 class FlywheelHoodSubsystem {
-  private static final Rotation3d ZERO_ROTATION = new Rotation3d();
-
   private final FlywheelSubsystemExample flywheel;
   private final GamepieceZone backspinRollerZone;
   private double backspinVelocity = 0.0;
-  private Rotation3d exitAngle = ZERO_ROTATION;
+  private Rotation3d exitAngle = jsim.JSim.rotationZero();
 
   /**
    * @param robot The simulated robot this subsystem is attached to.

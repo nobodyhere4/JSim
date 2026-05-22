@@ -121,4 +121,12 @@ public final class JSim {
       throw new RuntimeException("Failed to silence joystick warnings", e);
     }
   }
+
+  /**
+   * Returns a WPILib zero rotation instance. Helpers and examples should prefer this method
+   * when a canonical zero rotation is needed rather than constructing new instances.
+   */
+  public static edu.wpi.first.math.geometry.Rotation3d rotationZero() {
+    return new edu.wpi.first.math.geometry.Rotation3d();
+  }
 }
