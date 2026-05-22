@@ -1,6 +1,6 @@
 package examples;
 
-import jsim.api.Rotation3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import jsim.api.SimRobot;
 
 /**

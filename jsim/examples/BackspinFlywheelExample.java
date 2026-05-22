@@ -1,9 +1,9 @@
 package examples;
 
 import jsim.api.GamepieceZone;
-import jsim.api.Rotation3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import jsim.api.SimRobot;
-import jsim.api.Translation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 
 /**
  * Example that adds a compression/backspin roller to a generic flywheel.
