@@ -37,13 +37,13 @@ public class IntakeSubsystem {
     this.intakeZone = robot.createGamepieceZone(
         "intake",
       GamepieceZone.createZoneDimensions(
-        jsim.JSim.rotationZero(),
+        Rotation3d.kZero,
             new Translation3d(0.0, 0.0, 0.0),
             new Translation3d(0.22, 0.0, 0.0),
             new Translation3d(0.22, 0.16, 0.0),
             new Translation3d(0.0, 0.16, 0.0)),
         new Translation3d(0.1, 0.0, 0.0),
-        jsim.JSim.rotationZero());
+        Rotation3d.kZero);
     // Configure the zone for intake/outtake behavior.
     // The rotation is typically zero, as it's a direct pickup/ejection.
     // The velocity is the speed of the rollers.

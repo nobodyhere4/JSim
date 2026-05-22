@@ -19,15 +19,15 @@ public class BackspinFlywheelExample {
   private final FlywheelSubsystemExample flywheel;
   private final GamepieceZone backspinRollerZone;
   private double backspinVelocity = 0.0;
-  private Rotation3d exitAngle = jsim.JSim.rotationZero();
+  private Rotation3d exitAngle = Rotation3d.kZero;
 
   public BackspinFlywheelExample(SimRobot robot) {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.backspinRollerZone = robot.createGamepieceZone(
       "backspinRoller",
-      GamepieceZone.createZoneDimensions(jsim.JSim.rotationZero(), BACKSPIN_ZONE_POINTS),
+      GamepieceZone.createZoneDimensions(Rotation3d.kZero, BACKSPIN_ZONE_POINTS),
       new Translation3d(0.15, 0.0, 0.0),
-      jsim.JSim.rotationZero());
+      Rotation3d.kZero);
     this.backspinRollerZone.setMode(GamepieceZone.Mode.DISABLED);
   }
 

@@ -10,20 +10,20 @@ import edu.wpi.first.math.geometry.Translation3d;
 public class FlywheelHoodExample {
   private final FlywheelSubsystemExample flywheel;
   private final GamepieceZone hoodZone;
-  private Rotation3d hoodAngle = jsim.JSim.rotationZero();
+  private Rotation3d hoodAngle = Rotation3d.kZero;
 
   public FlywheelHoodExample(SimRobot robot) {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.hoodZone = robot.createGamepieceZone(
       "hood",
       GamepieceZone.createZoneDimensions(
-        jsim.JSim.rotationZero(),
+        Rotation3d.kZero,
         new Translation3d(0.0, 0.0, 0.0),
         new Translation3d(0.18, 0.0, 0.0),
         new Translation3d(0.18, 0.14, 0.0),
         new Translation3d(0.0, 0.14, 0.0)),
       new Translation3d(0.12, 0.02, 0.0),
-      jsim.JSim.rotationZero());
+      Rotation3d.kZero);
     this.hoodZone.disable();
   }
 

@@ -122,12 +122,4 @@ public final class JSim {
     }
   }
 
-  /**
-   * Returns WPILib's canonical zero rotation instance.
-   *
-   * @return {@link edu.wpi.first.math.geometry.Rotation3d#kZero}
-   */
-  public static edu.wpi.first.math.geometry.Rotation3d rotationZero() {
-    return edu.wpi.first.math.geometry.Rotation3d.kZero;
-  }
 }

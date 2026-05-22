@@ -13,7 +13,7 @@ public class FlywheelSubsystemExample {
   private final GamepieceZone flywheelZone;
   private double leftMotorVelocity = 0.0;
   private double rightMotorVelocity = 0.0;
-  private Rotation3d exitAngle = jsim.JSim.rotationZero();
+  private Rotation3d exitAngle = Rotation3d.kZero;
 
   /**
    * @param robot The simulated robot this subsystem is attached to.
@@ -22,13 +22,13 @@ public class FlywheelSubsystemExample {
     this.flywheelZone = robot.createGamepieceZone(
         "flywheel",
         GamepieceZone.createZoneDimensions(
-            jsim.JSim.rotationZero(),
+        Rotation3d.kZero,
             new Translation3d(0.0, 0.0, 0.0),
             new Translation3d(0.25, 0.0, 0.0),
             new Translation3d(0.25, 0.12, 0.0),
             new Translation3d(0.0, 0.12, 0.0)),
         new Translation3d(0.18, 0.0, 0.0),
-        jsim.JSim.rotationZero());
+      Rotation3d.kZero);
     this.flywheelZone.disable();
   }
 
@@ -73,7 +73,7 @@ class FlywheelHoodSubsystem {
   private final FlywheelSubsystemExample flywheel;
   private final GamepieceZone backspinRollerZone;
   private double backspinVelocity = 0.0;
-  private Rotation3d exitAngle = jsim.JSim.rotationZero();
+  private Rotation3d exitAngle = Rotation3d.kZero;
 
   /**
    * @param robot The simulated robot this subsystem is attached to.
@@ -83,13 +83,13 @@ class FlywheelHoodSubsystem {
     this.backspinRollerZone = robot.createGamepieceZone(
         "backspinRoller",
         GamepieceZone.createZoneDimensions(
-            ZERO_ROTATION,
+        Rotation3d.kZero,
             new Translation3d(0.0, 0.0, 0.0),
             new Translation3d(0.2, 0.0, 0.0),
             new Translation3d(0.2, 0.15, 0.0),
             new Translation3d(0.0, 0.15, 0.0)),
         new Translation3d(0.14, -0.02, 0.0),
-        ZERO_ROTATION);
+      Rotation3d.kZero);
     this.backspinRollerZone.disable();
   }
 
