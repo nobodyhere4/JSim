@@ -11,6 +11,12 @@ import api.Translation3d;
  */
 public class BackspinFlywheelExample {
   private static final Rotation3d ZERO_ROTATION = new Rotation3d();
+  private static final Translation3d[] BACKSPIN_ZONE_POINTS = {
+    new Translation3d(0.0, 0.0, 0.0),
+    new Translation3d(0.2, 0.0, 0.0),
+    new Translation3d(0.2, 0.15, 0.0),
+    new Translation3d(0.0, 0.15, 0.0)
+  };
 
   private final FlywheelSubsystemExample flywheel;
   private final GamepieceZone backspinRollerZone;
@@ -21,17 +27,13 @@ public class BackspinFlywheelExample {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.backspinRollerZone = robot.createGamepieceZone(
         "backspinRoller",
-        createZoneDimensions(
-            new Translation3d(0.0, 0.0, 0.0),
-            new Translation3d(0.2, 0.0, 0.0),
-            new Translation3d(0.2, 0.15, 0.0),
-            new Translation3d(0.0, 0.15, 0.0)),
+      createZoneDimensions(BACKSPIN_ZONE_POINTS),
         new Translation3d(0.15, 0.0, 0.0),
         ZERO_ROTATION);
     this.backspinRollerZone.setMode(GamepieceZone.Mode.DISABLED);
   }
 
-  private static Transform3d[] createZoneDimensions(Translation3d... translations) {
+  private static Transform3d[] createZoneDimensions(Translation3d[] translations) {
     Transform3d[] transforms = new Transform3d[translations.length];
     for (int i = 0; i < translations.length; i++) {
       transforms[i] = new Transform3d(translations[i], ZERO_ROTATION);
