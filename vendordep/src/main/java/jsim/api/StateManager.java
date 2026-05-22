@@ -11,7 +11,6 @@ import java.util.Map;
 import jsim.PhysicsBody;
 import jsim.PhysicsWorld;
 import jsim.field.FieldConfig;
-import jsim.nt.FieldTelemetryPublisher;
 
 /**
  * System Rules:
@@ -27,7 +26,6 @@ public class StateManager {
     private final Map<RobotID, PhysicsBody> robotBodies = new EnumMap<>(RobotID.class);
     private final List<GamepieceZone> gamepieceZones = new ArrayList<>();
     private PhysicsWorld physicsWorld;
-    private FieldTelemetryPublisher telemetryPublisher;
 
     private StateManager() {}
 
@@ -133,27 +131,6 @@ public class StateManager {
     }
 
     /**
-     * Stores the telemetry publisher used to mirror simulation state.
-     *
-     * <p>This hook is for embedders that want to route telemetry to a custom
-     * NetworkTables instance, a different base topic, or a test double.
-     *
-     * @param telemetryPublisher the telemetry publisher to store
-     */
-    public synchronized void setTelemetryPublisher(FieldTelemetryPublisher telemetryPublisher) {
-        this.telemetryPublisher = telemetryPublisher;
-    }
-
-    /**
-     * Returns the telemetry publisher used to mirror simulation state.
-     *
-     * @return the current telemetry publisher, or {@code null} if none is registered
-     */
-    public synchronized FieldTelemetryPublisher getTelemetryPublisher() {
-        return telemetryPublisher;
-    }
-
-    /**
      * Applies a chassis-speed command to the physics body registered for the given robot id.
      *
      * @param id the robot identifier
@@ -184,15 +161,12 @@ public class StateManager {
     }
 
     /**
-     * Advances the tracked physics world and refreshes telemetry and gamepiece zones.
+     * Advances the tracked physics world and refreshes gamepiece zones.
      */
     public synchronized void stepPhysics() {
         if (physicsWorld != null) {
             physicsWorld.step();
             refreshGamepieceZones();
-            if (telemetryPublisher != null) {
-                telemetryPublisher.publishFrame();
-            }
         }
     }
 }
