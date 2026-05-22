@@ -41,15 +41,20 @@ public final class PhysicsWorld implements AutoCloseable {
 	 *
 	 * <p>This is intentionally provided so callers can create native-backed helpers
 	 * like telemetry publishers that require the raw handle.
+	 *
+	 * @return native world handle (non-zero while world is valid)
 	 */
 	public long getNativeHandle() {
 		return worldHandle;
 	}
 
+
 	/**
 	 * Returns a reasonable default maximum number of bodies to export for telemetry.
 	 *
 	 * <p>Callers may use this value when constructing publishers that snapshot world state.
+	 *
+	 * @return default max bodies for telemetry (units: count)
 	 */
 	public int getMaxBodies() {
 		return 128;
