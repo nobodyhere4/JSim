@@ -7,7 +7,7 @@ package jsim.api;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.LinearVelocity;
 import java.util.function.Supplier;
 
@@ -30,8 +30,10 @@ public class GamepieceZone {
   }
 
   private final SimRobot robot;
-  private final Translation2d[] zoneDimensions;
-  private final Translation2d robotCenterOffset;
+  private final String name;
+  private final Translation3d[] zoneDimensions;
+  private final Translation3d robotCenterOffset;
+  private final Rotation3d robotRotation;
   private LinearVelocity exitVelocity = MetersPerSecond.of(0.0);
   private Rotation3d exitRotation = new Rotation3d();
   private Mode mode = Mode.DISABLED;
@@ -43,13 +45,22 @@ public class GamepieceZone {
    * Creates a zone attached to a robot.
    *
    * @param robot the simulated robot that owns this zone
+   * @param name the zone name used for retrieval from the robot
    * @param zoneDimensions the zone polygon dimensions relative to the robot center
    * @param robotCenterOffset the zone offset from the robot center
+   * @param robotRotation the zone rotation relative to the robot
    */
-  GamepieceZone(SimRobot robot, Translation2d[] zoneDimensions, Translation2d robotCenterOffset) {
+  GamepieceZone(
+      SimRobot robot,
+      String name,
+      Translation3d[] zoneDimensions,
+      Translation3d robotCenterOffset,
+      Rotation3d robotRotation) {
     this.robot = robot;
-    this.zoneDimensions = zoneDimensions == null ? new Translation2d[0] : zoneDimensions.clone();
+    this.name = name;
+    this.zoneDimensions = zoneDimensions == null ? new Translation3d[0] : zoneDimensions.clone();
     this.robotCenterOffset = robotCenterOffset;
+    this.robotRotation = robotRotation;
     StateManager.getInstance().registerGamepieceZone(this);
   }
 
@@ -63,11 +74,20 @@ public class GamepieceZone {
   }
 
   /**
+   * Returns the configured zone name.
+   *
+   * @return the zone name
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
    * Returns the zone dimensions relative to the robot center.
    *
    * @return a copy of the zone dimensions
    */
-  public Translation2d[] getZoneDimensions() {
+  public Translation3d[] getZoneDimensions() {
     return zoneDimensions.clone();
   }
 
@@ -76,8 +96,17 @@ public class GamepieceZone {
    *
    * @return the robot-center offset for this zone
    */
-  public Translation2d getRobotCenterOffset() {
+  public Translation3d getRobotCenterOffset() {
     return robotCenterOffset;
+  }
+
+  /**
+   * Returns the zone rotation relative to the robot.
+   *
+   * @return the robot-relative zone rotation
+   */
+  public Rotation3d getRobotRotation() {
+    return robotRotation;
   }
 
   /**
@@ -99,8 +128,8 @@ public class GamepieceZone {
   /**
    * Sets the gamepiece exit parameters for this zone.
    *
-   * @param velocity the launch velocity
-   * @param rotation the launch rotation
+    * @param velocity the launch velocity
+    * @param rotation the launch rotation relative to the robot
    */
   public void setExitParameters(LinearVelocity velocity, Rotation3d rotation) {
     this.exitVelocity = velocity;
@@ -119,8 +148,8 @@ public class GamepieceZone {
   /**
    * Configures the zone to intake gamepieces.
    *
-   * @param velocity the launch velocity
-   * @param rotation the launch rotation
+    * @param velocity the launch velocity
+    * @param rotation the launch rotation relative to the robot
    */
   public void intake(LinearVelocity velocity, Rotation3d rotation) {
     setExitParameters(velocity, rotation);
@@ -130,8 +159,8 @@ public class GamepieceZone {
   /**
    * Configures the zone to outtake gamepieces.
    *
-   * @param velocity the launch velocity
-   * @param rotation the launch rotation
+    * @param velocity the launch velocity
+    * @param rotation the launch rotation relative to the robot
    */
   public void outtake(LinearVelocity velocity, Rotation3d rotation) {
     setExitParameters(velocity, rotation);
@@ -141,8 +170,8 @@ public class GamepieceZone {
   /**
    * Configures the zone to shoot gamepieces.
    *
-   * @param velocity the launch velocity
-   * @param rotation the launch rotation
+    * @param velocity the launch velocity
+    * @param rotation the launch rotation relative to the robot
    */
   public void shoot(LinearVelocity velocity, Rotation3d rotation) {
     setExitParameters(velocity, rotation);
@@ -152,9 +181,9 @@ public class GamepieceZone {
   /**
    * Configures this zone from suppliers that can be refreshed each simulation step.
    *
-   * @param modeSupplier supplies the current interaction mode
-   * @param exitVelocitySupplier supplies the current exit velocity
-   * @param exitRotationSupplier supplies the current exit rotation
+    * @param modeSupplier supplies the current interaction mode relative to the robot
+    * @param exitVelocitySupplier supplies the current exit velocity
+    * @param exitRotationSupplier supplies the current exit rotation relative to the robot
    */
   public void configure(
       Supplier<Mode> modeSupplier,

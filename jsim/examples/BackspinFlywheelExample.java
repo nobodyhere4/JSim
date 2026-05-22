@@ -3,7 +3,7 @@ package examples;
 import api.GamepieceZone;
 import api.Rotation3d;
 import api.SimRobot;
-import api.Translation2d;
+import api.Translation3d;
 
 /**
  * Example that adds a compression/backspin roller to a generic flywheel.
@@ -17,13 +17,15 @@ public class BackspinFlywheelExample {
   public BackspinFlywheelExample(SimRobot robot) {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.backspinRollerZone = robot.createGamepieceZone(
-        new Translation2d[] {
-          new Translation2d(0.0, 0.0),
-          new Translation2d(0.2, 0.0),
-          new Translation2d(0.2, 0.15),
-          new Translation2d(0.0, 0.15)
+        "backspinRoller",
+        new Translation3d[] {
+          new Translation3d(0.0, 0.0, 0.0),
+          new Translation3d(0.2, 0.0, 0.0),
+          new Translation3d(0.2, 0.15, 0.0),
+          new Translation3d(0.0, 0.15, 0.0)
         },
-        new Translation2d(0.15, 0.0));
+        new Translation3d(0.15, 0.0, 0.0),
+        new Rotation3d(0.0, 0.0, 0.0));
     this.backspinRollerZone.setMode(GamepieceZone.Mode.DISABLED);
   }
 

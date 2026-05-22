@@ -3,42 +3,94 @@ package api;
 public class GamepieceZone {
     public enum Mode {
         /** Intake a gamepiece into the robot. */
-        INTAKE, // Intake gamepiece, motor count irrelevant
-        /** Outtake a gamepiece using a single roller. */
-        OUTTAKE, // Outtake gamepiece with only one roller (intake, flywheel wihout backrollers, etc.)
-        /** Outtake a gamepiece using a shooter-style mechanism. */
-        SHOOT, // Outtake gamepiece with two rollers (flywheel with backrollers, etc.)
-        /** Disable gamepiece interaction. */
-        DISABLED // No gamepiece interaction, motor count irrelevant
-    }
+    public class GamepieceZone {
+        public enum Mode {
+            /** Intake a gamepiece into the robot. */
+            INTAKE,
+            /** Outtake a gamepiece using a single roller. */
+            OUTTAKE,
+            /** Outtake a gamepiece using a shooter-style mechanism. */
+            SHOOT,
+            /** Disable gamepiece interaction. */
+            DISABLED
+        }
 
-    private double exitVelocity;
-    private Rotation3d exitRotation;
-    private Mode mode = Mode.DISABLED;
+        private final SimRobot robot;
+        private final String name;
+        private final Translation3d[] zoneDimensions;
+        private final Translation3d robotCenterOffset;
+        private final Rotation3d robotRotation;
+        private final SimRobot robot;
+        private final String name;
+        private final Translation3d[] zoneDimensions;
+        private final Translation3d robotCenterOffset;
+        private final Rotation3d robotRotation;
+        private double exitVelocity;
+        private Rotation3d exitRotation;
+        private Mode mode = Mode.DISABLED;
 
-    public GamepieceZone(SimRobot robot) {
-        // Optionally link to robot or state manager if needed
-    }
+        public GamepieceZone(SimRobot robot, String name, Translation3d[] zoneDimensions, Translation3d robotCenterOffset, Rotation3d robotRotation) {
+            this.robot = robot;
+            this.name = name;
+            this.zoneDimensions = zoneDimensions;
+            this.robotCenterOffset = robotCenterOffset;
+            this.robotRotation = robotRotation;
+        }
 
-    public void setMode(Mode mode) {
-        this.mode = mode;
-        // Integrate with StateManager if needed
-    }
+        public SimRobot getRobot() {
+            return robot;
+        }
 
-    public void setExitParameters(double velocity, Rotation3d rotation) {
-        this.exitVelocity = velocity;
-        this.exitRotation = rotation;
-    }
+        public String getName() {
+            return name;
+        }
 
-    public double getExitVelocity() {
-        return exitVelocity;
-    }
+        public Translation3d[] getZoneDimensions() {
+            return zoneDimensions;
+        }
 
-    public Rotation3d getExitRotation() {
-        return exitRotation;
-    }
+        public Translation3d getRobotCenterOffset() {
+            return robotCenterOffset;
+        }
 
-    public Mode getMode() {
-        return mode;
+        public Rotation3d getRobotRotation() {
+            return robotRotation;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Translation3d[] getZoneDimensions() {
+            return zoneDimensions;
+        }
+
+        public Translation3d getRobotCenterOffset() {
+            return robotCenterOffset;
+        }
+
+        public Rotation3d getRobotRotation() {
+            return robotRotation;
+        }
+
+        public void setMode(Mode mode) {
+            this.mode = mode;
+        }
+
+        public void setExitParameters(double velocity, Rotation3d rotation) {
+            this.exitVelocity = velocity;
+            this.exitRotation = rotation;
+        }
+
+        public double getExitVelocity() {
+            return exitVelocity;
+        }
+
+        public Rotation3d getExitRotation() {
+            return exitRotation;
+        }
+
+        public Mode getMode() {
+            return mode;
+        }
     }
-}

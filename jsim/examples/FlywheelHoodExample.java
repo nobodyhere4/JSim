@@ -3,7 +3,7 @@ package examples;
 import api.GamepieceZone;
 import api.Rotation3d;
 import api.SimRobot;
-import api.Translation2d;
+import api.Translation3d;
 
 /**
  * Example that models a flywheel plus an adjustable hood for aiming.
@@ -16,13 +16,15 @@ public class FlywheelHoodExample {
   public FlywheelHoodExample(SimRobot robot) {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.hoodZone = robot.createGamepieceZone(
-        new Translation2d[] {
-          new Translation2d(0.0, 0.0),
-          new Translation2d(0.18, 0.0),
-          new Translation2d(0.18, 0.14),
-          new Translation2d(0.0, 0.14)
+        "hood",
+        new Translation3d[] {
+          new Translation3d(0.0, 0.0, 0.0),
+          new Translation3d(0.18, 0.0, 0.0),
+          new Translation3d(0.18, 0.14, 0.0),
+          new Translation3d(0.0, 0.14, 0.0)
         },
-        new Translation2d(0.12, 0.02));
+        new Translation3d(0.12, 0.02, 0.0),
+        new Rotation3d(0.0, 0.0, 0.0));
     this.hoodZone.disable();
   }
 

@@ -4,9 +4,14 @@ package api;
 import api.Pose2d;
 import api.ChassisSpeeds;
 import api.Translation2d;
+import api.Translation3d;
+import api.Rotation3d;
 import api.RobotID;
 import api.RobotState;
 import api.FieldState;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import frc.robot.sim.core.RobotStateManager;
 import frc.robot.sim.core.GamepieceStateManager;
 
@@ -21,6 +26,7 @@ public final class SimRobot {
     private final RobotStateManager stateManager;
     private final GamepieceStateManager gamepieceStateManager;
     private final FieldState<RobotState> robotStateRef;
+    private final Map<String, GamepieceZone> gamepieceZones = new HashMap<>();
 
     private SimRobot(
             RobotID robotID,
@@ -48,6 +54,26 @@ public final class SimRobot {
                 );
 
         return new SimRobot(robotID, stateManager, gamepieceStateManager, ref);
+    }
+
+    public GamepieceZone createGamepieceZone(
+            String name,
+            Translation3d[] zoneDimensions,
+            Translation3d robotCenterOffset,
+            Rotation3d robotRotation) {
+        GamepieceZone zone = new GamepieceZone(this, name, zoneDimensions, robotCenterOffset, robotRotation);
+        if (name != null) {
+            gamepieceZones.put(name, zone);
+        }
+        return zone;
+    }
+
+    public GamepieceZone getGamepieceZone(String name) {
+        return gamepieceZones.get(name);
+    }
+
+    public Map<String, GamepieceZone> getGamepieceZones() {
+        return Collections.unmodifiableMap(gamepieceZones);
     }
 
     // Robot control (state)

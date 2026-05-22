@@ -3,7 +3,7 @@ package examples;
 import api.GamepieceZone;
 import api.SimRobot;
 import api.Rotation3d;
-import api.Translation2d;
+import api.Translation3d;
 
 /**
  * FlywheelSubsystem simulates a basic flywheel shooter with a flywheel powerd by two motors facing each other.
@@ -20,13 +20,15 @@ public class FlywheelSubsystemExample {
    */
   public FlywheelSubsystemExample(SimRobot robot) {
     this.flywheelZone = robot.createGamepieceZone(
-        new Translation2d[] {
-          new Translation2d(0.0, 0.0),
-          new Translation2d(0.25, 0.0),
-          new Translation2d(0.25, 0.12),
-          new Translation2d(0.0, 0.12)
+        "flywheel",
+        new Translation3d[] {
+          new Translation3d(0.0, 0.0, 0.0),
+          new Translation3d(0.25, 0.0, 0.0),
+          new Translation3d(0.25, 0.12, 0.0),
+          new Translation3d(0.0, 0.12, 0.0)
         },
-        new Translation2d(0.18, 0.0));
+        new Translation3d(0.18, 0.0, 0.0),
+        new Rotation3d(0.0, 0.0, 0.0));
     this.flywheelZone.disable();
   }
 
@@ -79,13 +81,15 @@ class FlywheelHoodSubsystem {
   public FlywheelHoodSubsystem(SimRobot robot) {
     this.flywheel = new FlywheelSubsystemExample(robot);
     this.backspinRollerZone = robot.createGamepieceZone(
-        new Translation2d[] {
-          new Translation2d(0.0, 0.0),
-          new Translation2d(0.2, 0.0),
-          new Translation2d(0.2, 0.15),
-          new Translation2d(0.0, 0.15)
+        "backspinRoller",
+        new Translation3d[] {
+          new Translation3d(0.0, 0.0, 0.0),
+          new Translation3d(0.2, 0.0, 0.0),
+          new Translation3d(0.2, 0.15, 0.0),
+          new Translation3d(0.0, 0.15, 0.0)
         },
-        new Translation2d(0.14, -0.02));
+        new Translation3d(0.14, -0.02, 0.0),
+        new Rotation3d(0.0, 0.0, 0.0));
     this.backspinRollerZone.disable();
   }
 

@@ -2,7 +2,7 @@ package examples;
 
 import api.GamepieceZone;
 import api.SimRobot;
-import api.Translation2d;
+import api.Translation3d;
 
 /**
  * A subsystem representing a robot's intake mechanism.
@@ -35,13 +35,15 @@ public class IntakeSubsystem {
    */
   public IntakeSubsystem(SimRobot robot, double intakeSpeed) {
     this.intakeZone = robot.createGamepieceZone(
-        new Translation2d[] {
-          new Translation2d(0.0, 0.0),
-          new Translation2d(0.22, 0.0),
-          new Translation2d(0.22, 0.16),
-          new Translation2d(0.0, 0.16)
+        "intake",
+        new Translation3d[] {
+          new Translation3d(0.0, 0.0, 0.0),
+          new Translation3d(0.22, 0.0, 0.0),
+          new Translation3d(0.22, 0.16, 0.0),
+          new Translation3d(0.0, 0.16, 0.0)
         },
-        new Translation2d(0.1, 0.0));
+        new Translation3d(0.1, 0.0, 0.0),
+        new Rotation3d(0.0, 0.0, 0.0));
     // Configure the zone for intake/outtake behavior.
     // The rotation is typically zero, as it's a direct pickup/ejection.
     // The velocity is the speed of the rollers.

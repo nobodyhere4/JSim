@@ -2,8 +2,14 @@ package jsim.api;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import jsim.api.StateManager;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.geometry.Translation3d;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+import jsim.api.StateManager;
 
 /**
  * External interface for simulated FRC Robots interacting with JSim.
@@ -11,6 +17,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 public class SimRobot {
     private final RobotID robotID;
     private final FieldState<RobotState> stateManagerRef;
+    private final Map<String, GamepieceZone> gamepieceZones = new HashMap<>();
 
     /**
      * Internal state for a simulated robot, including pose and speeds.
@@ -60,12 +67,41 @@ public class SimRobot {
     /**
      * Creates a gamepiece zone tied to this robot.
      *
+     * @param name the zone name used for retrieval
      * @param zoneDimensions the zone polygon dimensions relative to the robot center
      * @param robotCenterOffset the zone offset from the robot center
+     * @param robotRotation the zone rotation relative to the robot
      * @return a new zone registered for simulation refreshes
      */
-    public GamepieceZone createGamepieceZone(Translation2d[] zoneDimensions, Translation2d robotCenterOffset) {
-        return new GamepieceZone(this, zoneDimensions, robotCenterOffset);
+    public GamepieceZone createGamepieceZone(
+            String name,
+            Translation3d[] zoneDimensions,
+            Translation3d robotCenterOffset,
+            Rotation3d robotRotation) {
+        GamepieceZone zone = new GamepieceZone(this, name, zoneDimensions, robotCenterOffset, robotRotation);
+        if (name != null) {
+            gamepieceZones.put(name, zone);
+        }
+        return zone;
+    }
+
+    /**
+     * Retrieves a previously created gamepiece zone by name.
+     *
+     * @param name the zone name
+     * @return the registered zone, or {@code null} if none exists
+     */
+    public GamepieceZone getGamepieceZone(String name) {
+        return gamepieceZones.get(name);
+    }
+
+    /**
+     * Returns all gamepiece zones registered on this robot.
+     *
+     * @return an immutable view of the named zones
+     */
+    public Map<String, GamepieceZone> getGamepieceZones() {
+        return Collections.unmodifiableMap(gamepieceZones);
     }
 
     /**
