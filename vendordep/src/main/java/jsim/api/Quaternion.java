@@ -72,11 +72,11 @@ public class Quaternion extends edu.wpi.first.math.geometry.Quaternion {
      */
     public Translation3d rotate(Translation3d v) {
         Quaternion vectorQuaternion = new Quaternion(0.0, v.getX(), v.getY(), v.getZ());
-        Quaternion rotated = this.multiply(vectorQuaternion).multiply(conjugate());
+        Quaternion rotated = this.multiply(vectorQuaternion).multiply(computeConjugate());
         return new Translation3d(rotated.getX(), rotated.getY(), rotated.getZ());
     }
 
-    private Quaternion conjugate() {
+    private Quaternion computeConjugate() {
         return new Quaternion(getW(), -getX(), -getY(), -getZ());
     }
 }
