@@ -1,5 +1,8 @@
 package jsim.api;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
+
 /**
  * Represents a 2026 Fuel game piece.
  * Integrates vector, quaternion, and matrix math for simulation.
@@ -23,11 +26,12 @@ public class Fuel2026 extends GamePieceState {
         Quaternion q = quaternionFromRotation3d(exitAngle);
 
         // Example: rotate a velocity vector by the exit angle
-        Vector3 velocity = new Vector3(1, 0, 0); // placeholder for actual velocity
-        Vector3 rotatedVelocity = q.rotate(velocity);
+        Translation3d velocity = new Translation3d(1, 0, 0);
+        Translation3d rotatedVelocity = q.rotate(velocity);
 
         // Example: use a matrix for further transformation (identity for now)
         Matrix3 m = Matrix3.identity();
+        m.multiply(rotatedVelocity);
     }
 
     private static Quaternion quaternionFromRotation3d(Rotation3d r) {

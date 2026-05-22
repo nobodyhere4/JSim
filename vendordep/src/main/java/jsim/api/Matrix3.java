@@ -1,7 +1,9 @@
 package jsim.api;
 
+import edu.wpi.first.math.geometry.Translation3d;
+
 /**
- * Lightweight 3x3 matrix value.
+ * Small 3x3 matrix helper used by the Fuel2026 example path.
  */
 public class Matrix3 {
     public final double m00;
@@ -39,8 +41,8 @@ public class Matrix3 {
         return new Matrix3();
     }
 
-    public Vector3 multiply(Vector3 v) {
-        return new Vector3(
+    public Translation3d multiply(Translation3d v) {
+        return new Translation3d(
                 m00 * v.x + m01 * v.y + m02 * v.z,
                 m10 * v.x + m11 * v.y + m12 * v.z,
                 m20 * v.x + m21 * v.y + m22 * v.z);

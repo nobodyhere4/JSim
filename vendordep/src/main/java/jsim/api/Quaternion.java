@@ -1,7 +1,9 @@
 package jsim.api;
 
+import edu.wpi.first.math.geometry.Translation3d;
+
 /**
- * Lightweight quaternion value.
+ * Quaternion helper used by the Fuel2026 example path.
  */
 public class Quaternion {
     public final double w;
@@ -16,10 +18,10 @@ public class Quaternion {
         this.z = z;
     }
 
-    public static Quaternion fromAxisAngle(Vector3 axis, double angleRad) {
+    public static Quaternion fromAxisAngle(Translation3d axis, double angleRad) {
         double halfAngle = angleRad * 0.5;
         double sinHalf = Math.sin(halfAngle);
-        double magnitude = axis == null ? 0.0 : axis.norm();
+        double magnitude = axis == null ? 0.0 : Math.sqrt(axis.x * axis.x + axis.y * axis.y + axis.z * axis.z);
         if (magnitude == 0.0) {
             return new Quaternion(Math.cos(halfAngle), 0.0, 0.0, 0.0);
         }
@@ -39,10 +41,10 @@ public class Quaternion {
                 w * o.z + x * o.y - y * o.x + z * o.w);
     }
 
-    public Vector3 rotate(Vector3 v) {
+    public Translation3d rotate(Translation3d v) {
         Quaternion vectorQuaternion = new Quaternion(0.0, v.x, v.y, v.z);
         Quaternion rotated = this.multiply(vectorQuaternion).multiply(conjugate());
-        return new Vector3(rotated.x, rotated.y, rotated.z);
+        return new Translation3d(rotated.x, rotated.y, rotated.z);
     }
 
     private Quaternion conjugate() {

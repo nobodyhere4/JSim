@@ -1,5 +1,9 @@
 package jsim.api;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+
 public class RobotState {
 
     public Pose2d pose;

@@ -1,5 +1,9 @@
 package jsim.api;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+
 /**
  * Represents the state of a game piece in the simulation.
  * Includes type, velocity, rotation, and other physical properties.
