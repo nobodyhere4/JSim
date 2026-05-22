@@ -1,5 +1,8 @@
 package jsim.api;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
+
 /**
  * A 3D rigid transform composed of a translation and a rotation.
  */

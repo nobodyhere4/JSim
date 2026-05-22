@@ -35,12 +35,12 @@ public class Fuel2026 extends GamePieceState {
     }
 
     private static Quaternion quaternionFromRotation3d(Rotation3d r) {
-        double cy = Math.cos(r.yaw * 0.5);
-        double sy = Math.sin(r.yaw * 0.5);
-        double cp = Math.cos(r.pitch * 0.5);
-        double sp = Math.sin(r.pitch * 0.5);
-        double cr = Math.cos(r.roll * 0.5);
-        double sr = Math.sin(r.roll * 0.5);
+        double cy = Math.cos(r.getZ() * 0.5);
+        double sy = Math.sin(r.getZ() * 0.5);
+        double cp = Math.cos(r.getY() * 0.5);
+        double sp = Math.sin(r.getY() * 0.5);
+        double cr = Math.cos(r.getX() * 0.5);
+        double sr = Math.sin(r.getX() * 0.5);
 
         double w = cr * cp * cy + sr * sp * sy;
         double x = sr * cp * cy - cr * sp * sy;
