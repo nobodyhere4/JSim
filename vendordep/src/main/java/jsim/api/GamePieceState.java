@@ -3,6 +3,7 @@ package jsim.api;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import jsim.LinearVelocity3d;
 
 /**
  * Represents the state of a game piece in the simulation.
@@ -11,14 +12,14 @@ import edu.wpi.first.math.geometry.Translation3d;
 public class GamePieceState {
     /** Type of this game piece. */
     public GamePieceType type;
-    /** Scalar exit velocity used by older state managers. */
-    public double velocity;
+    /** Linear exit velocity used by the current simulation API. */
+    public LinearVelocity3d velocity;
     /** Orientation of the piece. */
     public Rotation3d rotation;
     /** Start offset in the robot frame. */
     public Translation2d robotOffsetStart;
     /** Exit velocity vector. */
-    public Translation3d exitVelocity;
+    public LinearVelocity3d exitVelocity;
     /** Exit orientation. */
     public Rotation3d exitAngle;
     /** Intake polygon in robot space. */
@@ -40,11 +41,11 @@ public class GamePieceState {
      */
     public GamePieceType getType() { return type; }
     /**
-     * Sets the scalar velocity.
+        * Sets the linear velocity.
      *
-     * @param velocity scalar exit velocity
+        * @param velocity linear exit velocity
      */
-    public void setVelocity(double velocity) { this.velocity = velocity; }
+        public void setVelocity(LinearVelocity3d velocity) { this.velocity = velocity; }
     /**
      * Sets the rotation.
      *
@@ -52,11 +53,11 @@ public class GamePieceState {
      */
     public void setRotation(Rotation3d rotation) { this.rotation = rotation; }
     /**
-     * Returns the scalar velocity.
+    * Returns the linear velocity.
      *
-     * @return the scalar velocity
+    * @return the linear velocity
      */
-    public double getVelocity() { return velocity; }
+    public LinearVelocity3d getVelocity() { return velocity; }
     /**
      * Returns the rotation.
      *
@@ -80,13 +81,13 @@ public class GamePieceState {
      *
      * @param velocity exit velocity vector
      */
-    public void setExitVelocity(Translation3d velocity) { this.exitVelocity = velocity; }
+    public void setExitVelocity(LinearVelocity3d velocity) { this.exitVelocity = velocity; }
     /**
      * Returns the exit velocity vector.
      *
      * @return the exit velocity vector
      */
-    public Translation3d getExitVelocity() { return exitVelocity; }
+    public LinearVelocity3d getExitVelocity() { return exitVelocity; }
     /**
      * Sets the exit angle.
      *
