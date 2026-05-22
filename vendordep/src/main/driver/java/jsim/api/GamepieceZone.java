@@ -181,6 +181,26 @@ public class GamepieceZone {
     this.exitRotationSupplier = exitRotationSupplier;
   }
 
+  /**
+   * Configures a rule-driven zone state.
+   *
+   * @param mode the mode to activate while the enter condition is true
+   * @param enter supplies whether the zone should activate
+   * @param exit supplies whether the zone should disable
+   * @param exitRateMetersPerSecondSupplier supplies the exit rate in meters per second
+   * @param rot supplies the exit rotation
+   * @param trans supplies the exit translation
+   */
+  public void configure(
+      Mode mode,
+      Supplier<Boolean> enter,
+      Supplier<Boolean> exit,
+      Supplier<Double> exitRateMetersPerSecondSupplier,
+      Supplier<Rotation3d> rot,
+      Supplier<Translation3d> trans) {
+    rules.add(new Rule(mode, enter, exit, exitRateMetersPerSecondSupplier, rot, trans));
+  }
+
   public double getExitRate() {
     return exitRate;
   }
@@ -206,6 +226,36 @@ public class GamepieceZone {
   public void refresh() {
     if (modeSupplier != null) {
       mode = modeSupplier.get();
+    }
+  }
+
+  /**
+   * Evaluates rule-driven zone updates.
+   *
+   * <p>If a rule's enter condition is true, the zone is set to the rule's mode and its exit
+   * parameters are refreshed from the configured suppliers. If the exit condition is true, the
+   * zone is disabled.
+   */
+  public void evaluate() {
+    for (Rule rule : rules) {
+      if (rule.exit != null && rule.exit.get()) {
+        disable();
+        continue;
+      }
+
+      if (rule.enter != null && rule.enter.get()) {
+        mode = rule.mode;
+        if (rule.exitRateMetersPerSecondSupplier != null) {
+          exitRate = rule.exitRateMetersPerSecondSupplier.get();
+          exitVelocity = MetersPerSecond.of(exitRate);
+        }
+        if (rule.rot != null) {
+          exitRotation = rule.rot.get();
+        }
+        if (rule.trans != null) {
+          exitTranslation = rule.trans.get();
+        }
+      }
     }
   }
 
