@@ -1,6 +1,7 @@
 package jsim.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -54,27 +55,24 @@ class GamepieceZoneTest {
         });
     GamepieceZone zone = robot.createGamepieceZone();
     AtomicReference<GamepieceZone.Mode> mode = new AtomicReference<>(GamepieceZone.Mode.OUTTAKE);
-        AtomicReference<LinearVelocity> velocity = new AtomicReference<>(MetersPerSecond.of(4.25));
+    AtomicReference<LinearVelocity> velocity = new AtomicReference<>(MetersPerSecond.of(4.25));
     AtomicReference<Rotation3d> rotation = new AtomicReference<>(new Rotation3d(1.0, 2.0, 3.0));
 
-        zone.configure(mode::get, velocity::get, rotation::get);
+    zone.configure(mode::get, velocity::get, rotation::get);
     zone.refresh();
 
     assertEquals(GamepieceZone.Mode.OUTTAKE, zone.getMode());
-        assertEquals(4.25, zone.getExitVelocity().in(MetersPerSecond), 1e-9);
-    assertEquals(1.0, zone.getExitRotation().getX(), 1e-9);
-    assertEquals(2.0, zone.getExitRotation().getY(), 1e-9);
-    assertEquals(3.0, zone.getExitRotation().getZ(), 1e-9);
+    assertEquals(4.25, zone.getExitVelocity().in(MetersPerSecond), 1e-9);
+    assertSame(rotation.get(), zone.getExitRotation());
 
     mode.set(GamepieceZone.Mode.SHOOT);
-        velocity.set(MetersPerSecond.of(6.0));
-    rotation.set(new Rotation3d(0.0, 0.0, 1.0));
+    velocity.set(MetersPerSecond.of(6.0));
+    Rotation3d updatedRotation = new Rotation3d(0.0, 0.0, 1.0);
+    rotation.set(updatedRotation);
     zone.refresh();
 
     assertEquals(GamepieceZone.Mode.SHOOT, zone.getMode());
-        assertEquals(6.0, zone.getExitVelocity().in(MetersPerSecond), 1e-9);
-    assertEquals(0.0, zone.getExitRotation().getX(), 1e-9);
-    assertEquals(0.0, zone.getExitRotation().getY(), 1e-9);
-    assertEquals(1.0, zone.getExitRotation().getZ(), 1e-9);
+    assertEquals(6.0, zone.getExitVelocity().in(MetersPerSecond), 1e-9);
+    assertSame(updatedRotation, zone.getExitRotation());
   }
 }
