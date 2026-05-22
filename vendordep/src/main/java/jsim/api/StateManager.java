@@ -41,6 +41,7 @@ public class StateManager {
 
     /**
      * Loads JSON field definition and builds all FieldElements and collision zones.
+     *
      * @param config The field configuration to initialize.
      */
     public void initializeField(FieldConfig config) {
@@ -49,6 +50,7 @@ public class StateManager {
 
     /**
      * Creates a robot instance, assigns starting pose, and registers it in the simulation.
+     *
      * @param id The RobotID for the robot.
      * @param startingPose The initial pose of the robot.
      * @param frameVertices The vertices of the robot's frame.
@@ -88,14 +90,30 @@ public class StateManager {
         return Collections.unmodifiableMap(poses);
     }
 
+    /**
+     * Stores the active physics world used by the simulation layer.
+     *
+     * @param physicsWorld the physics world to store
+     */
     public synchronized void setPhysicsWorld(PhysicsWorld physicsWorld) {
         this.physicsWorld = physicsWorld;
     }
 
+    /**
+     * Returns the active physics world used by the simulation layer.
+     *
+     * @return the current physics world, or {@code null} if none is registered
+     */
     public synchronized PhysicsWorld getPhysicsWorld() {
         return physicsWorld;
     }
 
+    /**
+     * Associates a native physics body with a robot id.
+     *
+     * @param id the robot identifier
+     * @param robotBody the physics body to store, or {@code null} to clear the mapping
+     */
     public synchronized void setRobotBody(RobotID id, PhysicsBody robotBody) {
         if (robotBody == null) {
             robotBodies.remove(id);
@@ -104,18 +122,40 @@ public class StateManager {
         }
     }
 
+    /**
+     * Returns the physics body associated with the given robot id.
+     *
+     * @param id the robot identifier
+     * @return the tracked physics body, or {@code null} if none exists
+     */
     public synchronized PhysicsBody getRobotBody(RobotID id) {
         return robotBodies.get(id);
     }
 
+    /**
+     * Stores the telemetry publisher used to mirror simulation state.
+     *
+     * @param telemetryPublisher the telemetry publisher to store
+     */
     public synchronized void setTelemetryPublisher(FieldTelemetryPublisher telemetryPublisher) {
         this.telemetryPublisher = telemetryPublisher;
     }
 
+    /**
+     * Returns the telemetry publisher used to mirror simulation state.
+     *
+     * @return the current telemetry publisher, or {@code null} if none is registered
+     */
     public synchronized FieldTelemetryPublisher getTelemetryPublisher() {
         return telemetryPublisher;
     }
 
+    /**
+     * Applies a chassis-speed command to the physics body registered for the given robot id.
+     *
+     * @param id the robot identifier
+     * @param speeds the commanded chassis speeds
+     */
     public synchronized void setPhysicsVelocity(RobotID id, ChassisSpeeds speeds) {
         PhysicsBody robotBody = robotBodies.get(id);
         if (robotBody != null) {
@@ -123,6 +163,11 @@ public class StateManager {
         }
     }
 
+    /**
+     * Registers a gamepiece zone to be refreshed on each simulation step.
+     *
+     * @param gamepieceZone the zone to register
+     */
     public synchronized void registerGamepieceZone(GamepieceZone gamepieceZone) {
         if (gamepieceZone != null && !gamepieceZones.contains(gamepieceZone)) {
             gamepieceZones.add(gamepieceZone);
@@ -135,6 +180,9 @@ public class StateManager {
         }
     }
 
+    /**
+     * Advances the tracked physics world and refreshes telemetry and gamepiece zones.
+     */
     public synchronized void stepPhysics() {
         if (physicsWorld != null) {
             physicsWorld.step();
