@@ -3,17 +3,16 @@ package jsim.api;
 import edu.wpi.first.math.geometry.Translation3d;
 
 /**
- * Quaternion helper used by the Fuel2026 example path.
+ * Thin wrapper around WPILib's Quaternion with a few helper utilities.
  */
-public class Quaternion {
-    /** Scalar component. */
-    public final double w;
-    /** X component. */
-    public final double x;
-    /** Y component. */
-    public final double y;
-    /** Z component. */
-    public final double z;
+public class Quaternion extends edu.wpi.first.math.geometry.Quaternion {
+
+    /**
+     * Creates an identity quaternion.
+     */
+    public Quaternion() {
+        super();
+    }
 
     /**
      * Creates a quaternion from its four components.
@@ -24,10 +23,7 @@ public class Quaternion {
      * @param z z component
      */
     public Quaternion(double w, double x, double y, double z) {
-        this.w = w;
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        super(w, x, y, z);
     }
 
     /**
@@ -62,10 +58,10 @@ public class Quaternion {
      */
     public Quaternion multiply(Quaternion o) {
         return new Quaternion(
-                w * o.w - x * o.x - y * o.y - z * o.z,
-                w * o.x + x * o.w + y * o.z - z * o.y,
-                w * o.y - x * o.z + y * o.w + z * o.x,
-                w * o.z + x * o.y - y * o.x + z * o.w);
+                getW() * o.getW() - getX() * o.getX() - getY() * o.getY() - getZ() * o.getZ(),
+                getW() * o.getX() + getX() * o.getW() + getY() * o.getZ() - getZ() * o.getY(),
+                getW() * o.getY() - getX() * o.getZ() + getY() * o.getW() + getZ() * o.getX(),
+                getW() * o.getZ() + getX() * o.getY() - getY() * o.getX() + getZ() * o.getW());
     }
 
     /**
@@ -77,10 +73,10 @@ public class Quaternion {
     public Translation3d rotate(Translation3d v) {
         Quaternion vectorQuaternion = new Quaternion(0.0, v.getX(), v.getY(), v.getZ());
         Quaternion rotated = this.multiply(vectorQuaternion).multiply(conjugate());
-        return new Translation3d(rotated.x, rotated.y, rotated.z);
+        return new Translation3d(rotated.getX(), rotated.getY(), rotated.getZ());
     }
 
     private Quaternion conjugate() {
-        return new Quaternion(w, -x, -y, -z);
+        return new Quaternion(getW(), -getX(), -getY(), -getZ());
     }
 }

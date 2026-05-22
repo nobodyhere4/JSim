@@ -1,16 +1,16 @@
 package jsim.api;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
-
 /**
- * A 3D rigid transform composed of a translation and a rotation.
+ * Thin wrapper around WPILib's Transform3d for API compatibility.
  */
-public class Transform3d {
-    /** Translation component of the transform. */
-    public final Translation3d translation;
-    /** Rotation component of the transform. */
-    public final Rotation3d rotation;
+public class Transform3d extends edu.wpi.first.math.geometry.Transform3d {
+
+    /**
+     * Creates a zero transform.
+     */
+    public Transform3d() {
+        super();
+    }
 
     /**
      * Creates a rigid transform from a translation and rotation.
@@ -18,17 +18,9 @@ public class Transform3d {
      * @param translation translation component
      * @param rotation rotation component
      */
-    public Transform3d(Translation3d translation, Rotation3d rotation) {
-        this.translation = translation;
-        this.rotation = rotation;
-    }
-
-    /**
-     * Returns the rotation component.
-     *
-     * @return the stored rotation
-     */
-    public Rotation3d getRotation() {
-        return rotation;
+    public Transform3d(
+            edu.wpi.first.math.geometry.Translation3d translation,
+            edu.wpi.first.math.geometry.Rotation3d rotation) {
+        super(translation, rotation);
     }
 }
