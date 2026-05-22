@@ -274,7 +274,14 @@ public class GamepieceZone {
     this.exitRotationSupplier = exitRotationSupplier;
   }
 
-  /** Configure a single automatic rule. */
+  /**
+   * Configures a default intake rule using boolean enter/exit conditions.
+   *
+   * @param enterCondition supplies {@code true} when the rule should activate
+   * @param exitCondition supplies {@code true} when the zone should disable
+   * @param exitRateSupplier supplies the exit rate in meters per second
+   * @param rotationSupplier supplies the exit rotation relative to the robot
+   */
   public void configure(
       Supplier<Boolean> enterCondition,
       Supplier<Boolean> exitCondition,
@@ -283,6 +290,16 @@ public class GamepieceZone {
     addRule(Mode.INTAKE, enterCondition, exitCondition, exitRateSupplier, rotationSupplier, null);
   }
 
+  /**
+   * Configures an automatic rule for the given mode.
+   *
+   * @param mode the interaction mode to enable when the enter condition is met
+   * @param enterCondition supplies {@code true} when the rule should activate
+   * @param exitCondition supplies {@code true} when the zone should disable
+   * @param exitRateSupplier supplies the exit rate in meters per second
+   * @param rotationSupplier supplies the exit rotation relative to the robot
+   * @param translationSupplier supplies the exit translation relative to the robot
+   */
   public void configure(
       Mode mode,
       Supplier<Boolean> enterCondition,
@@ -293,7 +310,16 @@ public class GamepieceZone {
     addRule(mode, enterCondition, exitCondition, exitRateSupplier, rotationSupplier, translationSupplier);
   }
 
-  /** Add a rule that sets the zone to the provided mode when the enter condition is true. */
+  /**
+   * Adds an automatic rule for this zone.
+   *
+   * @param mode the interaction mode to set when the enter condition is met
+   * @param enterCondition supplies {@code true} when the rule should activate
+   * @param exitCondition supplies {@code true} when the zone should disable
+   * @param exitRateSupplier supplies the exit rate in meters per second
+   * @param rotationSupplier supplies the exit rotation relative to the robot
+   * @param translationSupplier supplies the exit translation relative to the robot
+   */
   public void addRule(
       Mode mode,
       Supplier<Boolean> enterCondition,
@@ -321,7 +347,9 @@ public class GamepieceZone {
     evaluate();
   }
 
-  /** Evaluate configured rules and update the zone mode/params. Call from sim step. */
+  /**
+   * Evaluates configured automatic rules and updates the zone mode and exit parameters.
+   */
   public void evaluate() {
     for (var rule : rules) {
       if (rule.enter != null && rule.enter.get()) {
@@ -354,7 +382,11 @@ public class GamepieceZone {
     return exitVelocity;
   }
 
-  /** Returns the configured exit rate in meters per second. */
+  /**
+   * Returns the configured exit rate in meters per second.
+   *
+   * @return the exit rate
+   */
   public double getExitRate() {
     return exitRate;
   }
@@ -368,7 +400,11 @@ public class GamepieceZone {
     return exitRotation;
   }
 
-  /** Returns the configured exit translation. */
+  /**
+   * Returns the configured exit translation.
+   *
+   * @return the exit translation relative to the robot
+   */
   public Translation3d getExitTranslation() {
     return exitTranslation;
   }
