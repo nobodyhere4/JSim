@@ -127,6 +127,11 @@ public final class JSim {
    * when a canonical zero rotation is needed rather than constructing new instances.
    */
   public static edu.wpi.first.math.geometry.Rotation3d rotationZero() {
+    /**
+     * Returns a new WPILib Rotation3d representing zero rotation.
+     *
+     * @return a zero Rotation3d
+     */
     return new edu.wpi.first.math.geometry.Rotation3d();
   }
 }

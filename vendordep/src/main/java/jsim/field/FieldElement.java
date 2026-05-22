@@ -7,6 +7,10 @@ import edu.wpi.first.math.geometry.Pose3d;
  */
 public class FieldElement {
     /**
+     * Create a new empty FieldElement.
+     */
+    public FieldElement() {}
+    /**
      * Enum representing the type of field element.
      */
     public enum Type {
