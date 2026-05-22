@@ -4,13 +4,27 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
+/**
+ * Mutable robot snapshot shared between the simulation facade and state manager.
+ */
 public class RobotState {
 
+    /** Current robot pose on the field. */
     public Pose2d pose;
+    /** Robot frame perimeter vertices. */
     public final Translation2d[] frameVertices;
+    /** Current commanded or measured chassis speeds. */
     public ChassisSpeeds chassisSpeeds;
+    /** Robot identifier. */
     public final RobotID id;
 
+    /**
+     * Creates a robot state snapshot.
+     *
+     * @param id robot identifier
+     * @param pose initial pose
+     * @param frameVertices frame perimeter vertices
+     */
     public RobotState(RobotID id, Pose2d pose, Translation2d[] frameVertices) {
         this.id = id;
         this.pose = pose;
