@@ -15,7 +15,6 @@ public class BackspinFlywheelExample {
     new Translation3d(0.2, 0.15, 0.0),
     new Translation3d(0.0, 0.15, 0.0)
   };
-  private static final Translation3d BACKSPIN_ROBOT_CENTER_OFFSET = new Translation3d(0.15, 0.0, 0.0);
 
   private final FlywheelSubsystemExample flywheel;
   private final GamepieceZone backspinRollerZone;
@@ -27,7 +26,6 @@ public class BackspinFlywheelExample {
     this.backspinRollerZone = robot.createGamepieceZone(
       "backspinRoller",
       GamepieceZone.createZoneDimensions(Rotation3d.kZero, BACKSPIN_ZONE_POINTS),
-      BACKSPIN_ROBOT_CENTER_OFFSET,
       Rotation3d.kZero);
   }
 

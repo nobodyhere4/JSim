@@ -32,9 +32,6 @@ public class GamepieceZone {
     DISABLED
   }
 
-  /** Common zero rotation constant for examples and callers. */
-  public static final Rotation3d ZERO_ROTATION = Rotation3d.kZero;
-
   /**
    * Helper to build an array of transform dimensions from a shared rotation and a list of
    * translations. This is a small convenience for example code and users constructing zones.
@@ -43,13 +40,10 @@ public class GamepieceZone {
    * @param translations the vertex translations defining the zone polygon
    * @return transforms with the provided rotation applied to each translation
    */
-  public static edu.wpi.first.math.geometry.Transform3d[] createZoneDimensions(
-      edu.wpi.first.math.geometry.Rotation3d rotation,
-      edu.wpi.first.math.geometry.Translation3d... translations) {
-    edu.wpi.first.math.geometry.Transform3d[] transforms =
-        new edu.wpi.first.math.geometry.Transform3d[translations.length];
+  public static Transform3d[] createZoneDimensions(Rotation3d rotation, Translation3d... translations) {
+    Transform3d[] transforms = new Transform3d[translations.length];
     for (int i = 0; i < translations.length; i++) {
-      transforms[i] = new edu.wpi.first.math.geometry.Transform3d(translations[i], rotation);
+      transforms[i] = new Transform3d(translations[i], rotation);
     }
     return transforms;
   }
@@ -57,7 +51,6 @@ public class GamepieceZone {
   private final SimRobot robot;
   private final String name;
   private final Transform3d[] zoneDimensions;
-  private final Translation3d robotCenterOffset;
   private final Rotation3d robotRotation;
   private double exitRate = 0.0;
   private LinearVelocity exitVelocity = MetersPerSecond.of(0.0);
@@ -103,7 +96,7 @@ public class GamepieceZone {
    * @param ignored compatibility placeholder
    */
   public GamepieceZone(Object ignored) {
-    this(null, null, new Transform3d[0], new Translation3d(), Rotation3d.kZero, false);
+    this(null, null, new Transform3d[0], Rotation3d.kZero, false);
   }
 
   /**
@@ -112,16 +105,14 @@ public class GamepieceZone {
    * @param robot the simulated robot that owns this zone
    * @param name the zone name used for retrieval from the robot
    * @param zoneDimensions the zone polygon transforms relative to the robot center
-   * @param robotCenterOffset the zone offset from the robot center
    * @param robotRotation the zone rotation relative to the robot
    */
   GamepieceZone(
       SimRobot robot,
       String name,
       Transform3d[] zoneDimensions,
-      Translation3d robotCenterOffset,
       Rotation3d robotRotation) {
-    this(robot, name, zoneDimensions, robotCenterOffset, robotRotation, true);
+    this(robot, name, zoneDimensions, robotRotation, true);
   }
 
   /**
@@ -149,15 +140,6 @@ public class GamepieceZone {
    */
   public Transform3d[] getZoneDimensions() {
     return zoneDimensions.clone();
-  }
-
-  /**
-   * Returns the zone offset from the robot center.
-   *
-   * @return robot-center offset translation
-   */
-  public Translation3d getRobotCenterOffset() {
-    return robotCenterOffset;
   }
 
   /**
@@ -256,12 +238,12 @@ public class GamepieceZone {
   }
 
   /**
-   * Returns the cached exit rate in meters per second.
+   * Returns the cached exit rate.
    *
-   * @return exit rate in meters per second
+   * @return exit rate as a linear velocity
    */
-  public double getExitRate() {
-    return exitRate;
+  public LinearVelocity getExitRate() {
+    return getExitVelocity();
   }
 
   /**
@@ -310,13 +292,11 @@ public class GamepieceZone {
       SimRobot robot,
       String name,
       Transform3d[] zoneDimensions,
-      Translation3d robotCenterOffset,
       Rotation3d robotRotation,
       boolean register) {
     this.robot = robot;
     this.name = name;
     this.zoneDimensions = zoneDimensions == null ? new Transform3d[0] : zoneDimensions.clone();
-    this.robotCenterOffset = robotCenterOffset;
     this.robotRotation = robotRotation;
     if (register) {
       StateManager.getInstance().registerGamepieceZone(this);

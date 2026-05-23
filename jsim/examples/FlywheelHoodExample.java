@@ -14,7 +14,6 @@ public class FlywheelHoodExample {
     new Translation3d(0.18, 0.14, 0.0),
     new Translation3d(0.0, 0.14, 0.0)
   };
-  private static final Translation3d HOOD_ROBOT_CENTER_OFFSET = new Translation3d(0.12, 0.02, 0.0);
 
   private final FlywheelSubsystemExample flywheel;
   private final GamepieceZone hoodZone;
@@ -25,7 +24,6 @@ public class FlywheelHoodExample {
     this.hoodZone = robot.createGamepieceZone(
       "hood",
       GamepieceZone.createZoneDimensions(Rotation3d.kZero, HOOD_ZONE_POINTS),
-      HOOD_ROBOT_CENTER_OFFSET,
       Rotation3d.kZero);
   }
 

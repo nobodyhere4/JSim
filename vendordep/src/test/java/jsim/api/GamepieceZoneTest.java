@@ -35,9 +35,8 @@ class GamepieceZoneTest {
       new Transform3d(new Translation3d(0.2, 0.1, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
       new Transform3d(new Translation3d(0.0, 0.1, 0.0), new Rotation3d(0.0, 0.0, 0.0))
     };
-    Translation3d robotCenterOffset = new Translation3d(0.25, 0.15, 0.0);
     Rotation3d robotRotation = new Rotation3d(0.0, 0.0, 0.0);
-    GamepieceZone zone = robot.createGamepieceZone("intake", zoneDimensions, robotCenterOffset, robotRotation);
+    GamepieceZone zone = robot.createGamepieceZone("intake", zoneDimensions, robotRotation);
 
     zone.intake(MetersPerSecond.of(2.5), new Rotation3d(0.1, 0.2, 0.3));
 
@@ -46,7 +45,6 @@ class GamepieceZoneTest {
     assertEquals(0.1, zone.getExitRotation().getX(), 1e-9);
     assertEquals(0.2, zone.getExitRotation().getY(), 1e-9);
     assertEquals(0.3, zone.getExitRotation().getZ(), 1e-9);
-    assertSame(robotCenterOffset, zone.getRobotCenterOffset());
     assertEquals(4, zone.getZoneDimensions().length);
     assertSame(zone, robot.getGamepieceZone("intake"));
 
@@ -75,7 +73,6 @@ class GamepieceZoneTest {
           new Transform3d(new Translation3d(0.3, 0.2, 0.0), new Rotation3d(0.0, 0.0, 0.0)),
           new Transform3d(new Translation3d(0.0, 0.2, 0.0), new Rotation3d(0.0, 0.0, 0.0))
         },
-        new Translation3d(0.1, 0.1, 0.0),
         new Rotation3d(0.0, 0.0, 0.0));
     AtomicReference<GamepieceZone.Mode> mode = new AtomicReference<>(GamepieceZone.Mode.OUTTAKE);
     AtomicReference<LinearVelocity> velocity = new AtomicReference<>(MetersPerSecond.of(4.25));
@@ -115,7 +112,7 @@ class GamepieceZoneTest {
     zone.evaluate();
 
     assertEquals(GamepieceZone.Mode.SHOOT, zone.getMode());
-    assertEquals(3.75, zone.getExitRate(), 1e-9);
+    assertEquals(3.75, zone.getExitRate().in(MetersPerSecond), 1e-9);
     assertEquals(3.75, zone.getExitVelocity().in(MetersPerSecond), 1e-9);
     assertSame(rotation.get(), zone.getExitRotation());
     assertSame(translation.get(), zone.getExitTranslation());
