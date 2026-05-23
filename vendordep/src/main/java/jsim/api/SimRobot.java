@@ -70,10 +70,9 @@ public class SimRobot {
      *
      * @param name the zone name used for retrieval
      * @param zoneDimensions the zone polygon dimensions relative to the robot center
-     * @param robotCenterOffset the zone offset from the robot center
      * @param robotRotation the zone rotation relative to the robot
      * @return a new zone registered for simulation refreshes
-         * @throws IllegalArgumentException if a zone with the same name already exists
+     * @throws IllegalArgumentException if a zone with the same name already exists
      */
     public GamepieceZone createGamepieceZone(
             String name,
