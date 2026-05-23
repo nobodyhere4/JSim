@@ -1,4 +1,4 @@
-package examples;
+package examples.java;
 
 import jsim.api.GamepieceZone;
 import jsim.api.SimRobot;

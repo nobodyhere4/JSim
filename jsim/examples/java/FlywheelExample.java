@@ -1,4 +1,4 @@
-package examples;
+package examples.java;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import jsim.api.SimRobot;
