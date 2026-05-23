@@ -1,63 +1,115 @@
 package jsim.api;
 
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import jsim.LinearVelocity3d;
 
 /**
- * Tracks the lifecycle and data of a standard game piece in the simulation.
+ * Represents the state of a game piece in the simulation.
+ * Includes type, velocity, rotation, and other physical properties.
  */
 public class GamePieceState {
+    /** Type of this game piece. */
+    public GamePieceType type;
+    /** Linear exit velocity used by the current simulation API. */
+    public LinearVelocity3d velocity;
+    /** Orientation of the piece. */
+    public Rotation3d rotation;
+    /** Start offset in the robot frame. */
+    public Translation2d robotOffsetStart;
+    /** Exit velocity vector. */
+    public LinearVelocity3d exitVelocity;
+    /** Exit orientation. */
+    public Rotation3d exitAngle;
+    /** Intake polygon in robot space. */
+    public Translation3d[] intakeArea;
 
     /**
-     * Enum representing the lifecycle state of a game piece.
+     * Creates a game piece state for the given type.
+     *
+     * @param type game piece type
      */
-    public enum Lifecycle {
-        /** Game piece has been spawned. */
-        SPAWNED,
-        /** Game piece is actively moving. */
-        ACTIVE,
-        /** Game piece is interacting with robot or field element. */
-        INTERACTING,
-        /** Game piece interaction has been resolved. */
-        RESOLVED
-    }
-
-    /** The current lifecycle state of this game piece. */
-    public Lifecycle lifecycle = Lifecycle.SPAWNED;
-    /** The current 3D position of this game piece. */
-    public Pose3d position = new Pose3d();
-    /** The physics properties of this game piece. */
-    public GamePiecePhysics physics;
-
-    /**
-     * Creates a new GamePieceState with the specified physics type.
-     * @param physicsType The physics properties for this game piece.
-     */
-    public GamePieceState(GamePiecePhysics physicsType) {
-        this.physics = physicsType;
+    public GamePieceState(GamePieceType type) {
+        this.type = type;
     }
 
     /**
-     * Defines valid interaction volume for intake.
-     * @param intakeArea Array of Translation3d vertices defining the intake polygon in 3D space.
+     * Returns the piece type.
+     *
+     * @return the game piece type
      */
-    public void intakeZone(Translation3d[] intakeArea) {
-        // Defines the polygon bounds in 3d space for intaking
-    }
-
+    public GamePieceType getType() { return type; }
     /**
-     * Ejects/spawns a piece based on parameters mapping.
-     * @param exitAngle The rotation angle for the game piece exit.
-     * @param exitVelocity The 3D velocity vector for the game piece exit.
-     * @param robotOffsetStart The 2D offset from the robot start position.
-     * @return A FieldState wrapper containing the spawned GamePieceState.
+        * Sets the linear velocity.
+     *
+        * @param velocity linear exit velocity
      */
-    public static FieldState<GamePieceState> spawn(Rotation3d exitAngle, Translation3d exitVelocity, Translation2d robotOffsetStart) {
-        GamePieceState state = new GamePieceState(new GamePiecePhysics());
-        state.lifecycle = Lifecycle.ACTIVE;
-        // In reality, this links back into the StateManager
-        return new FieldState<>(state);
-    }
+        public void setVelocity(LinearVelocity3d velocity) { this.velocity = velocity; }
+    /**
+     * Sets the rotation.
+     *
+     * @param rotation piece rotation
+     */
+    public void setRotation(Rotation3d rotation) { this.rotation = rotation; }
+    /**
+    * Returns the linear velocity.
+     *
+    * @return the linear velocity
+     */
+    public LinearVelocity3d getVelocity() { return velocity; }
+    /**
+     * Returns the rotation.
+     *
+     * @return the piece rotation
+     */
+    public Rotation3d getRotation() { return rotation; }
+    /**
+     * Sets the robot offset start.
+     *
+     * @param offset starting offset in robot coordinates
+     */
+    public void setRobotOffsetStart(Translation2d offset) { this.robotOffsetStart = offset; }
+    /**
+     * Returns the robot offset start.
+     *
+     * @return the starting offset in robot coordinates
+     */
+    public Translation2d getRobotOffsetStart() { return robotOffsetStart; }
+    /**
+     * Sets the exit velocity vector.
+     *
+     * @param velocity exit velocity vector
+     */
+    public void setExitVelocity(LinearVelocity3d velocity) { this.exitVelocity = velocity; }
+    /**
+     * Returns the exit velocity vector.
+     *
+     * @return the exit velocity vector
+     */
+    public LinearVelocity3d getExitVelocity() { return exitVelocity; }
+    /**
+     * Sets the exit angle.
+     *
+     * @param angle exit angle
+     */
+    public void setExitAngle(Rotation3d angle) { this.exitAngle = angle; }
+    /**
+     * Returns the exit angle.
+     *
+     * @return the exit angle
+     */
+    public Rotation3d getExitAngle() { return exitAngle; }
+    /**
+     * Sets the intake polygon area.
+     *
+     * @param intakeArea intake polygon area
+     */
+    public void intakeZone(Translation3d[] intakeArea) { this.intakeArea = intakeArea; }
+    /**
+     * Returns the intake polygon area.
+     *
+     * @return the intake polygon area
+     */
+    public Translation3d[] getIntakeArea() { return intakeArea; }
 }

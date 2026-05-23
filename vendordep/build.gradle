@@ -28,9 +28,7 @@ if (project.hasProperty('releaseMode')) {
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
 }
-var javaVersion = "17"
 
 // Apply C++ configuration
 apply from: 'config.gradle'
@@ -80,6 +78,8 @@ def enableExternalJavadocLinks = !gradle.startParameter.isOffline() && System.ge
 
 javadoc {
     title = "JSim API"
+
+    // Exclude helper/example API trees from published Javadocs.
 
     failOnError = true
     options {
@@ -162,7 +162,7 @@ def driverWpilibCExcludes = [
 sourceSets {
     main {
         java {
-            srcDir "src/main/java/"
+            srcDirs "src/main/java/"
         }
     }
     //    test {

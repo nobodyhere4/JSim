@@ -1,25 +1,41 @@
-package examples;
+package examples.java;
 
-import api.GamepieceZone;
-import api.SimRobot;
-import api.Rotation3d;
+import jsim.api.GamepieceZone;
+import jsim.api.SimRobot;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 
 /**
  * FlywheelSubsystem simulates a basic flywheel shooter with a flywheel powerd by two motors facing each other.
  * This is a common FRC design for launching balls.
  */
 public class FlywheelSubsystemExample {
+  private static final Translation3d[] FLYWHEEL_ZONE_POINTS = {
+    new Translation3d(0.0, 0.0, 0.0),
+    new Translation3d(0.25, 0.0, 0.0),
+    new Translation3d(0.25, 0.12, 0.0),
+    new Translation3d(0.0, 0.12, 0.0)
+  };
+  private static final Translation3d[] BACKSPIN_ZONE_POINTS = {
+    new Translation3d(0.0, 0.0, 0.0),
+    new Translation3d(0.2, 0.0, 0.0),
+    new Translation3d(0.2, 0.15, 0.0),
+    new Translation3d(0.0, 0.15, 0.0)
+  };
+
   private final GamepieceZone flywheelZone;
   private double leftMotorVelocity = 0.0;
   private double rightMotorVelocity = 0.0;
-  private Rotation3d exitAngle = new Rotation3d(0, 0, 0);
+  private Rotation3d exitAngle = Rotation3d.kZero;
 
   /**
    * @param robot The simulated robot this subsystem is attached to.
    */
   public FlywheelSubsystemExample(SimRobot robot) {
-    this.flywheelZone = new GamepieceZone(robot);
-    this.flywheelZone.setMode(GamepieceZone.Mode.DISABLED);
+    this.flywheelZone = robot.createGamepieceZone(
+        "flywheel",
+        GamepieceZone.createZoneDimensions(Rotation3d.kZero, FLYWHEEL_ZONE_POINTS),
+        Rotation3d.kZero);
   }
 
   /**
@@ -40,15 +56,14 @@ public class FlywheelSubsystemExample {
    */
   public void shoot() {
     double avgVelocity = (leftMotorVelocity + rightMotorVelocity) / 2.0;
-    flywheelZone.setExitParameters(avgVelocity, exitAngle);
-    flywheelZone.setMode(GamepieceZone.Mode.SHOOT);
+    flywheelZone.shoot(avgVelocity, exitAngle);
   }
 
   /**
    * Stop the flywheel shooter.
    */
   public void stop() {
-    flywheelZone.setMode(GamepieceZone.Mode.DISABLED);
+    flywheelZone.disable();
   }
 
   public GamepieceZone getGamepieceZone() {
@@ -64,15 +79,17 @@ class FlywheelHoodSubsystem {
   private final FlywheelSubsystemExample flywheel;
   private final GamepieceZone backspinRollerZone;
   private double backspinVelocity = 0.0;
-  private Rotation3d exitAngle = new Rotation3d(0, 0, 0);
+  private Rotation3d exitAngle = Rotation3d.kZero;
 
   /**
    * @param robot The simulated robot this subsystem is attached to.
    */
   public FlywheelHoodSubsystem(SimRobot robot) {
     this.flywheel = new FlywheelSubsystemExample(robot);
-    this.backspinRollerZone = new GamepieceZone(robot);
-    this.backspinRollerZone.setMode(GamepieceZone.Mode.DISABLED);
+    this.backspinRollerZone = robot.createGamepieceZone(
+        "backspinRoller",
+        GamepieceZone.createZoneDimensions(Rotation3d.kZero, BACKSPIN_ZONE_POINTS),
+        Rotation3d.kZero);
   }
 
   /**
@@ -94,8 +111,7 @@ class FlywheelHoodSubsystem {
    */
   public void shoot() {
     flywheel.shoot();
-    backspinRollerZone.setExitParameters(backspinVelocity, exitAngle);
-    backspinRollerZone.setMode(GamepieceZone.Mode.SHOOT);
+    backspinRollerZone.shoot(backspinVelocity, exitAngle);
   }
 
   /**
@@ -103,7 +119,7 @@ class FlywheelHoodSubsystem {
    */
   public void stop() {
     flywheel.stop();
-    backspinRollerZone.setMode(GamepieceZone.Mode.DISABLED);
+    backspinRollerZone.disable();
   }
 
   public FlywheelSubsystemExample getFlywheel() {

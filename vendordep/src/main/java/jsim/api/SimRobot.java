@@ -1,9 +1,16 @@
 package jsim.api;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import jsim.api.StateManager;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+import jsim.api.StateManager;
 
 /**
  * External interface for simulated FRC Robots interacting with JSim.
@@ -11,6 +18,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 public class SimRobot {
     private final RobotID robotID;
     private final FieldState<RobotState> stateManagerRef;
+    private final Map<String, GamepieceZone> gamepieceZones = new HashMap<>();
 
     /**
      * Internal state for a simulated robot, including pose and speeds.
@@ -45,6 +53,58 @@ public class SimRobot {
      */
     public static SimRobot createRobot(RobotID id, Translation2d[] frameDimensions) {
         return StateManager.getInstance().initializeRobot(id, new Pose2d(), frameDimensions);
+    }
+
+    /**
+     * Retrieves a previously created robot by driver-station id.
+     *
+     * @param id the robot identifier
+     * @return the registered robot, or {@code null} if none exists
+     */
+    public static SimRobot getRobot(RobotID id) {
+        return StateManager.getInstance().getRobot(id);
+    }
+
+    /**
+     * Creates a gamepiece zone tied to this robot.
+     *
+     * @param name the zone name used for retrieval
+     * @param zoneDimensions the zone polygon dimensions relative to the robot center
+     * @param robotRotation the zone rotation relative to the robot
+     * @return a new zone registered for simulation refreshes
+     * @throws IllegalArgumentException if a zone with the same name already exists
+     */
+    public GamepieceZone createGamepieceZone(
+            String name,
+            Transform3d[] zoneDimensions,
+            Rotation3d robotRotation) {
+        if (name != null && gamepieceZones.containsKey(name)) {
+            throw new IllegalArgumentException("Gamepiece zone already exists: " + name);
+        }
+        GamepieceZone zone = new GamepieceZone(this, name, zoneDimensions, robotRotation);
+        if (name != null) {
+            gamepieceZones.put(name, zone);
+        }
+        return zone;
+    }
+
+    /**
+     * Retrieves a previously created gamepiece zone by name.
+     *
+     * @param name the zone name
+     * @return the registered zone, or {@code null} if none exists
+     */
+    public GamepieceZone getGamepieceZone(String name) {
+        return gamepieceZones.get(name);
+    }
+
+    /**
+     * Returns all gamepiece zones registered on this robot.
+     *
+     * @return an immutable view of the named zones
+     */
+    public Map<String, GamepieceZone> getGamepieceZones() {
+        return Collections.unmodifiableMap(gamepieceZones);
     }
 
     /**

@@ -1,22 +1,32 @@
-package examples;
+package examples.java;
 
-import api.GamepieceZone;
-import api.Rotation3d;
-import api.SimRobot;
+import jsim.api.GamepieceZone;
+import edu.wpi.first.math.geometry.Rotation3d;
+import jsim.api.SimRobot;
+import edu.wpi.first.math.geometry.Translation3d;
 
 /**
  * Example that adds a compression/backspin roller to a generic flywheel.
  */
 public class BackspinFlywheelExample {
+  private static final Translation3d[] BACKSPIN_ZONE_POINTS = {
+    new Translation3d(0.0, 0.0, 0.0),
+    new Translation3d(0.2, 0.0, 0.0),
+    new Translation3d(0.2, 0.15, 0.0),
+    new Translation3d(0.0, 0.15, 0.0)
+  };
+
   private final FlywheelSubsystemExample flywheel;
   private final GamepieceZone backspinRollerZone;
   private double backspinVelocity = 0.0;
-  private Rotation3d exitAngle = new Rotation3d(0, 0, 0);
+  private Rotation3d exitAngle = Rotation3d.kZero;
 
   public BackspinFlywheelExample(SimRobot robot) {
     this.flywheel = new FlywheelSubsystemExample(robot);
-    this.backspinRollerZone = new GamepieceZone(robot);
-    this.backspinRollerZone.setMode(GamepieceZone.Mode.DISABLED);
+    this.backspinRollerZone = robot.createGamepieceZone(
+      "backspinRoller",
+      GamepieceZone.createZoneDimensions(Rotation3d.kZero, BACKSPIN_ZONE_POINTS),
+      Rotation3d.kZero);
   }
 
   public void setShot(double left, double right, double backspin, Rotation3d angle) {

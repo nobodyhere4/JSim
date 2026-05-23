@@ -1,4 +1,6 @@
-package api;
+package jsim.api;
+
+import edu.wpi.first.math.geometry.Pose3d;
 
 /**
  * Represents a 2025 Coral game piece.
@@ -13,7 +15,7 @@ public class Coral2025 extends GamePieceState {
      * Simulates placing the coral game piece.
      * @param branch The pose where the coral is placed.
      */
-    public void place(api.Pose3d branch) {
-        // TODO: Implement placement logic — placeholder to satisfy API surface.
+    public void place(Pose3d branch) {
+        // TODO: Implement placement logic - placeholder to satisfy API surface.
     }
 }

@@ -37,6 +37,30 @@ public final class PhysicsWorld implements AutoCloseable {
 	}
 
 	/**
+	 * Returns the native world handle for interop (primarily for publishers).
+	 *
+	 * <p>This is intentionally provided so callers can create native-backed helpers
+	 * like telemetry publishers that require the raw handle.
+	 *
+	 * @return native world handle (non-zero while world is valid)
+	 */
+	public long getNativeHandle() {
+		return worldHandle;
+	}
+
+
+	/**
+	 * Returns a reasonable default maximum number of bodies to export for telemetry.
+	 *
+	 * <p>Callers may use this value when constructing publishers that snapshot world state.
+	 *
+	 * @return default max bodies for telemetry (units: count)
+	 */
+	public int getMaxBodies() {
+		return 128;
+	}
+
+	/**
 	 * Creates a new body with the provided mass in kilograms.
 	 *
 	 * @param massKg the body mass in kilograms
@@ -237,7 +261,7 @@ public final class PhysicsWorld implements AutoCloseable {
 			throw new JSimException("Failed to get body position", rc,
 				"Verify the body index and that the world is initialized; check native logs for details.");
 		}
-		return new Pose3d(values[0], values[1], values[2], new Rotation3d());
+		return new Pose3d(values[0], values[1], values[2], Rotation3d.kZero);
 	}
 
 	/**
@@ -286,7 +310,7 @@ public final class PhysicsWorld implements AutoCloseable {
 			throw new JSimException("Failed to get ball position", rc,
 				"Verify the ball index and that the world is initialized; check native logs for details.");
 		}
-		return new Pose3d(values[0], values[1], values[2], new Rotation3d());
+		return new Pose3d(values[0], values[1], values[2], Rotation3d.kZero);
 	}
 	/**
 	 * Gets the world linear velocity for the given ball.

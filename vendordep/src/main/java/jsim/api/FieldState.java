@@ -1,27 +1,56 @@
 package jsim.api;
 
 /**
- * A Read/Write proxy wrapper safeguarding underlying JSim state data.
- * All access forces adherence to StateManager validation logic.
+ * Mutable wrapper for tracked simulation state.
  *
- * @param <T> The type of the tracked state object.
+ * @param <T> tracked state type
  */
 public class FieldState<T> {
-    private final T state;
+    /** Wrapped state object. */
+    private T state;
 
     /**
-     * Creates a new FieldState wrapper with the given state.
-     * @param state The state object to wrap and manage.
+     * Creates a wrapper around the supplied state.
+     *
+     * @param state state object to store
      */
-    protected FieldState(T state) {
+    public FieldState(T state) {
         this.state = state;
     }
 
     /**
-     * Safely reads the snapshot of the state.
-     * @return the tracked state.
+     * Returns the wrapped state.
+     *
+     * @return wrapped state
      */
     public T get() {
         return state;
+    }
+
+    /**
+     * Returns the wrapped state.
+     *
+     * @return wrapped state
+     */
+    public T getState() {
+        return state;
+    }
+
+    /**
+     * Replaces the wrapped state.
+     *
+     * @param state replacement state
+     */
+    public void set(T state) {
+        this.state = state;
+    }
+
+    /**
+     * Replaces the wrapped state.
+     *
+     * @param state replacement state
+     */
+    public void setState(T state) {
+        this.state = state;
     }
 }

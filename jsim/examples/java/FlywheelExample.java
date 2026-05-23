@@ -1,7 +1,7 @@
-package examples;
+package examples.java;
 
-import api.Rotation3d;
-import api.SimRobot;
+import edu.wpi.first.math.geometry.Rotation3d;
+import jsim.api.SimRobot;
 
 /**
  * Simple example wrapper around a generic FlywheelSubsystem.

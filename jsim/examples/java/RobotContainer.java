@@ -1,7 +1,7 @@
-package examples;
+package examples.java;
 
-import api.SimRobot;
-import api.Rotation3d;
+import jsim.api.SimRobot;
+import edu.wpi.first.math.geometry.Rotation3d;
 
 /**
  * Example RobotContainer for wiring up FRC-style subsystems and commands.
@@ -14,6 +14,10 @@ public class RobotContainer {
     private final FlywheelHoodSubsystem flywheelHoodSubsystem;
 
     public RobotContainer(SimRobot robot) {
+        // Centralized small example initialization (silence WPILib warnings, load field)
+        jsim.JSim.silenceJoystickWarnings();
+        jsim.JSim.initializeField(2026);
+
         this.robot = robot;
         this.flywheelSubsystem = new FlywheelSubsystemExample(robot);
         this.flywheelHoodSubsystem = new FlywheelHoodSubsystem(robot);

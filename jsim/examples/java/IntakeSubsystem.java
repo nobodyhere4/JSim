@@ -1,7 +1,9 @@
-package examples;
+package examples.java;
 
-import api.GamepieceZone;
-import api.SimRobot;
+import jsim.api.GamepieceZone;
+import edu.wpi.first.math.geometry.Rotation3d;
+import jsim.api.SimRobot;
+import edu.wpi.first.math.geometry.Translation3d;
 
 /**
  * A subsystem representing a robot's intake mechanism.
@@ -10,6 +12,12 @@ import api.SimRobot;
  * can be set to different modes for collecting game pieces from the field or ejecting them.
  */
 public class IntakeSubsystem {
+  private static final Translation3d[] INTAKE_ZONE_POINTS = {
+    new Translation3d(0.0, 0.0, 0.0),
+    new Translation3d(0.22, 0.0, 0.0),
+    new Translation3d(0.22, 0.16, 0.0),
+    new Translation3d(0.0, 0.16, 0.0)
+  };
 
   private final GamepieceZone intakeZone;
 
@@ -33,11 +41,14 @@ public class IntakeSubsystem {
    *     out game pieces. A positive value is used for both intake and outtake directions.
    */
   public IntakeSubsystem(SimRobot robot, double intakeSpeed) {
-    this.intakeZone = new GamepieceZone(robot);
+    this.intakeZone = robot.createGamepieceZone(
+        "intake",
+      GamepieceZone.createZoneDimensions(Rotation3d.kZero, INTAKE_ZONE_POINTS),
+        Rotation3d.kZero);
     // Configure the zone for intake/outtake behavior.
     // The rotation is typically zero, as it's a direct pickup/ejection.
     // The velocity is the speed of the rollers.
-    this.intakeZone.setExitParameters(intakeSpeed, null);
+    this.intakeZone.setExitParameters(intakeSpeed);
   }
 
   /**
@@ -55,7 +66,7 @@ public class IntakeSubsystem {
         break;
       case DISABLED:
       default:
-        intakeZone.setMode(GamepieceZone.Mode.DISABLED);
+        intakeZone.disable();
         break;
     }
   }
