@@ -119,9 +119,11 @@ int c_rsPlaceGamepiece(uint64_t world_handle, int gamepiece_index,
                       double x_m, double y_m, double z_m);
 
 /**
- * @brief Shoot a gamepiece from a muzzle pose with velocity.
+ * @brief Outtake a gamepiece from a muzzle pose with velocity (launch).
+ *
+ * This API name uses 'outtake' to match higher-level robot semantics.
  */
-int c_rsShootGamepiece(uint64_t world_handle, int gamepiece_index,
+int c_rsOuttakeGamepiece(uint64_t world_handle, int gamepiece_index,
                       double px, double py, double pz,
                       double vx, double vy, double vz);
 

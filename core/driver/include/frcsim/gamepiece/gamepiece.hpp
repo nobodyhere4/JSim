@@ -56,9 +56,9 @@ class Gamepiece : public BallPhysicsSim3D {
   }
 
   /**
-   * @brief Shoot the gamepiece into free flight and mark as airborne.
+   * @brief Outtake (launch) the gamepiece into free flight and mark as airborne.
    */
-  void shoot(const Vector3& muzzle_position_m,
+  void outtake(const Vector3& muzzle_position_m,
              const Vector3& muzzle_velocity_mps,
              const Vector3& muzzle_spin_radps = Vector3::zero()) {
     BallPhysicsSim3D::shoot(muzzle_position_m, muzzle_velocity_mps,

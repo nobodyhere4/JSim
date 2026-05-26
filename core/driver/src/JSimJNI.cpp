@@ -344,16 +344,16 @@ Java_jsim_jni_JSimJNI_placeGamepiece
 
 /*
  * Class:     jsim_jni_JSimJNI
- * Method:    shootGamepiece
+ * Method:    outtakeGamepiece
  * Signature: (JI DDD DDD)I
  */
 JNIEXPORT jint JNICALL
-Java_jsim_jni_JSimJNI_shootGamepiece
+Java_jsim_jni_JSimJNI_outtakeGamepiece
   (JNIEnv*, jclass, jlong world_handle, jint gamepiece_index, jdouble px,
    jdouble py, jdouble pz, jdouble vx, jdouble vy, jdouble vz)
 {
   return static_cast<jint>(
-      c_rsShootGamepiece(static_cast<uint64_t>(world_handle), gamepiece_index,
+      c_rsOuttakeGamepiece(static_cast<uint64_t>(world_handle), gamepiece_index,
                          px, py, pz, vx, vy, vz));
 }
 

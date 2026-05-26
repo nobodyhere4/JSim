@@ -151,7 +151,7 @@ int c_rsPlaceGamepiece(uint64_t world_handle, int gamepiece_index,
   return 0;
 }
 
-int c_rsShootGamepiece(uint64_t world_handle, int gamepiece_index,
+int c_rsOuttakeGamepiece(uint64_t world_handle, int gamepiece_index,
                       double px, double py, double pz,
                       double vx, double vy, double vz) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
@@ -166,7 +166,7 @@ int c_rsShootGamepiece(uint64_t world_handle, int gamepiece_index,
     return -1;
   }
 
-  gps[idx].shoot(frcsim::Vector3{px, py, pz}, frcsim::Vector3{vx, vy, vz});
+  gps[idx].outtake(frcsim::Vector3{px, py, pz}, frcsim::Vector3{vx, vy, vz});
   return 0;
 }
 
