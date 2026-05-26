@@ -94,6 +94,14 @@ public class JSimJNI {
   public static native int createBall(long worldHandle);
 
   /**
+   * Creates a generic gamepiece using the legacy ball-compatible defaults.
+   *
+   * @param worldHandle the native world handle
+   * @return the native gamepiece index
+   */
+  public static native int createGamepiece(long worldHandle);
+
+  /**
    * Creates a generic gamepiece with a spherical hitbox in the world.
    *
    * @param worldHandle the native world handle
@@ -114,7 +122,7 @@ public class JSimJNI {
      * @param restitution coefficient of restitution
      * @return native gamepiece index
      */
-    public static native int createGamepieceWithType(
+  public static native int createGamepieceWithType(
       long worldHandle, int type, double radiusMeters, double massKg, double restitution);
 
       /**
@@ -126,8 +134,8 @@ public class JSimJNI {
        * @param restitution coefficient of restitution
        * @return native gamepiece index
        */
-      public static native int createGamepieceWithTypeName(
-        long worldHandle, String typeName, double radiusMeters, double massKg, double restitution);
+  public static native int createGamepieceWithTypeName(
+      long worldHandle, String typeName, double radiusMeters, double massKg, double restitution);
 
       /**
        * Reads the registered type name for a gamepiece.
@@ -135,7 +143,7 @@ public class JSimJNI {
        * @param gamepieceIndex native gamepiece index
        * @return UTF-8 type name or null when unknown
        */
-      public static native String getGamepieceTypeName(long worldHandle, int gamepieceIndex);
+  public static native String getGamepieceTypeName(long worldHandle, int gamepieceIndex);
 
   /**
    * Sets a body's position in meters.
@@ -245,7 +253,7 @@ public class JSimJNI {
       double zMeters,
       double dragCoefficient);
 
-    public static native int pickGamepiece(
+  public static native int pickGamepiece(
       long worldHandle,
       int gamepieceIndex,
       double intakeX,
@@ -256,11 +264,27 @@ public class JSimJNI {
       double carryOffsetY,
       double carryOffsetZ);
 
-    public static native int placeGamepiece(long worldHandle, int gamepieceIndex,
+  public static native int placeGamepiece(long worldHandle, int gamepieceIndex,
       double xMeters, double yMeters, double zMeters);
 
-    public static native int outtakeGamepiece(long worldHandle, int gamepieceIndex,
+  public static native int outtakeGamepiece(long worldHandle, int gamepieceIndex,
       double px, double py, double pz, double vx, double vy, double vz);
+
+  /** Gamepiece-oriented alias for setBallPosition. */
+  public static native int setGamepiecePosition(
+      long worldHandle, int gamepieceIndex, double xMeters, double yMeters, double zMeters);
+
+  /** Gamepiece-oriented alias for setBallLinearVelocity. */
+  public static native int setGamepieceLinearVelocity(
+      long worldHandle, int gamepieceIndex, double vxMps, double vyMps, double vzMps);
+
+  /** Gamepiece-oriented alias for getBallPosition. */
+  public static native int getGamepiecePosition(
+      long worldHandle, int gamepieceIndex, double[] outXyzMeters);
+
+  /** Gamepiece-oriented alias for getBallLinearVelocity. */
+  public static native int getGamepieceLinearVelocity(
+      long worldHandle, int gamepieceIndex, double[] outVxyzMps);
 
     /**
      * Sets a ball's world-space position from a Pose3d.
@@ -287,6 +311,12 @@ public class JSimJNI {
      */
     public static native int setBallLinearVelocity(
       long worldHandle, int ballIndex, double vxMps, double vyMps, double vzMps);
+
+    /** @deprecated Use createGamepiece(). */
+    @Deprecated
+    public static int createBallDeprecated(long worldHandle) {
+      return createGamepiece(worldHandle);
+    }
 
   /**
    * Sets the world's gravity vector in meters per second squared.

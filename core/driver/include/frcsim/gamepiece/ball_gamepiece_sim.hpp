@@ -394,6 +394,28 @@ class BallGamepieceSim {
    */
   const std::vector<BallEntity>& balls() const { return balls_; }
 
+  /** Backwards-compatible gamepiece aliases to aid migration. */
+  /** Mutable gamepiece list. */
+  std::vector<BallEntity>& gamepieces() { return balls_; }
+  /** Immutable gamepiece list. */
+  const std::vector<BallEntity>& gamepieces() const { return balls_; }
+
+  /** Sentinel index representing no carried gamepiece. */
+  static constexpr std::size_t kNoGamepiece = kNoBall;
+
+  /** Returns the registered type for a gamepiece index. */
+  GamePieceType gamepieceType(std::size_t idx) const { return ballType(idx); }
+  /** Returns the registered type label for a gamepiece index. */
+  std::string gamepieceTypeName(std::size_t idx) const { return ballTypeName(idx); }
+  /** Updates the type for an existing gamepiece. */
+  bool setGamepieceType(std::size_t idx, GamePieceType t) { return setBallType(idx, t); }
+  /** Backward-compatible setter that accepts a type name for a gamepiece. */
+  bool setGamepieceType(std::size_t idx, const std::string& n) { return setBallType(idx, n); }
+  /** Removes a gamepiece by index. */
+  bool removeGamepiece(std::size_t idx) { return removeBall(idx); }
+  /** Returns total grounded gamepiece count. */
+  std::size_t countGamepieces() const { return countBalls(); }
+
   /**
    * @brief Returns the registered type for a ball index.
    * @param ball_index Ball index to query.

@@ -100,63 +100,6 @@ public final class PhysicsWorld implements AutoCloseable {
 		if (hitboxType != HitboxType.SPHERE) {
 			throw new IllegalArgumentException("Unsupported hitbox type: " + hitboxType);
 		}
-
-		/**
-		 * Creates a new gamepiece with an explicit type tag.
-		 * @param type gamepiece type enum
-		 * @param radiusMeters sphere radius in meters
-		 * @param massKg mass in kilograms
-		 * @param restitution coefficient of restitution
-		 * @return created gamepiece
-		 */
-		public Gamepiece createGamepiece(GamePieceType type, double radiusMeters, double massKg, double restitution) {
-			int index = JSimJNI.createGamepieceWithType(worldHandle, type.ordinal(), radiusMeters, massKg, restitution);
-			if (index < 0) {
-				throw new JSimException(
-					"Failed to create gamepiece in physics world",
-					index,
-					"Verify hitbox and material parameters. Radius and mass must be positive finite values.");
-			}
-
-			Gamepiece gamepiece = new Gamepiece(this, index);
-			gamepieces.add(gamepiece);
-			return gamepiece;
-		}
-
-		/**
-		 * Convenience: create a gamepiece of the given type using default physical parameters.
-		 */
-		public Gamepiece createGamepiece(GamePieceType type) {
-			return createGamepiece(type, 0.12, 0.27, 0.45);
-		}
-
-		/**
-		 * Creates a new named gamepiece type (useful for season definitions or CAD-imported types).
-		 * @param typeName human readable type name (e.g. "generic_sphere", "fuel_rebuilt_2026")
-		 * @param radiusMeters sphere radius in meters
-		 * @param massKg mass in kilograms
-		 * @param restitution coefficient of restitution
-		 * @return created gamepiece
-		 */
-		public Gamepiece createGamepiece(String typeName, double radiusMeters, double massKg, double restitution) {
-			int index = JSimJNI.createGamepieceWithTypeName(worldHandle, typeName, radiusMeters, massKg, restitution);
-			if (index < 0) {
-				throw new JSimException(
-					"Failed to create gamepiece in physics world",
-					index,
-					"Verify hitbox and material parameters. Radius and mass must be positive finite values.");
-			}
-
-			Gamepiece gamepiece = new Gamepiece(this, index);
-			gamepieces.add(gamepiece);
-			return gamepiece;
-		}
-
-		/** Convenience: create named type with default physical parameters. */
-		public Gamepiece createGamepiece(String typeName) {
-			return createGamepiece(typeName, 0.12, 0.27, 0.45);
-		}
-
 		int index = JSimJNI.createGamepiece(worldHandle, radiusMeters, massKg, restitution);
 		if (index < 0) {
 			throw new JSimException(
@@ -176,7 +119,73 @@ public final class PhysicsWorld implements AutoCloseable {
 	 * @return the created gamepiece handle
 	 */
 	public Gamepiece createGamepiece() {
-		return createGamepiece(HitboxType.SPHERE, 0.12, 0.27, 0.45);
+		int index = JSimJNI.createGamepiece(worldHandle);
+		if (index < 0) {
+			throw new JSimException(
+				"Failed to create gamepiece in physics world",
+				index,
+				"Ensure the native gamepiece defaults are valid.");
+		}
+
+		Gamepiece gamepiece = new Gamepiece(this, index);
+		gamepieces.add(gamepiece);
+		return gamepiece;
+	}
+
+	/**
+	 * Creates a new gamepiece with an explicit type tag.
+	 *
+	 * @param type gamepiece type enum
+	 * @param radiusMeters sphere radius in meters
+	 * @param massKg mass in kilograms
+	 * @param restitution coefficient of restitution
+	 * @return created gamepiece
+	 */
+	public Gamepiece createGamepiece(GamePieceType type, double radiusMeters, double massKg, double restitution) {
+		int index = JSimJNI.createGamepieceWithType(worldHandle, type.ordinal(), radiusMeters, massKg, restitution);
+		if (index < 0) {
+			throw new JSimException(
+				"Failed to create gamepiece in physics world",
+				index,
+				"Verify hitbox and material parameters. Radius and mass must be positive finite values.");
+		}
+
+		Gamepiece gamepiece = new Gamepiece(this, index);
+		gamepieces.add(gamepiece);
+		return gamepiece;
+	}
+
+	/** Convenience: create a gamepiece of the given type using default physical parameters. */
+	public Gamepiece createGamepiece(GamePieceType type) {
+		return createGamepiece(type, 0.12, 0.27, 0.45);
+	}
+
+	/**
+	 * Creates a new named gamepiece type (useful for season definitions or CAD-imported types).
+	 *
+	 * @param typeName human readable type name (e.g. "generic_sphere", "fuel_rebuilt_2026")
+	 * @param radiusMeters sphere radius in meters
+	 * @param massKg mass in kilograms
+	 * @param restitution coefficient of restitution
+	 * @return created gamepiece
+	 */
+	public Gamepiece createGamepiece(String typeName, double radiusMeters, double massKg, double restitution) {
+		int index = JSimJNI.createGamepieceWithTypeName(worldHandle, typeName, radiusMeters, massKg, restitution);
+		if (index < 0) {
+			throw new JSimException(
+				"Failed to create gamepiece in physics world",
+				index,
+				"Verify hitbox and material parameters. Radius and mass must be positive finite values.");
+		}
+
+		Gamepiece gamepiece = new Gamepiece(this, index);
+		gamepieces.add(gamepiece);
+		return gamepiece;
+	}
+
+	/** Convenience: create named type with default physical parameters. */
+	public Gamepiece createGamepiece(String typeName) {
+		return createGamepiece(typeName, 0.12, 0.27, 0.45);
 	}
 
 	// Deprecated `Ball` wrapper removed; use `createGamepiece()` instead.
@@ -315,7 +324,7 @@ public final class PhysicsWorld implements AutoCloseable {
 	 * @param zMeters z position in meters
 	 */
 	void setGamepiecePosition(int gamepieceIndex, double xMeters, double yMeters, double zMeters) {
-		int rc = JSimJNI.setBallPosition(worldHandle, gamepieceIndex, xMeters, yMeters, zMeters);
+		int rc = JSimJNI.setGamepiecePosition(worldHandle, gamepieceIndex, xMeters, yMeters, zMeters);
 		if (rc != 0) {
 			throw new JSimException("Failed to set gamepiece position", rc,
 				"Verify the gamepiece index and that the native world is valid; check native logs for details.");
@@ -359,7 +368,7 @@ public final class PhysicsWorld implements AutoCloseable {
 	 */
 	void setGamepieceLinearVelocity(int gamepieceIndex, double vxMetersPerSecond,
 			double vyMetersPerSecond, double vzMetersPerSecond) {
-		int rc = JSimJNI.setBallLinearVelocity(worldHandle, gamepieceIndex, vxMetersPerSecond,
+		int rc = JSimJNI.setGamepieceLinearVelocity(worldHandle, gamepieceIndex, vxMetersPerSecond,
 				vyMetersPerSecond, vzMetersPerSecond);
 		if (rc != 0) {
 			throw new JSimException("Failed to set gamepiece linear velocity", rc,
@@ -426,21 +435,22 @@ public final class PhysicsWorld implements AutoCloseable {
 	 */
 	public Pose3d getGamepiecePosition(int gamepieceIndex) {
 		double[] values = new double[3];
-		int rc = JSimJNI.getBallPosition(worldHandle, gamepieceIndex, values);
+		int rc = JSimJNI.getGamepiecePosition(worldHandle, gamepieceIndex, values);
 		if (rc != 0) {
 			throw new JSimException("Failed to get gamepiece position", rc,
 				"Verify the gamepiece index and that the world is initialized; check native logs for details.");
 		}
-
-		/**
-		 * Returns the registered type name for the given gamepiece.
-		 * @param gamepieceIndex native gamepiece index
-		 * @return human-readable type name or null if none
-		 */
-		public String getGamepieceTypeName(int gamepieceIndex) {
-			return JSimJNI.getGamepieceTypeName(worldHandle, gamepieceIndex);
-		}
 		return new Pose3d(values[0], values[1], values[2], Rotation3d.kZero);
+	}
+
+	/**
+	 * Returns the registered type name for the given gamepiece.
+	 *
+	 * @param gamepieceIndex native gamepiece index
+	 * @return human-readable type name or null if none
+	 */
+	public String getGamepieceTypeName(int gamepieceIndex) {
+		return JSimJNI.getGamepieceTypeName(worldHandle, gamepieceIndex);
 	}
 
 	// Deprecated ball accessors removed. Use `getGamepiecePosition` instead.
@@ -453,7 +463,7 @@ public final class PhysicsWorld implements AutoCloseable {
 	 */
 	public LinearVelocity3d getGamepieceLinearVelocity(int gamepieceIndex) {
 		double[] values = new double[3];
-		int rc = JSimJNI.getBallLinearVelocity(worldHandle, gamepieceIndex, values);
+		int rc = JSimJNI.getGamepieceLinearVelocity(worldHandle, gamepieceIndex, values);
 		if (rc != 0) {
 			throw new JSimException(
 				"Failed to get gamepiece linear velocity for gamepieceIndex=" + gamepieceIndex,

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cstring>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -385,6 +386,12 @@ int c_rsSetBallPosition(uint64_t world_handle, int ball_index,
   return 0;
 }
 
+// New gamepiece-named ABI wrappers delegating to legacy ball functions.
+int c_rsSetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
+                             double x_m, double y_m, double z_m) {
+  return c_rsSetBallPosition(world_handle, gamepiece_index, x_m, y_m, z_m);
+}
+
 int c_rsSetBallLinearVelocity(uint64_t world_handle, int ball_index,
                               double vx_mps, double vy_mps, double vz_mps) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
@@ -403,6 +410,11 @@ int c_rsSetBallLinearVelocity(uint64_t world_handle, int ball_index,
   state.velocity_mps = frcsim::Vector3{vx_mps, vy_mps, vz_mps};
   balls[idx].setState(state);
   return 0;
+}
+
+int c_rsSetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
+                                   double vx_mps, double vy_mps, double vz_mps) {
+  return c_rsSetBallLinearVelocity(world_handle, gamepiece_index, vx_mps, vy_mps, vz_mps);
 }
 
 int c_rsSetWorldAerodynamics(uint64_t world_handle, int enabled,
@@ -501,6 +513,11 @@ int c_rsGetBallPosition(uint64_t world_handle, int ball_index,
   return 0;
 }
 
+int c_rsGetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
+                             double* x_m, double* y_m, double* z_m) {
+  return c_rsGetBallPosition(world_handle, gamepiece_index, x_m, y_m, z_m);
+}
+
 int c_rsGetBallLinearVelocity(uint64_t world_handle, int ball_index,
                               double* vx_mps, double* vy_mps, double* vz_mps) {
   if (!vx_mps || !vy_mps || !vz_mps) {
@@ -524,6 +541,11 @@ int c_rsGetBallLinearVelocity(uint64_t world_handle, int ball_index,
   *vy_mps = v.y;
   *vz_mps = v.z;
   return 0;
+}
+
+int c_rsGetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
+                                   double* vx_mps, double* vy_mps, double* vz_mps) {
+  return c_rsGetBallLinearVelocity(world_handle, gamepiece_index, vx_mps, vy_mps, vz_mps);
 }
 
 int c_rsGetBodyPosition(uint64_t world_handle, int body_index,
