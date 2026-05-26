@@ -9,17 +9,24 @@ import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.Distance;
+import jsim.api.GamePieceType;
 
 /**
  * Generic handle for a gamepiece managed by {@link PhysicsWorld}.
  */
 public class Gamepiece {
-  private final PhysicsWorld world;
-  private final int gamepieceIndex;
+  protected final PhysicsWorld world;
+  protected final int gamepieceIndex;
+  protected final GamePieceType type;
 
   Gamepiece(PhysicsWorld world, int gamepieceIndex) {
+    this(world, gamepieceIndex, null);
+  }
+
+  Gamepiece(PhysicsWorld world, int gamepieceIndex, GamePieceType type) {
     this.world = world;
     this.gamepieceIndex = gamepieceIndex;
+    this.type = type;
   }
 
   /**
@@ -29,6 +36,15 @@ public class Gamepiece {
    */
   public int gamepieceIndex() {
     return gamepieceIndex;
+  }
+
+  /**
+   * Gets the declared gamepiece type when created from a typed API.
+   *
+   * @return the declared gamepiece type, or null when unknown
+   */
+  public GamePieceType type() {
+    return type;
   }
 
   /**
@@ -208,6 +224,9 @@ public class Gamepiece {
    * @return human-readable type name or null
    */
   public String typeName() {
+    if (type != null) {
+      return type.name().toLowerCase();
+    }
     return world.getGamepieceTypeName(gamepieceIndex);
   }
 

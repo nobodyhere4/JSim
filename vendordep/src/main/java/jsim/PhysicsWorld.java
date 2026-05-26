@@ -5,7 +5,6 @@
 package jsim;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import jsim.api.GamePieceType;
 
@@ -90,17 +89,12 @@ public final class PhysicsWorld implements AutoCloseable {
 	 * <p>Current native support is spherical hitboxes. Additional hitbox types can
 	 * be added without changing the top-level gamepiece abstraction.
 	 *
-	 * @param hitboxType hitbox type to create
 	 * @param radiusMeters sphere radius in meters
 	 * @param massKg gamepiece mass in kilograms
 	 * @param restitution coefficient of restitution in [0, 1]
 	 * @return the created gamepiece handle
 	 */
-	public Gamepiece createGamepiece(
-			HitboxType hitboxType, double radiusMeters, double massKg, double restitution) {
-		if (hitboxType != HitboxType.SPHERE) {
-			throw new IllegalArgumentException("Unsupported hitbox type: " + hitboxType);
-		}
+	public Gamepiece createGamepiece(double radiusMeters, double massKg, double restitution) {
 		int index = JSimJNI.createGamepiece(worldHandle, radiusMeters, massKg, restitution);
 		if (index < 0) {
 			throw new JSimException(
@@ -115,22 +109,20 @@ public final class PhysicsWorld implements AutoCloseable {
 	}
 
 	/**
+	 * @deprecated Use {@link #createGamepiece(double, double, double)}.
+	 */
+	@Deprecated(forRemoval = false)
+	public Gamepiece createGamepiece(HitboxType hitboxType, double radiusMeters, double massKg, double restitution) {
+		return createGamepiece(radiusMeters, massKg, restitution);
+	}
+
+	/**
 	 * Creates a spherical gamepiece with default physical parameters.
 	 *
 	 * @return the created gamepiece handle
 	 */
 	public Gamepiece createGamepiece() {
-		int index = JSimJNI.createGamepiece(worldHandle);
-		if (index < 0) {
-			throw new JSimException(
-				"Failed to create gamepiece in physics world",
-				index,
-				"Ensure the native gamepiece defaults are valid.");
-		}
-
-		Gamepiece gamepiece = new Gamepiece(this, index);
-		gamepieces.add(gamepiece);
-		return gamepiece;
+		return createGamepiece(0.12, 0.27, 0.45);
 	}
 
 	/**
@@ -151,7 +143,7 @@ public final class PhysicsWorld implements AutoCloseable {
 				"Verify hitbox and material parameters. Radius and mass must be positive finite values.");
 		}
 
-		Gamepiece gamepiece = new Gamepiece(this, index);
+		Gamepiece gamepiece = new Gamepiece(this, index, type);
 		gamepieces.add(gamepiece);
 		return gamepiece;
 	}
@@ -194,10 +186,10 @@ public final class PhysicsWorld implements AutoCloseable {
 	/**
 	 * Returns gamepieces created through this world wrapper in insertion order.
 	 *
-	 * @return immutable view of created gamepieces
+	 * @return live list of created gamepieces
 	 */
 	public List<Gamepiece> gamepieces() {
-		return Collections.unmodifiableList(gamepieces);
+		return gamepieces;
 	}
 
 	// `balls()` deprecated; use `gamepieces()`.

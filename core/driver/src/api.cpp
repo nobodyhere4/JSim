@@ -18,24 +18,24 @@ RigidBody_t* frcsim_create_body(PhysicsWorld_t* w, double mass_kg) {
 }
 
 Gamepiece_t* frcsim_create_gamepiece(PhysicsWorld_t* w,
-                                    const frcsim::BallPhysicsSim3D::Config* config,
-                                    const frcsim::BallPhysicsSim3D::BallProperties* props) {
+                                    const frcsim::Gamepiece::Config* config,
+                                    const frcsim::Gamepiece::Properties* props) {
   if (!w) return nullptr;
   if (config && props) {
     return static_cast<Gamepiece_t*>(&w->createBall(*config, *props));
   }
   if (config) {
-    return static_cast<Gamepiece_t*>(&w->createBall(*config, frcsim::BallPhysicsSim3D::BallProperties()));
+    return static_cast<Gamepiece_t*>(&w->createBall(*config, frcsim::Gamepiece::Properties()));
   }
   if (props) {
-    return static_cast<Gamepiece_t*>(&w->createBall(frcsim::BallPhysicsSim3D::Config(), *props));
+    return static_cast<Gamepiece_t*>(&w->createBall(frcsim::Gamepiece::Config(), *props));
   }
-  return static_cast<Gamepiece_t*>(&w->createBall(frcsim::BallPhysicsSim3D::Config(), frcsim::BallPhysicsSim3D::BallProperties()));
+  return static_cast<Gamepiece_t*>(&w->createBall(frcsim::Gamepiece::Config(), frcsim::Gamepiece::Properties()));
 }
 
 Ball_t* frcsim_create_ball(PhysicsWorld_t* w,
-                           const frcsim::BallPhysicsSim3D::Config* config,
-                           const frcsim::BallPhysicsSim3D::BallProperties* props) {
+                           const frcsim::Gamepiece::Config* config,
+                           const frcsim::Gamepiece::Properties* props) {
   // Delegate to new gamepiece factory for backward compatibility.
   return reinterpret_cast<Ball_t*>(frcsim_create_gamepiece(w, config, props));
 }
@@ -75,13 +75,13 @@ void frcsim_set_body_position(RigidBody_t* body, double x, double y, double z) {
 void frcsim_get_gamepiece_state(Gamepiece_t* gp, double* px, double* py, double* pz,
                                 double* vx, double* vy, double* vz) {
   if (!gp) return;
-  const auto& s = gp->state();
-  if (px) *px = s.position_m.x;
-  if (py) *py = s.position_m.y;
-  if (pz) *pz = s.position_m.z;
-  if (vx) *vx = s.velocity_mps.x;
-  if (vy) *vy = s.velocity_mps.y;
-  if (vz) *vz = s.velocity_mps.z;
+  const auto& state = gp->state();
+  if (px) *px = state.position_m.x;
+  if (py) *py = state.position_m.y;
+  if (pz) *pz = state.position_m.z;
+  if (vx) *vx = state.velocity_mps.x;
+  if (vy) *vy = state.velocity_mps.y;
+  if (vz) *vz = state.velocity_mps.z;
 }
 
 void frcsim_gamepiece_outtake(Gamepiece_t* gp, double px, double py, double pz,

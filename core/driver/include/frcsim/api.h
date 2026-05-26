@@ -19,13 +19,14 @@ RigidBody_t* frcsim_create_body(PhysicsWorld_t* w, double mass_kg);
 // Create a gamepiece (generic). For now this materializes a ball-based
 // gamepiece instance; later this can instantiate non-ball types.
 Gamepiece_t* frcsim_create_gamepiece(PhysicsWorld_t* w,
-                                    const frcsim::BallPhysicsSim3D::Config* config,
-                                    const frcsim::BallPhysicsSim3D::BallProperties* props);
+                                    const frcsim::Gamepiece::Config* config,
+                                    const frcsim::Gamepiece::Properties* props);
 
 // Backwards-compatible create_ball helper.
+[[deprecated("Use frcsim_create_gamepiece")]]
 Ball_t* frcsim_create_ball(PhysicsWorld_t* w,
-                           const frcsim::BallPhysicsSim3D::Config* config,
-                           const frcsim::BallPhysicsSim3D::BallProperties* props);
+                           const frcsim::Gamepiece::Config* config,
+                           const frcsim::Gamepiece::Properties* props);
 
 void frcsim_step_world(PhysicsWorld_t* w, double dt_s);
 
@@ -41,8 +42,10 @@ void frcsim_gamepiece_outtake(Gamepiece_t* gp, double px, double py, double pz,
                               double vx, double vy, double vz);
 
 // Backwards-compatible Ball API that delegates to gamepiece functions.
+[[deprecated("Use frcsim_get_gamepiece_state")]]
 void frcsim_get_ball_state(Ball_t* ball, double* px, double* py, double* pz,
                            double* vx, double* vy, double* vz);
+[[deprecated("Use frcsim_gamepiece_outtake")]]
 void frcsim_ball_shoot(Ball_t* ball, double px, double py, double pz,
                        double vx, double vy, double vz);
 

@@ -26,6 +26,19 @@ std::uint64_t g_next_handle = 1;
 static std::unordered_map<std::uint64_t, std::unordered_map<int, std::string>>
   g_gamepiece_types;
 
+std::string typeNameForKind(int type) {
+  switch (type) {
+    case 0: return "ball";
+    case 1: return "fuel";
+    case 2: return "coral";
+    case 3: return "custom1";
+    case 4: return "custom2";
+    case 5: return "custom3";
+    case 6: return "custom4";
+    default: return "unknown";
+  }
+}
+
 bool worldExists(std::uint64_t handle) {
   return g_worlds.find(handle) != g_worlds.end();
 }
@@ -115,11 +128,25 @@ int c_rsCreateGamepiece(uint64_t world_handle, double radius_m,
 
 int c_rsCreateGamepieceWithType(uint64_t world_handle, int type, double radius_m,
                                 double mass_kg, double restitution) {
-  // For now, type is a hint. Default behavior: create a spherical gamepiece
-  // using existing ball physics. Future: instantiate non-ball types when
-  // supported by the core.
-  (void)type;  // suppress unused-warning until type is acted upon
-  return c_rsCreateGamepiece(world_handle, radius_m, mass_kg, restitution);
+  const int idx = c_rsCreateGamepiece(world_handle, radius_m, mass_kg, restitution);
+  if (idx < 0) {
+    return idx;
+  }
+
+  const std::string type_name = typeNameForKind(type);
+  std::lock_guard<std::mutex> lock(g_world_mutex);
+  g_gamepiece_types[world_handle][idx] = type_name;
+  frcsim::PhysicsWorld* world = getWorld(world_handle);
+  if (world) {
+    const std::size_t uidx = static_cast<std::size_t>(idx);
+    if (uidx < world->gamepieces().size()) {
+      try {
+        world->gamepieces()[uidx].setTypeName(type_name);
+      } catch (...) {
+      }
+    }
+  }
+  return idx;
 }
 
 int c_rsCreateGamepieceWithTypeName(uint64_t world_handle, const char* type_name,

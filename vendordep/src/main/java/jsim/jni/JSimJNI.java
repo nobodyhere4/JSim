@@ -296,6 +296,7 @@ public class JSimJNI {
      * @param zMeters Pose3d position data
      * @return zero on success
      */
+    @Deprecated(forRemoval = false)
     public static native int setBallPosition(
       long worldHandle, int ballIndex, double xMeters, double yMeters, double zMeters);
 
@@ -309,6 +310,7 @@ public class JSimJNI {
      * @param vzMps LinearVelocity3d data
      * @return zero on success
      */
+    @Deprecated(forRemoval = false)
     public static native int setBallLinearVelocity(
       long worldHandle, int ballIndex, double vxMps, double vyMps, double vzMps);
 

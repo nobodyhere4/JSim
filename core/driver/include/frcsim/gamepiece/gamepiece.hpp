@@ -20,6 +20,9 @@ namespace frcsim {
  */
 class Gamepiece : public BallPhysicsSim3D {
  public:
+  using Config = BallPhysicsSim3D::Config;
+  using Properties = BallPhysicsSim3D::BallProperties;
+
   using BallPhysicsSim3D::BallPhysicsSim3D;
 
   enum class State { kAirborne, kGrounded, kHeld };

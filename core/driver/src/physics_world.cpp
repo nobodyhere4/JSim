@@ -26,11 +26,11 @@ RigidAssembly& PhysicsWorld::createAssembly() {
 }
 
 BallPhysicsSim3D& PhysicsWorld::createBall(
-    const BallPhysicsSim3D::Config& config,
-    const BallPhysicsSim3D::BallProperties& properties) {
+    const Gamepiece::Config& config,
+    const Gamepiece::Properties& properties) {
   // Backwards-compatible wrapper: create a Gamepiece and return base reference.
-  Gamepiece& gp = createGamepiece(config, properties);
-  return static_cast<BallPhysicsSim3D&>(gp);
+  Gamepiece& gamepiece = createGamepiece(config, properties);
+  return static_cast<BallPhysicsSim3D&>(gamepiece);
 }
 
 EnvironmentalBoundary& PhysicsWorld::addBoundary() {
@@ -39,8 +39,8 @@ EnvironmentalBoundary& PhysicsWorld::addBoundary() {
 }
 
 Gamepiece& PhysicsWorld::createGamepiece(
-    const BallPhysicsSim3D::Config& config,
-    const BallPhysicsSim3D::BallProperties& properties) {
+    const Gamepiece::Config& config,
+    const Gamepiece::Properties& properties) {
   gamepieces_.emplace_back(config, properties);
   return gamepieces_.back();
 }

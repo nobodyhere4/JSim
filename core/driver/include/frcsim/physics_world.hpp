@@ -261,9 +261,8 @@ class PhysicsWorld {
      * @return Reference to the newly added gamepiece.
      */
     Gamepiece& createGamepiece(
-      const BallPhysicsSim3D::Config& config = BallPhysicsSim3D::Config(),
-      const BallPhysicsSim3D::BallProperties& properties =
-        BallPhysicsSim3D::BallProperties());
+      const Gamepiece::Config& config = Gamepiece::Config(),
+      const Gamepiece::Properties& properties = Gamepiece::Properties());
 
     /**
      * @brief Backwards-compatible helper that creates a ball simulator.
@@ -272,9 +271,8 @@ class PhysicsWorld {
      * underlying BallPhysicsSim3D base so existing callers continue to function.
      */
     BallPhysicsSim3D& createBall(
-      const BallPhysicsSim3D::Config& config = BallPhysicsSim3D::Config(),
-      const BallPhysicsSim3D::BallProperties& properties =
-        BallPhysicsSim3D::BallProperties());
+      const Gamepiece::Config& config = Gamepiece::Config(),
+      const Gamepiece::Properties& properties = Gamepiece::Properties());
 
     /** @brief Mutable access to all registered gamepieces. */
     std::vector<Gamepiece>& gamepieces() { return gamepieces_; }
