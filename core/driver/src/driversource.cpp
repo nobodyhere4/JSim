@@ -395,53 +395,54 @@ int c_rsSetBodyAerodynamicBox(uint64_t world_handle, int body_index,
 
 int c_rsSetBallPosition(uint64_t world_handle, int ball_index,
                         double x_m, double y_m, double z_m) {
-  std::lock_guard<std::mutex> lock(g_world_mutex);
-  frcsim::PhysicsWorld* world = getWorld(world_handle);
-  if (!world || ball_index < 0) {
-    return -1;
-  }
-
-  auto& balls = world->gamepieces();
-  const std::size_t idx = static_cast<std::size_t>(ball_index);
-  if (idx >= balls.size()) {
-    return -1;
-  }
-
-  auto state = balls[idx].state();
-  state.position_m = frcsim::Vector3{x_m, y_m, z_m};
-  balls[idx].setState(state);
-  return 0;
+  return c_rsSetGamepiecePosition(world_handle, ball_index, x_m, y_m, z_m);
 }
 
-// New gamepiece-named ABI wrappers delegating to legacy ball functions.
+// New gamepiece-named ABI wrappers own the implementation; legacy ball
+// functions delegate to them for compatibility.
 int c_rsSetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
                              double x_m, double y_m, double z_m) {
-  return c_rsSetBallPosition(world_handle, gamepiece_index, x_m, y_m, z_m);
+  std::lock_guard<std::mutex> lock(g_world_mutex);
+  frcsim::PhysicsWorld* world = getWorld(world_handle);
+  if (!world || gamepiece_index < 0) {
+    return -1;
+  }
+
+  auto& gamepieces = world->gamepieces();
+  const std::size_t idx = static_cast<std::size_t>(gamepiece_index);
+  if (idx >= gamepieces.size()) {
+    return -1;
+  }
+
+  auto state = gamepieces[idx].state();
+  state.position_m = frcsim::Vector3{x_m, y_m, z_m};
+  gamepieces[idx].setState(state);
+  return 0;
 }
 
 int c_rsSetBallLinearVelocity(uint64_t world_handle, int ball_index,
                               double vx_mps, double vy_mps, double vz_mps) {
-  std::lock_guard<std::mutex> lock(g_world_mutex);
-  frcsim::PhysicsWorld* world = getWorld(world_handle);
-  if (!world || ball_index < 0) {
-    return -1;
-  }
-
-  auto& balls = world->gamepieces();
-  const std::size_t idx = static_cast<std::size_t>(ball_index);
-  if (idx >= balls.size()) {
-    return -1;
-  }
-
-  auto state = balls[idx].state();
-  state.velocity_mps = frcsim::Vector3{vx_mps, vy_mps, vz_mps};
-  balls[idx].setState(state);
-  return 0;
+  return c_rsSetGamepieceLinearVelocity(world_handle, ball_index, vx_mps, vy_mps, vz_mps);
 }
 
 int c_rsSetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
                                    double vx_mps, double vy_mps, double vz_mps) {
-  return c_rsSetBallLinearVelocity(world_handle, gamepiece_index, vx_mps, vy_mps, vz_mps);
+  std::lock_guard<std::mutex> lock(g_world_mutex);
+  frcsim::PhysicsWorld* world = getWorld(world_handle);
+  if (!world || gamepiece_index < 0) {
+    return -1;
+  }
+
+  auto& gamepieces = world->gamepieces();
+  const std::size_t idx = static_cast<std::size_t>(gamepiece_index);
+  if (idx >= gamepieces.size()) {
+    return -1;
+  }
+
+  auto state = gamepieces[idx].state();
+  state.velocity_mps = frcsim::Vector3{vx_mps, vy_mps, vz_mps};
+  gamepieces[idx].setState(state);
+  return 0;
 }
 
 int c_rsSetWorldAerodynamics(uint64_t world_handle, int enabled,
@@ -517,62 +518,62 @@ int c_rsSetWorldGravity(uint64_t world_handle, double gx_mps2,
 
 int c_rsGetBallPosition(uint64_t world_handle, int ball_index,
                         double* x_m, double* y_m, double* z_m) {
+  return c_rsGetGamepiecePosition(world_handle, ball_index, x_m, y_m, z_m);
+}
+
+int c_rsGetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
+                             double* x_m, double* y_m, double* z_m) {
   if (!x_m || !y_m || !z_m) {
     return -1;
   }
 
   std::lock_guard<std::mutex> lock(g_world_mutex);
   frcsim::PhysicsWorld* world = getWorld(world_handle);
-  if (!world || ball_index < 0) {
+  if (!world || gamepiece_index < 0) {
     return -1;
   }
 
-  const auto& balls = world->gamepieces();
-  const std::size_t idx = static_cast<std::size_t>(ball_index);
-  if (idx >= balls.size()) {
+  const auto& gamepieces = world->gamepieces();
+  const std::size_t idx = static_cast<std::size_t>(gamepiece_index);
+  if (idx >= gamepieces.size()) {
     return -1;
   }
 
-  const frcsim::Vector3 p = balls[idx].state().position_m;
-  *x_m = p.x;
-  *y_m = p.y;
-  *z_m = p.z;
+  const frcsim::Vector3 position = gamepieces[idx].state().position_m;
+  *x_m = position.x;
+  *y_m = position.y;
+  *z_m = position.z;
   return 0;
-}
-
-int c_rsGetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
-                             double* x_m, double* y_m, double* z_m) {
-  return c_rsGetBallPosition(world_handle, gamepiece_index, x_m, y_m, z_m);
 }
 
 int c_rsGetBallLinearVelocity(uint64_t world_handle, int ball_index,
                               double* vx_mps, double* vy_mps, double* vz_mps) {
+  return c_rsGetGamepieceLinearVelocity(world_handle, ball_index, vx_mps, vy_mps, vz_mps);
+}
+
+int c_rsGetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
+                                   double* vx_mps, double* vy_mps, double* vz_mps) {
   if (!vx_mps || !vy_mps || !vz_mps) {
     return -1;
   }
 
   std::lock_guard<std::mutex> lock(g_world_mutex);
   frcsim::PhysicsWorld* world = getWorld(world_handle);
-  if (!world || ball_index < 0) {
+  if (!world || gamepiece_index < 0) {
     return -1;
   }
 
-  const auto& balls = world->gamepieces();
-  const std::size_t idx = static_cast<std::size_t>(ball_index);
-  if (idx >= balls.size()) {
+  const auto& gamepieces = world->gamepieces();
+  const std::size_t idx = static_cast<std::size_t>(gamepiece_index);
+  if (idx >= gamepieces.size()) {
     return -1;
   }
 
-  const frcsim::Vector3 v = balls[idx].state().velocity_mps;
-  *vx_mps = v.x;
-  *vy_mps = v.y;
-  *vz_mps = v.z;
+  const frcsim::Vector3 velocity = gamepieces[idx].state().velocity_mps;
+  *vx_mps = velocity.x;
+  *vy_mps = velocity.y;
+  *vz_mps = velocity.z;
   return 0;
-}
-
-int c_rsGetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
-                                   double* vx_mps, double* vy_mps, double* vz_mps) {
-  return c_rsGetBallLinearVelocity(world_handle, gamepiece_index, vx_mps, vy_mps, vz_mps);
 }
 
 int c_rsGetBodyPosition(uint64_t world_handle, int body_index,
