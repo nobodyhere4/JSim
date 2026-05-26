@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import jsim.Ball;
 import jsim.Gamepiece;
 import jsim.PhysicsBody;
 import jsim.PhysicsWorld;
@@ -80,13 +79,13 @@ public class JSimJNITest {
   @Test
   void legacyBallWrapperStillWorks() {
     try (PhysicsWorld world = new PhysicsWorld(0.01, true)) {
-      Ball ball = world.createBall();
-      ball.outtake(new Pose3d(0.2, 0.0, 0.2, Rotation3d.kZero), new jsim.LinearVelocity3d(0.0, 0.0, 0.0));
+      Gamepiece gp = world.createGamepiece();
+      gp.outtake(new Pose3d(0.2, 0.0, 0.2, Rotation3d.kZero), new jsim.LinearVelocity3d(0.0, 0.0, 0.0));
 
       world.step(1);
 
-      assertTrue(ball.position().getZ() <= 0.2);
-      assertTrue(ball.ballIndex() == ball.gamepieceIndex());
+      assertTrue(gp.position().getZ() <= 0.2);
+      assertTrue(gp.gamepieceIndex() >= 0);
     }
   }
 }

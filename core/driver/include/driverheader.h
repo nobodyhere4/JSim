@@ -94,6 +94,38 @@ int c_rsCreateGamepiece(uint64_t world_handle, double radius_m,
                         double mass_kg, double restitution);
 
 /**
+ * @brief Creates a new generic gamepiece with an explicit type tag.
+ * @param world_handle Target world handle.
+ * @param type Integer type tag (application-defined). For Java usage, map from GamePieceType.ordinal().
+ * @param radius_m Sphere hitbox radius in meters (ignored for non-spherical types currently).
+ * @param mass_kg Gamepiece mass in kilograms.
+ * @param restitution Coefficient of restitution in [0, 1].
+ * @return Non-negative gamepiece index on success; negative value on failure.
+ */
+int c_rsCreateGamepieceWithType(uint64_t world_handle, int type, double radius_m,
+                                double mass_kg, double restitution);
+
+/**
+ * @brief Creates a new generic gamepiece with a human-readable type name.
+ *
+ * This API lets callers register/import named gamepiece types (for example
+ * "generic_sphere", "generic_cube", "fuel_rebuilt_2026"). The driver will
+ * store the provided name for use by higher-level tooling; core physics will
+ * continue to use spherical defaults until specific type implementations are
+ * available.
+ *
+ * @param world_handle Target world handle.
+ * @param type_name Null-terminated UTF-8 name for the gamepiece type. May be
+ *                  NULL to indicate unnamed/default.
+ * @param radius_m Sphere hitbox radius in meters (ignored for non-spherical types currently).
+ * @param mass_kg Gamepiece mass in kilograms.
+ * @param restitution Coefficient of restitution in [0, 1].
+ * @return Non-negative gamepiece index on success; negative value on failure.
+ */
+int c_rsCreateGamepieceWithTypeName(uint64_t world_handle, const char* type_name,
+                                   double radius_m, double mass_kg, double restitution);
+
+/**
  * @brief Request pickup of a gamepiece into a carrier.
  * @param world_handle Target world handle.
  * @param gamepiece_index Zero-based gamepiece index returned by c_rsCreateGamepiece().

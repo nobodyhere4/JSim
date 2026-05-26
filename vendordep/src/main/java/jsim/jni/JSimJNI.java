@@ -105,6 +105,30 @@ public class JSimJNI {
   public static native int createGamepiece(
       long worldHandle, double radiusMeters, double massKg, double restitution);
 
+    /**
+     * Creates a generic gamepiece with explicit type tag.
+     * @param worldHandle native world handle
+     * @param type ordinal value from GamePieceType
+     * @param radiusMeters sphere radius in meters
+     * @param massKg mass in kilograms
+     * @param restitution coefficient of restitution
+     * @return native gamepiece index
+     */
+    public static native int createGamepieceWithType(
+      long worldHandle, int type, double radiusMeters, double massKg, double restitution);
+
+      /**
+       * Creates a generic gamepiece with a string type name.
+       * @param worldHandle native world handle
+       * @param typeName human readable type name (e.g. "generic_sphere")
+       * @param radiusMeters sphere radius in meters
+       * @param massKg mass in kilograms
+       * @param restitution coefficient of restitution
+       * @return native gamepiece index
+       */
+      public static native int createGamepieceWithTypeName(
+        long worldHandle, String typeName, double radiusMeters, double massKg, double restitution);
+
   /**
    * Sets a body's position in meters.
    *

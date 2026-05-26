@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
+#include <string>
 #include <unordered_map>
 
 #include "frcsim/physics_world.hpp"
@@ -19,6 +20,10 @@ std::mutex g_world_mutex;
 std::unordered_map<std::uint64_t, std::unique_ptr<frcsim::PhysicsWorld>>
     g_worlds;
 std::uint64_t g_next_handle = 1;
+
+// Mapping of world handle -> (gamepiece index -> type name)
+static std::unordered_map<std::uint64_t, std::unordered_map<int, std::string>>
+  g_gamepiece_types;
 
 bool worldExists(std::uint64_t handle) {
   return g_worlds.find(handle) != g_worlds.end();
@@ -105,6 +110,32 @@ int c_rsCreateGamepiece(uint64_t world_handle, double radius_m,
 
   world->createBall(frcsim::BallPhysicsSim3D::Config(), props);
   return static_cast<int>(world->gamepieces().size() - 1);
+}
+
+int c_rsCreateGamepieceWithType(uint64_t world_handle, int type, double radius_m,
+                                double mass_kg, double restitution) {
+  // For now, type is a hint. Default behavior: create a spherical gamepiece
+  // using existing ball physics. Future: instantiate non-ball types when
+  // supported by the core.
+  (void)type;  // suppress unused-warning until type is acted upon
+  return c_rsCreateGamepiece(world_handle, radius_m, mass_kg, restitution);
+}
+
+int c_rsCreateGamepieceWithTypeName(uint64_t world_handle, const char* type_name,
+                                   double radius_m, double mass_kg, double restitution) {
+  // Create the gamepiece using existing spherical defaults today.
+  int idx = c_rsCreateGamepiece(world_handle, radius_m, mass_kg, restitution);
+  if (idx < 0) {
+    return idx;
+  }
+
+  std::lock_guard<std::mutex> lock(g_world_mutex);
+  if (type_name) {
+    g_gamepiece_types[world_handle][idx] = std::string(type_name);
+  } else {
+    g_gamepiece_types[world_handle][idx] = std::string();
+  }
+  return idx;
 }
 
 int c_rsPickGamepiece(uint64_t world_handle, int gamepiece_index,
