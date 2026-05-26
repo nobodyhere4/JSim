@@ -126,6 +126,17 @@ int c_rsCreateGamepieceWithTypeName(uint64_t world_handle, const char* type_name
                                    double radius_m, double mass_kg, double restitution);
 
 /**
+ * @brief Reads the registered type name for a gamepiece.
+ * @param world_handle Target world handle.
+ * @param gamepiece_index Zero-based gamepiece index.
+ * @param out_buf Destination buffer to receive a null-terminated UTF-8 string.
+ * @param buf_len Length of out_buf in bytes.
+ * @return 0 on success, non-zero on failure.
+ */
+int c_rsGetGamepieceTypeName(uint64_t world_handle, int gamepiece_index,
+                            char* out_buf, int buf_len);
+
+/**
  * @brief Request pickup of a gamepiece into a carrier.
  * @param world_handle Target world handle.
  * @param gamepiece_index Zero-based gamepiece index returned by c_rsCreateGamepiece().

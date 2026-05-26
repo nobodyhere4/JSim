@@ -107,6 +107,43 @@ Java_jsim_jni_JSimJNI_createGamepiece
 
 /*
  * Class:     jsim_jni_JSimJNI
+ * Method:    createGamepieceWithTypeName
+ * Signature: (JLjava/lang/String;DDD)I
+ */
+JNIEXPORT jint JNICALL
+Java_jsim_jni_JSimJNI_createGamepieceWithTypeName
+  (JNIEnv* env, jclass, jlong world_handle, jstring typeName, jdouble radius_m,
+   jdouble mass_kg, jdouble restitution)
+{
+  const char* cname = nullptr;
+  if (typeName) {
+    cname = env->GetStringUTFChars(typeName, nullptr);
+  }
+  const jint rc = static_cast<jint>(c_rsCreateGamepieceWithTypeName(
+      static_cast<uint64_t>(world_handle), cname, radius_m, mass_kg, restitution));
+  if (cname) env->ReleaseStringUTFChars(typeName, cname);
+  return rc;
+}
+
+/*
+ * Class:     jsim_jni_JSimJNI
+ * Method:    getGamepieceTypeName
+ * Signature: (JI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL
+Java_jsim_jni_JSimJNI_getGamepieceTypeName
+  (JNIEnv* env, jclass, jlong world_handle, jint gamepiece_index)
+{
+  char buf[256];
+  const int rc = c_rsGetGamepieceTypeName(static_cast<uint64_t>(world_handle), gamepiece_index, buf, sizeof(buf));
+  if (rc != 0) {
+    return nullptr;
+  }
+  return env->NewStringUTF(buf);
+}
+
+/*
+ * Class:     jsim_jni_JSimJNI
  * Method:    setBodyPosition
  * Signature: (JIDDD)I
  */

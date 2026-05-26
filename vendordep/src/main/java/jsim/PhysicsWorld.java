@@ -431,6 +431,15 @@ public final class PhysicsWorld implements AutoCloseable {
 			throw new JSimException("Failed to get gamepiece position", rc,
 				"Verify the gamepiece index and that the world is initialized; check native logs for details.");
 		}
+
+		/**
+		 * Returns the registered type name for the given gamepiece.
+		 * @param gamepieceIndex native gamepiece index
+		 * @return human-readable type name or null if none
+		 */
+		public String getGamepieceTypeName(int gamepieceIndex) {
+			return JSimJNI.getGamepieceTypeName(worldHandle, gamepieceIndex);
+		}
 		return new Pose3d(values[0], values[1], values[2], Rotation3d.kZero);
 	}
 

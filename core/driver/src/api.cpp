@@ -17,20 +17,27 @@ RigidBody_t* frcsim_create_body(PhysicsWorld_t* w, double mass_kg) {
   return &w->createBody(mass_kg);
 }
 
+Gamepiece_t* frcsim_create_gamepiece(PhysicsWorld_t* w,
+                                    const frcsim::BallPhysicsSim3D::Config* config,
+                                    const frcsim::BallPhysicsSim3D::BallProperties* props) {
+  if (!w) return nullptr;
+  if (config && props) {
+    return static_cast<Gamepiece_t*>(&w->createBall(*config, *props));
+  }
+  if (config) {
+    return static_cast<Gamepiece_t*>(&w->createBall(*config, frcsim::BallPhysicsSim3D::BallProperties()));
+  }
+  if (props) {
+    return static_cast<Gamepiece_t*>(&w->createBall(frcsim::BallPhysicsSim3D::Config(), *props));
+  }
+  return static_cast<Gamepiece_t*>(&w->createBall(frcsim::BallPhysicsSim3D::Config(), frcsim::BallPhysicsSim3D::BallProperties()));
+}
+
 Ball_t* frcsim_create_ball(PhysicsWorld_t* w,
                            const frcsim::BallPhysicsSim3D::Config* config,
                            const frcsim::BallPhysicsSim3D::BallProperties* props) {
-  if (!w) return nullptr;
-  if (config && props) {
-    return &w->createBall(*config, *props);
-  }
-  if (config) {
-    return &w->createBall(*config, frcsim::BallPhysicsSim3D::BallProperties());
-  }
-  if (props) {
-    return &w->createBall(frcsim::BallPhysicsSim3D::Config(), *props);
-  }
-  return &w->createBall(frcsim::BallPhysicsSim3D::Config(), frcsim::BallPhysicsSim3D::BallProperties());
+  // Delegate to new gamepiece factory for backward compatibility.
+  return reinterpret_cast<Ball_t*>(frcsim_create_gamepiece(w, config, props));
 }
 
 void frcsim_step_world(PhysicsWorld_t* w, double dt_s) {
@@ -65,10 +72,10 @@ void frcsim_set_body_position(RigidBody_t* body, double x, double y, double z) {
   body->setPosition(x, y, z);
 }
 
-void frcsim_get_ball_state(Ball_t* ball, double* px, double* py, double* pz,
-                           double* vx, double* vy, double* vz) {
-  if (!ball) return;
-  const auto& s = ball->state();
+void frcsim_get_gamepiece_state(Gamepiece_t* gp, double* px, double* py, double* pz,
+                                double* vx, double* vy, double* vz) {
+  if (!gp) return;
+  const auto& s = gp->state();
   if (px) *px = s.position_m.x;
   if (py) *py = s.position_m.y;
   if (pz) *pz = s.position_m.z;
@@ -77,12 +84,23 @@ void frcsim_get_ball_state(Ball_t* ball, double* px, double* py, double* pz,
   if (vz) *vz = s.velocity_mps.z;
 }
 
-void frcsim_ball_shoot(Ball_t* ball, double px, double py, double pz,
-                       double vx, double vy, double vz) {
-  if (!ball) return;
+void frcsim_gamepiece_outtake(Gamepiece_t* gp, double px, double py, double pz,
+                              double vx, double vy, double vz) {
+  if (!gp) return;
   frcsim::Vector3 pos(px, py, pz);
   frcsim::Vector3 vel(vx, vy, vz);
-  ball->shoot(pos, vel);
+  gp->outtake(pos, vel);
+}
+
+// Backwards-compatible Ball API delegates to gamepiece functions.
+void frcsim_get_ball_state(Ball_t* ball, double* px, double* py, double* pz,
+                           double* vx, double* vy, double* vz) {
+  frcsim_get_gamepiece_state(reinterpret_cast<Gamepiece_t*>(ball), px, py, pz, vx, vy, vz);
+}
+
+void frcsim_ball_shoot(Ball_t* ball, double px, double py, double pz,
+                       double vx, double vy, double vz) {
+  frcsim_gamepiece_outtake(reinterpret_cast<Gamepiece_t*>(ball), px, py, pz, vx, vy, vz);
 }
 
 }

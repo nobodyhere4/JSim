@@ -135,7 +135,44 @@ int c_rsCreateGamepieceWithTypeName(uint64_t world_handle, const char* type_name
   } else {
     g_gamepiece_types[world_handle][idx] = std::string();
   }
+
+  // Also record the name on the native Gamepiece instance when available.
+  frcsim::PhysicsWorld* world = getWorld(world_handle);
+  if (world) {
+    const std::size_t uidx = static_cast<std::size_t>(idx);
+    if (uidx < world->gamepieces().size()) {
+      try {
+        world->gamepieces()[uidx].setTypeName(g_gamepiece_types[world_handle][idx]);
+      } catch (...) {
+        // setTypeName may not be present in older cores; ignore safely.
+      }
+    }
+  }
   return idx;
+}
+
+int c_rsGetGamepieceTypeName(uint64_t world_handle, int gamepiece_index,
+                            char* out_buf, int buf_len) {
+  if (!out_buf || buf_len <= 0) return -1;
+
+  std::lock_guard<std::mutex> lock(g_world_mutex);
+  if (!worldExists(world_handle)) return -1;
+  auto it = g_gamepiece_types.find(world_handle);
+  if (it == g_gamepiece_types.end()) return -1;
+  auto it2 = it->second.find(gamepiece_index);
+  if (it2 == it->second.end()) return -1;
+
+  const std::string& name = it2->second;
+  if (name.empty()) {
+    out_buf[0] = '\0';
+    return 0;
+  }
+
+  // copy up to buf_len-1 chars and null-terminate
+  const int to_copy = std::min(static_cast<int>(name.size()), buf_len - 1);
+  memcpy(out_buf, name.c_str(), to_copy);
+  out_buf[to_copy] = '\0';
+  return 0;
 }
 
 int c_rsPickGamepiece(uint64_t world_handle, int gamepiece_index,

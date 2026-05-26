@@ -5,6 +5,9 @@
 #pragma once
 
 #include "frcsim/gamepiece/ball_physics.hpp"
+#include <algorithm>
+#include <cctype>
+#include <string>
 
 namespace frcsim {
 
@@ -115,8 +118,32 @@ class Gamepiece : public BallPhysicsSim3D {
     }
   }
 
+  /**
+   * Set a human-readable type name for this gamepiece (e.g. "generic_sphere").
+   */
+  void setTypeName(const std::string& name) { type_name_ = name; }
+
+  /**
+   * Get the registered type name (may be empty).
+   */
+  const std::string& typeName() const { return type_name_; }
+
+  /**
+   * Returns true when this gamepiece should use the ball physics path.
+   */
+  bool isBall() const {
+    if (type_name_.empty()) return true;
+    std::string lower = type_name_;
+    std::transform(lower.begin(), lower.end(), lower.begin(), [](unsigned char c){ return std::tolower(c); });
+    if (lower.find("ball") != std::string::npos) return true;
+    if (lower.find("sphere") != std::string::npos) return true;
+    if (lower.rfind("generic_", 0) == 0) return true;
+    return false;
+  }
+
  private:
   State state_{State::kGrounded};
+  std::string type_name_{};
 };
 
 }  // namespace frcsim

@@ -202,4 +202,22 @@ public class Gamepiece {
   public LinearVelocity3d linearVelocity() {
     return world.getGamepieceLinearVelocity(gamepieceIndex);
   }
+
+  /**
+   * Returns the registered type name for this gamepiece, if any.
+   * @return human-readable type name or null
+   */
+  public String typeName() {
+    return world.getGamepieceTypeName(gamepieceIndex);
+  }
+
+  /**
+   * Convenience: is this gamepiece a ball (default spherical physics)?
+   */
+  public boolean isBall() {
+    String t = typeName();
+    if (t == null || t.isEmpty()) return true;
+    String lower = t.toLowerCase();
+    return lower.contains("ball") || lower.contains("sphere") || lower.startsWith("generic_");
+  }
 }

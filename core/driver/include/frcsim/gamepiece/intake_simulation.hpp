@@ -36,8 +36,8 @@ class IntakeSimulation {
       kEnd,
     };
 
-    /** Index of ball involved in this event. */
-    std::size_t ball_index{BallGamepieceSim::kNoBall};
+    /** Index of gamepiece involved in this event. */
+    std::size_t gamepiece_index{BallGamepieceSim::kNoBall};
     /** Contact phase classification. */
     Phase phase{Phase::kBegin};
   };
@@ -65,7 +65,7 @@ class IntakeSimulation {
 
   /**
    * @brief Sets optional custom acceptance predicate for candidate balls.
-   * @param predicate Callable receiving ball index and simulator state.
+   * @param predicate Callable receiving gamepiece index and simulator state.
    */
   void setCustomIntakeCondition(
       const std::function<bool(std::size_t, const BallGamepieceSim&)>&
@@ -147,13 +147,13 @@ class IntakeSimulation {
       if (intake_count_ >= config_.capacity) {
         break;
       }
-      if (event.ball_index >= sim.balls().size()) {
+      if (event.gamepiece_index >= sim.balls().size()) {
         continue;
       }
-      if (custom_condition_ && !custom_condition_(event.ball_index, sim)) {
+      if (custom_condition_ && !custom_condition_(event.gamepiece_index, sim)) {
         continue;
       }
-      if (sim.removeBall(event.ball_index)) {
+      if (sim.removeBall(event.gamepiece_index)) {
         ++intake_count_;
       }
     }

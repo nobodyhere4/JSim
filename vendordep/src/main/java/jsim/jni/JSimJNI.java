@@ -129,6 +129,14 @@ public class JSimJNI {
       public static native int createGamepieceWithTypeName(
         long worldHandle, String typeName, double radiusMeters, double massKg, double restitution);
 
+      /**
+       * Reads the registered type name for a gamepiece.
+       * @param worldHandle native world handle
+       * @param gamepieceIndex native gamepiece index
+       * @return UTF-8 type name or null when unknown
+       */
+      public static native String getGamepieceTypeName(long worldHandle, int gamepieceIndex);
+
   /**
    * Sets a body's position in meters.
    *
