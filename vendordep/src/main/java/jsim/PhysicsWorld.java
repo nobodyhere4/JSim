@@ -154,6 +154,16 @@ public final class PhysicsWorld implements AutoCloseable {
 	}
 
 	/**
+	 * Convenience overload for creating a named gamepiece type with default physical parameters.
+	 *
+	 * @param typeName human readable type name (e.g. "generic_sphere", "fuel_rebuilt_2026")
+	 * @return created gamepiece
+	 */
+	public Gamepiece createGamepiece(String typeName) {
+		return createGamepiece(typeName, 0.12, 0.27, 0.45);
+	}
+
+	/**
 	 * Creates a new named gamepiece type (useful for season definitions or CAD-imported types).
 	 *
 	 * @param typeName human readable type name (e.g. "generic_sphere", "fuel_rebuilt_2026")
@@ -174,11 +184,6 @@ public final class PhysicsWorld implements AutoCloseable {
 		Gamepiece gamepiece = new Gamepiece(this, index);
 		gamepieces.add(gamepiece);
 		return gamepiece;
-	}
-
-	/** Convenience: create named type with default physical parameters. */
-	public Gamepiece createGamepiece(String typeName) {
-		return createGamepiece(typeName, 0.12, 0.27, 0.45);
 	}
 
 	// Deprecated `Ball` wrapper removed; use `createGamepiece()` instead.
@@ -309,9 +314,9 @@ public final class PhysicsWorld implements AutoCloseable {
 	}
 
 	/**
-	 * Sets the ball's world-space position in meters.
+	 * Sets the gamepiece's world-space position in meters.
 	 *
-	 * @param ballIndex native ball index
+	 * @param gamepieceIndex native gamepiece index
 	 * @param xMeters x position in meters
 	 * @param yMeters y position in meters
 	 * @param zMeters z position in meters
@@ -384,9 +389,9 @@ public final class PhysicsWorld implements AutoCloseable {
 	// Deprecated ball setters removed. Use gamepiece setters above.
 
 	/**
-	 * Sets the ball's world-space linear velocity in meters per second.
+	 * Sets the gamepiece's world-space linear velocity in meters per second.
 	 *
-	 * @param ballIndex native ball index
+	 * @param gamepieceIndex native gamepiece index
 	 * @param vxMetersPerSecond x velocity in meters per second
 	 * @param vyMetersPerSecond y velocity in meters per second
 	 * @param vzMetersPerSecond z velocity in meters per second
