@@ -107,6 +107,69 @@ int c_rsCreateGamepiece(uint64_t world_handle, double radius_m,
   return static_cast<int>(world->balls().size() - 1);
 }
 
+int c_rsPickGamepiece(uint64_t world_handle, int gamepiece_index,
+                      double intake_x, double intake_y, double intake_z,
+                      double capture_radius,
+                      double carry_offset_x, double carry_offset_y,
+                      double carry_offset_z) {
+  std::lock_guard<std::mutex> lock(g_world_mutex);
+  frcsim::PhysicsWorld* world = getWorld(world_handle);
+  if (!world || gamepiece_index < 0) {
+    return -1;
+  }
+
+  auto& gps = world->balls();
+  const std::size_t idx = static_cast<std::size_t>(gamepiece_index);
+  if (idx >= gps.size()) {
+    return -1;
+  }
+
+  frcsim::BallPhysicsSim3D::PickupRequest req;
+  req.intake_position_m = frcsim::Vector3{intake_x, intake_y, intake_z};
+  req.capture_radius_m = std::max(0.0, capture_radius);
+  req.carry_offset_m = frcsim::Vector3{carry_offset_x, carry_offset_y, carry_offset_z};
+
+  const bool ok = gps[idx].pick(req);
+  return ok ? 0 : -1;
+}
+
+int c_rsPlaceGamepiece(uint64_t world_handle, int gamepiece_index,
+                      double x_m, double y_m, double z_m) {
+  std::lock_guard<std::mutex> lock(g_world_mutex);
+  frcsim::PhysicsWorld* world = getWorld(world_handle);
+  if (!world || gamepiece_index < 0) {
+    return -1;
+  }
+
+  auto& gps = world->balls();
+  const std::size_t idx = static_cast<std::size_t>(gamepiece_index);
+  if (idx >= gps.size()) {
+    return -1;
+  }
+
+  gps[idx].place(frcsim::Vector3{x_m, y_m, z_m});
+  return 0;
+}
+
+int c_rsShootGamepiece(uint64_t world_handle, int gamepiece_index,
+                      double px, double py, double pz,
+                      double vx, double vy, double vz) {
+  std::lock_guard<std::mutex> lock(g_world_mutex);
+  frcsim::PhysicsWorld* world = getWorld(world_handle);
+  if (!world || gamepiece_index < 0) {
+    return -1;
+  }
+
+  auto& gps = world->balls();
+  const std::size_t idx = static_cast<std::size_t>(gamepiece_index);
+  if (idx >= gps.size()) {
+    return -1;
+  }
+
+  gps[idx].shoot(frcsim::Vector3{px, py, pz}, frcsim::Vector3{vx, vy, vz});
+  return 0;
+}
+
 int c_rsSetBodyPosition(uint64_t world_handle, int body_index,
                         double x_m, double y_m, double z_m) {
   std::lock_guard<std::mutex> lock(g_world_mutex);

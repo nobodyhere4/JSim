@@ -213,6 +213,23 @@ public class JSimJNI {
       double zMeters,
       double dragCoefficient);
 
+    public static native int pickGamepiece(
+      long worldHandle,
+      int gamepieceIndex,
+      double intakeX,
+      double intakeY,
+      double intakeZ,
+      double captureRadius,
+      double carryOffsetX,
+      double carryOffsetY,
+      double carryOffsetZ);
+
+    public static native int placeGamepiece(long worldHandle, int gamepieceIndex,
+      double xMeters, double yMeters, double zMeters);
+
+    public static native int shootGamepiece(long worldHandle, int gamepieceIndex,
+      double px, double py, double pz, double vx, double vy, double vz);
+
     /**
      * Sets a ball's world-space position from a Pose3d.
      *

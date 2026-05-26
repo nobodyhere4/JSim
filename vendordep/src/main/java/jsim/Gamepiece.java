@@ -117,8 +117,9 @@ public class Gamepiece {
    * @param velocityMps launch velocity in meters per second
    */
   public void shoot(Pose3d pose, LinearVelocity3d velocityMps) {
-    setPosition(pose);
-    setLinearVelocity(velocityMps);
+    world.shootGamepiece(gamepieceIndex(),
+        pose.getTranslation().getX(), pose.getTranslation().getY(), pose.getTranslation().getZ(),
+        velocityMps.getVxMetersPerSecond(), velocityMps.getVyMetersPerSecond(), velocityMps.getVzMetersPerSecond());
   }
 
   /**
@@ -128,8 +129,8 @@ public class Gamepiece {
    * @param velocityMps launch velocity in meters per second
    */
   public void shoot(Translation3d positionMeters, LinearVelocity3d velocityMps) {
-    setPosition(positionMeters);
-    setLinearVelocity(velocityMps);
+    world.shootGamepiece(gamepieceIndex(), positionMeters.getX(), positionMeters.getY(), positionMeters.getZ(),
+        velocityMps.getVxMetersPerSecond(), velocityMps.getVyMetersPerSecond(), velocityMps.getVzMetersPerSecond());
   }
 
   /**
@@ -139,8 +140,31 @@ public class Gamepiece {
    * @param velocityMps launch velocity in meters per second
    */
   public void shoot(Vec3 positionMeters, Vec3 velocityMps) {
-    setPosition(positionMeters);
-    setLinearVelocity(velocityMps);
+    world.shootGamepiece(gamepieceIndex(), positionMeters.x(), positionMeters.y(), positionMeters.z(),
+        velocityMps.x(), velocityMps.y(), velocityMps.z());
+  }
+
+  /**
+   * Attempt to pick this gamepiece into a carrier.
+   * @param intakePos intake world position
+   * @param captureRadius capture radius in meters
+   * @param carryOffset offset from intake to carried resting position
+   * @return true when pickup succeeded
+   */
+  public boolean pick(Pose3d intakePos, double captureRadius, Vec3 carryOffset) {
+    Translation3d t = intakePos.getTranslation();
+    int rc = world.pickGamepiece(gamepieceIndex,
+        t.getX(), t.getY(), t.getZ(),
+        captureRadius,
+        carryOffset.x(), carryOffset.y(), carryOffset.z());
+    return rc == 0;
+  }
+
+  /**
+   * Place this gamepiece at the given world position and mark grounded.
+   */
+  public void place(Translation3d pos) {
+    world.placeGamepiece(gamepieceIndex, pos.getX(), pos.getY(), pos.getZ());
   }
 
   /**

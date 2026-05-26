@@ -289,10 +289,11 @@ void PhysicsWorld::step() {
 
   // Resolve ball <-> rigid-body collisions after the ball has advanced its own physics.
   for (auto& ball : gamepieces_) {
-    BallPhysicsSim3D::BallState s = ball.state();
-    if (s.held) {
+    // Only consider airborne gamepieces for rigid-body collisions.
+    if (ball.getGamepieceState() != Gamepiece::State::kAirborne) {
       continue;
     }
+    BallPhysicsSim3D::BallState s = ball.state();
 
     const BallPhysicsSim3D::BallProperties& bp = ball.ballProperties();
     const double ball_r = std::max(0.0, bp.radius_m);

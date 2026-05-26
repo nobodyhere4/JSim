@@ -94,6 +94,38 @@ int c_rsCreateGamepiece(uint64_t world_handle, double radius_m,
                         double mass_kg, double restitution);
 
 /**
+ * @brief Request pickup of a gamepiece into a carrier.
+ * @param world_handle Target world handle.
+ * @param gamepiece_index Zero-based gamepiece index returned by c_rsCreateGamepiece().
+ * @param intake_x Intake world x position.
+ * @param intake_y Intake world y position.
+ * @param intake_z Intake world z position.
+ * @param capture_radius Capture radius in meters.
+ * @param carry_offset_x Carry offset x in meters.
+ * @param carry_offset_y Carry offset y in meters.
+ * @param carry_offset_z Carry offset z in meters.
+ * @return 0 on success (picked), non-zero on failure.
+ */
+int c_rsPickGamepiece(uint64_t world_handle, int gamepiece_index,
+                      double intake_x, double intake_y, double intake_z,
+                      double capture_radius,
+                      double carry_offset_x, double carry_offset_y,
+                      double carry_offset_z);
+
+/**
+ * @brief Place a gamepiece at a world position and mark grounded.
+ */
+int c_rsPlaceGamepiece(uint64_t world_handle, int gamepiece_index,
+                      double x_m, double y_m, double z_m);
+
+/**
+ * @brief Shoot a gamepiece from a muzzle pose with velocity.
+ */
+int c_rsShootGamepiece(uint64_t world_handle, int gamepiece_index,
+                      double px, double py, double pz,
+                      double vx, double vy, double vz);
+
+/**
  * @brief Sets a body's world-space position.
  * @param world_handle Target world handle.
  * @param body_index Zero-based body index returned by c_rsCreateBody().

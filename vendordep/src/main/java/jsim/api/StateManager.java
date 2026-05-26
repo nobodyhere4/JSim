@@ -1,6 +1,13 @@
 package jsim.api;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import jsim.Gamepiece;
+import jsim.Vec3;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import java.util.ArrayList;
@@ -181,6 +188,60 @@ public class StateManager {
     private synchronized void refreshGamepieceZones() {
         for (GamepieceZone gamepieceZone : gamepieceZones) {
             gamepieceZone.refresh();
+        }
+        // Apply zone-driven actions: when a zone is actively OUTTAKE or SHOOT,
+        // convert nearby grounded gamepieces into airborne (full physics) by
+        // calling the PhysicsWorld shoot API. For INTAKE, attempt pickup.
+        if (physicsWorld == null) {
+            return;
+        }
+
+        final double kCaptureThresholdM = 0.35; // proximity threshold
+
+        for (GamepieceZone zone : gamepieceZones) {
+            GamepieceZone.Mode mode = zone.getMode();
+            if (mode == GamepieceZone.Mode.DISABLED) {
+                continue;
+            }
+            SimRobot owner = zone.getRobot();
+            if (owner == null) {
+                continue;
+            }
+
+            Pose2d robotPose = owner.getPose();
+            Translation3d exitTrans = zone.getExitTranslation();
+            // world-space exit point: robot XY + zone local XYZ
+            double wx = robotPose.getX() + exitTrans.getX();
+            double wy = robotPose.getY() + exitTrans.getY();
+            double wz = exitTrans.getZ();
+
+            double exitSpeed = zone.getExitVelocity().in(MetersPerSecond);
+            // simple pitch extraction from zone rotation (approximate)
+            double pitch = zone.getExitRotation().getY();
+            double heading = robotPose.getRotation().getRadians();
+
+            for (Gamepiece gp : physicsWorld.gamepieces()) {
+                Pose3d gpPose = physicsWorld.getGamepiecePosition(gp.gamepieceIndex());
+                double dx = gpPose.getTranslation().getX() - wx;
+                double dy = gpPose.getTranslation().getY() - wy;
+                double dz = gpPose.getTranslation().getZ() - wz;
+                final double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                if (dist > kCaptureThresholdM) {
+                    continue;
+                }
+
+                if (mode == GamepieceZone.Mode.INTAKE) {
+                    // Attempt pickup — use small capture radius and zero carry offset.
+                    gp.pick(new Pose3d(wx, wy, wz, new Rotation3d()), 0.25, new Vec3(0.0, 0.0, 0.0));
+                } else if (mode == GamepieceZone.Mode.OUTTAKE || mode == GamepieceZone.Mode.SHOOT) {
+                    // Compute simple world-space velocity vector from robot heading and pitch.
+                    final double cosPitch = Math.cos(pitch);
+                    double vx = exitSpeed * Math.cos(heading) * cosPitch;
+                    double vy = exitSpeed * Math.sin(heading) * cosPitch;
+                    double vz = exitSpeed * Math.sin(pitch);
+                    physicsWorld.shootGamepiece(gp.gamepieceIndex(), wx, wy, wz, vx, vy, vz);
+                }
+            }
         }
     }
 

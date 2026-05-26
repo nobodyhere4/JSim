@@ -284,6 +284,31 @@ public final class PhysicsWorld implements AutoCloseable {
 		}
 	}
 
+	int pickGamepiece(int gamepieceIndex, double intakeX, double intakeY, double intakeZ,
+				double captureRadius, double carryOffsetX, double carryOffsetY, double carryOffsetZ) {
+		int rc = JSimJNI.pickGamepiece(worldHandle, gamepieceIndex,
+				intakeX, intakeY, intakeZ, captureRadius,
+				carryOffsetX, carryOffsetY, carryOffsetZ);
+		return rc;
+	}
+
+	void placeGamepiece(int gamepieceIndex, double xMeters, double yMeters, double zMeters) {
+		int rc = JSimJNI.placeGamepiece(worldHandle, gamepieceIndex, xMeters, yMeters, zMeters);
+		if (rc != 0) {
+			throw new JSimException("Failed to place gamepiece", rc,
+				"Verify the gamepiece index and that the native world is valid; check native logs for details.");
+		}
+	}
+
+	void shootGamepiece(int gamepieceIndex, double px, double py, double pz,
+					double vx, double vy, double vz) {
+		int rc = JSimJNI.shootGamepiece(worldHandle, gamepieceIndex, px, py, pz, vx, vy, vz);
+		if (rc != 0) {
+			throw new JSimException("Failed to shoot gamepiece", rc,
+				"Verify the gamepiece index and parameters; check native logs for details.");
+		}
+	}
+
 	@Deprecated(forRemoval = false)
 	void setBallPosition(int ballIndex, double xMeters, double yMeters, double zMeters) {
 		int rc = JSimJNI.setBallPosition(worldHandle, ballIndex, xMeters, yMeters, zMeters);

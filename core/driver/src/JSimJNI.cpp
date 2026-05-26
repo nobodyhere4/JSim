@@ -312,6 +312,53 @@ Java_jsim_jni_JSimJNI_setMaterialInteraction
 
 /*
  * Class:     jsim_jni_JSimJNI
+ * Method:    pickGamepiece
+ * Signature: (JIIDDDDD)I
+ */
+JNIEXPORT jint JNICALL
+Java_jsim_jni_JSimJNI_pickGamepiece
+  (JNIEnv*, jclass, jlong world_handle, jint gamepiece_index, jdouble intake_x,
+   jdouble intake_y, jdouble intake_z, jdouble capture_radius,
+   jdouble carry_offset_x, jdouble carry_offset_y, jdouble carry_offset_z)
+{
+  return static_cast<jint>(
+      c_rsPickGamepiece(static_cast<uint64_t>(world_handle), gamepiece_index,
+                        intake_x, intake_y, intake_z, capture_radius,
+                        carry_offset_x, carry_offset_y, carry_offset_z));
+}
+
+/*
+ * Class:     jsim_jni_JSimJNI
+ * Method:    placeGamepiece
+ * Signature: (JIDDD)I
+ */
+JNIEXPORT jint JNICALL
+Java_jsim_jni_JSimJNI_placeGamepiece
+  (JNIEnv*, jclass, jlong world_handle, jint gamepiece_index, jdouble x_m,
+   jdouble y_m, jdouble z_m)
+{
+  return static_cast<jint>(
+      c_rsPlaceGamepiece(static_cast<uint64_t>(world_handle), gamepiece_index,
+                         x_m, y_m, z_m));
+}
+
+/*
+ * Class:     jsim_jni_JSimJNI
+ * Method:    shootGamepiece
+ * Signature: (JI DDD DDD)I
+ */
+JNIEXPORT jint JNICALL
+Java_jsim_jni_JSimJNI_shootGamepiece
+  (JNIEnv*, jclass, jlong world_handle, jint gamepiece_index, jdouble px,
+   jdouble py, jdouble pz, jdouble vx, jdouble vy, jdouble vz)
+{
+  return static_cast<jint>(
+      c_rsShootGamepiece(static_cast<uint64_t>(world_handle), gamepiece_index,
+                         px, py, pz, vx, vy, vz));
+}
+
+/*
+ * Class:     jsim_jni_JSimJNI
  * Method:    stepWorld
  * Signature: (JI)I
  */
