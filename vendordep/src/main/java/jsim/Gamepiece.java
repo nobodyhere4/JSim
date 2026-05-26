@@ -116,10 +116,10 @@ public class Gamepiece {
    * @param pose launch position (only translation component is used)
    * @param velocityMps launch velocity in meters per second
    */
-  public void shoot(Pose3d pose, LinearVelocity3d velocityMps) {
-    world.shootGamepiece(gamepieceIndex(),
-        pose.getTranslation().getX(), pose.getTranslation().getY(), pose.getTranslation().getZ(),
-        velocityMps.getVxMetersPerSecond(), velocityMps.getVyMetersPerSecond(), velocityMps.getVzMetersPerSecond());
+  public void outtake(Pose3d pose, LinearVelocity3d velocityMps) {
+    world.outtakeGamepiece(gamepieceIndex(),
+      pose.getTranslation().getX(), pose.getTranslation().getY(), pose.getTranslation().getZ(),
+      velocityMps.getVxMetersPerSecond(), velocityMps.getVyMetersPerSecond(), velocityMps.getVzMetersPerSecond());
   }
 
   /**
@@ -128,9 +128,9 @@ public class Gamepiece {
    * @param positionMeters launch position in meters
    * @param velocityMps launch velocity in meters per second
    */
-  public void shoot(Translation3d positionMeters, LinearVelocity3d velocityMps) {
-    world.shootGamepiece(gamepieceIndex(), positionMeters.getX(), positionMeters.getY(), positionMeters.getZ(),
-        velocityMps.getVxMetersPerSecond(), velocityMps.getVyMetersPerSecond(), velocityMps.getVzMetersPerSecond());
+  public void outtake(Translation3d positionMeters, LinearVelocity3d velocityMps) {
+    world.outtakeGamepiece(gamepieceIndex(), positionMeters.getX(), positionMeters.getY(), positionMeters.getZ(),
+      velocityMps.getVxMetersPerSecond(), velocityMps.getVyMetersPerSecond(), velocityMps.getVzMetersPerSecond());
   }
 
   /**
@@ -139,9 +139,9 @@ public class Gamepiece {
    * @param positionMeters launch position in meters
    * @param velocityMps launch velocity in meters per second
    */
-  public void shoot(Vec3 positionMeters, Vec3 velocityMps) {
-    world.shootGamepiece(gamepieceIndex(), positionMeters.x(), positionMeters.y(), positionMeters.z(),
-        velocityMps.x(), velocityMps.y(), velocityMps.z());
+  public void outtake(Vec3 positionMeters, Vec3 velocityMps) {
+    world.outtakeGamepiece(gamepieceIndex(), positionMeters.x(), positionMeters.y(), positionMeters.z(),
+      velocityMps.x(), velocityMps.y(), velocityMps.z());
   }
 
   /**

@@ -227,7 +227,7 @@ public class JSimJNI {
     public static native int placeGamepiece(long worldHandle, int gamepieceIndex,
       double xMeters, double yMeters, double zMeters);
 
-    public static native int shootGamepiece(long worldHandle, int gamepieceIndex,
+    public static native int outtakeGamepiece(long worldHandle, int gamepieceIndex,
       double px, double py, double pz, double vx, double vy, double vz);
 
     /**

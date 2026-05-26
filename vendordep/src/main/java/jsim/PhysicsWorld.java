@@ -300,11 +300,11 @@ public final class PhysicsWorld implements AutoCloseable {
 		}
 	}
 
-	void shootGamepiece(int gamepieceIndex, double px, double py, double pz,
+	void outtakeGamepiece(int gamepieceIndex, double px, double py, double pz,
 					double vx, double vy, double vz) {
-		int rc = JSimJNI.shootGamepiece(worldHandle, gamepieceIndex, px, py, pz, vx, vy, vz);
+		int rc = JSimJNI.outtakeGamepiece(worldHandle, gamepieceIndex, px, py, pz, vx, vy, vz);
 		if (rc != 0) {
-			throw new JSimException("Failed to shoot gamepiece", rc,
+			throw new JSimException("Failed to outtake gamepiece", rc,
 				"Verify the gamepiece index and parameters; check native logs for details.");
 		}
 	}

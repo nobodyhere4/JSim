@@ -196,7 +196,7 @@ public class StateManager {
             return;
         }
 
-        final double kCaptureThresholdM = 0.35; // proximity threshold
+        final double kCaptureThresholdM = 0.5; // proximity threshold (tuned)
 
         for (GamepieceZone zone : gamepieceZones) {
             GamepieceZone.Mode mode = zone.getMode();
@@ -216,9 +216,9 @@ public class StateManager {
             double wz = exitTrans.getZ();
 
             double exitSpeed = zone.getExitVelocity().in(MetersPerSecond);
-            // simple pitch extraction from zone rotation (approximate)
+            // Use zone rotation yaw as heading offset and Y as pitch
             double pitch = zone.getExitRotation().getY();
-            double heading = robotPose.getRotation().getRadians();
+            double heading = robotPose.getRotation().getRadians() + zone.getExitRotation().getZ();
 
             for (Gamepiece gp : physicsWorld.gamepieces()) {
                 Pose3d gpPose = physicsWorld.getGamepiecePosition(gp.gamepieceIndex());
@@ -239,7 +239,7 @@ public class StateManager {
                     double vx = exitSpeed * Math.cos(heading) * cosPitch;
                     double vy = exitSpeed * Math.sin(heading) * cosPitch;
                     double vz = exitSpeed * Math.sin(pitch);
-                    physicsWorld.shootGamepiece(gp.gamepieceIndex(), wx, wy, wz, vx, vy, vz);
+                    physicsWorld.outtakeGamepiece(gp.gamepieceIndex(), wx, wy, wz, vx, vy, vz);
                 }
             }
         }
