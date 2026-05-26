@@ -145,6 +145,24 @@ public class Gamepiece {
   }
 
   /**
+   * Deprecated compatibility alias for outtake.
+   */
+  @Deprecated(forRemoval = false)
+  public void shoot(Pose3d pose, LinearVelocity3d velocityMps) {
+    outtake(pose, velocityMps);
+  }
+
+  @Deprecated(forRemoval = false)
+  public void shoot(Translation3d positionMeters, LinearVelocity3d velocityMps) {
+    outtake(positionMeters, velocityMps);
+  }
+
+  @Deprecated(forRemoval = false)
+  public void shoot(Vec3 positionMeters, Vec3 velocityMps) {
+    outtake(positionMeters, velocityMps);
+  }
+
+  /**
    * Attempt to pick this gamepiece into a carrier.
    * @param intakePos intake world position
    * @param captureRadius capture radius in meters

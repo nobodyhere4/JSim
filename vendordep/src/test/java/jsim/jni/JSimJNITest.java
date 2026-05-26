@@ -66,7 +66,7 @@ public class JSimJNITest {
           0.12,
           0.27,
           0.45);
-      gamepiece.shoot(new jsim.Vec3(0.5, 0.0, 0.12), new jsim.Vec3(-3.0, 0.0, 0.0));
+      gamepiece.outtake(new jsim.Vec3(0.5, 0.0, 0.12), new jsim.Vec3(-3.0, 0.0, 0.0));
 
       world.step(20);
 
@@ -81,7 +81,7 @@ public class JSimJNITest {
   void legacyBallWrapperStillWorks() {
     try (PhysicsWorld world = new PhysicsWorld(0.01, true)) {
       Ball ball = world.createBall();
-      ball.shoot(new Pose3d(0.2, 0.0, 0.2, Rotation3d.kZero), new jsim.LinearVelocity3d(0.0, 0.0, 0.0));
+      ball.outtake(new Pose3d(0.2, 0.0, 0.2, Rotation3d.kZero), new jsim.LinearVelocity3d(0.0, 0.0, 0.0));
 
       world.step(1);
 
