@@ -81,13 +81,29 @@ int c_rsCreateBody(uint64_t world_handle, double mass_kg) {
 }
 
 int c_rsCreateBall(uint64_t world_handle) {
+  return c_rsCreateGamepiece(world_handle, 0.12, 0.27, 0.45);
+}
+
+int c_rsCreateGamepiece(uint64_t world_handle, double radius_m,
+                        double mass_kg, double restitution) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
   frcsim::PhysicsWorld* world = getWorld(world_handle);
   if (!world) {
     return -1;
   }
 
-  world->createBall();
+  frcsim::BallPhysicsSim3D::BallProperties props;
+  props.radius_m = std::max(0.0, radius_m);
+  if (props.radius_m <= 0.0) {
+    props.radius_m = 0.12;
+  }
+
+  props.mass_kg = (mass_kg > 0.0) ? mass_kg : 0.27;
+  props.restitution = std::clamp(restitution, 0.0, 1.0);
+  props.reference_area_m2 =
+      3.14159265358979323846 * props.radius_m * props.radius_m;
+
+  world->createBall(frcsim::BallPhysicsSim3D::Config(), props);
   return static_cast<int>(world->balls().size() - 1);
 }
 

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import jsim.Ball;
+import jsim.Gamepiece;
 import jsim.PhysicsBody;
 import jsim.PhysicsWorld;
 
@@ -60,15 +61,32 @@ public class JSimJNITest {
       bumper.setCollisionBox(0.6, 0.6, 0.2);
       bumper.setPosition(Meters.of(0.0), Meters.of(0.0), Meters.of(0.1));
 
-      Ball ball = world.createBall();
-      ball.shoot(new jsim.Vec3(0.5, 0.0, 0.12), new jsim.Vec3(-3.0, 0.0, 0.0));
+      Gamepiece gamepiece = world.createGamepiece(
+          PhysicsWorld.HitboxType.SPHERE,
+          0.12,
+          0.27,
+          0.45);
+      gamepiece.shoot(new jsim.Vec3(0.5, 0.0, 0.12), new jsim.Vec3(-3.0, 0.0, 0.0));
 
       world.step(20);
 
-      Pose3d pos = ball.position();
-      var vel = ball.linearVelocity();
+      Pose3d pos = gamepiece.position();
+      var vel = gamepiece.linearVelocity();
       assertTrue(pos.getZ() >= 0.0);
       assertTrue(vel.getVxMetersPerSecond() > -3.0);
+    }
+  }
+
+  @Test
+  void legacyBallWrapperStillWorks() {
+    try (PhysicsWorld world = new PhysicsWorld(0.01, true)) {
+      Ball ball = world.createBall();
+      ball.shoot(new Pose3d(0.2, 0.0, 0.2, Rotation3d.kZero), new jsim.LinearVelocity3d(0.0, 0.0, 0.0));
+
+      world.step(1);
+
+      assertTrue(ball.position().getZ() <= 0.2);
+      assertTrue(ball.ballIndex() == ball.gamepieceIndex());
     }
   }
 }

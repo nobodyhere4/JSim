@@ -12,6 +12,7 @@
 #include "frcsim/field/boundary.hpp"
 #include "frcsim/forces/force_generator.hpp"
 #include "frcsim/gamepiece/ball_physics.hpp"
+#include "frcsim/gamepiece/gamepiece.hpp"
 #include "frcsim/rigidbody/rigid_assembly.hpp"
 #include "frcsim/rigidbody/rigid_body.hpp"
 
@@ -252,22 +253,40 @@ class PhysicsWorld {
   /** @brief Immutable access to all rigid assemblies currently registered in the world. */
   const std::vector<RigidAssembly>& assemblies() const { return assemblies_; }
 
-  /**
-   * @brief Creates and registers a 3D ball simulator.
-   * @param config Environment and behavior configuration for the ball simulator.
-   * @param properties Physical properties for the simulated ball.
-   * @return Reference to the newly added ball simulator.
-   */
-  BallPhysicsSim3D& createBall(
+    /**
+     * @brief Creates and registers a generic gamepiece.
+     * @param config Environment and behavior configuration for the gamepiece when
+     * it uses spherical hitboxes. Future hitbox types may be added.
+     * @param properties Physical properties for the simulated gamepiece.
+     * @return Reference to the newly added gamepiece.
+     */
+    Gamepiece& createGamepiece(
       const BallPhysicsSim3D::Config& config = BallPhysicsSim3D::Config(),
       const BallPhysicsSim3D::BallProperties& properties =
-          BallPhysicsSim3D::BallProperties());
+        BallPhysicsSim3D::BallProperties());
 
-  /** @brief Mutable access to all registered ball simulators. */
-  std::vector<BallPhysicsSim3D>& balls() { return balls_; }
+    /**
+     * @brief Backwards-compatible helper that creates a ball simulator.
+     *
+     * Internally this delegates to createGamepiece and returns a reference to the
+     * underlying BallPhysicsSim3D base so existing callers continue to function.
+     */
+    BallPhysicsSim3D& createBall(
+      const BallPhysicsSim3D::Config& config = BallPhysicsSim3D::Config(),
+      const BallPhysicsSim3D::BallProperties& properties =
+        BallPhysicsSim3D::BallProperties());
 
-  /** @brief Immutable access to all registered ball simulators. */
-  const std::vector<BallPhysicsSim3D>& balls() const { return balls_; }
+    /** @brief Mutable access to all registered gamepieces. */
+    std::vector<Gamepiece>& gamepieces() { return gamepieces_; }
+
+    /** @brief Immutable access to all registered gamepieces. */
+    const std::vector<Gamepiece>& gamepieces() const { return gamepieces_; }
+
+    /** @brief Backwards-compatible accessor name for registered balls (gamepieces). */
+    std::vector<Gamepiece>& balls() { return gamepieces_; }
+
+    /** @brief Backwards-compatible const accessor for registered balls (gamepieces). */
+    const std::vector<Gamepiece>& balls() const { return gamepieces_; }
 
   /**
    * @brief Advances simulation by exactly one fixed timestep.
@@ -352,7 +371,7 @@ class PhysicsWorld {
 
   std::vector<RigidBody> bodies_{};
   std::vector<RigidAssembly> assemblies_{};
-  std::vector<BallPhysicsSim3D> balls_{};
+  std::vector<Gamepiece> gamepieces_{};
   std::vector<EnvironmentalBoundary> boundaries_{};
   std::vector<std::shared_ptr<ForceGenerator>> global_force_generators_{};
   std::vector<MaterialInteraction> material_interactions_{};

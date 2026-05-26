@@ -94,6 +94,18 @@ public class JSimJNI {
   public static native int createBall(long worldHandle);
 
   /**
+   * Creates a generic gamepiece with a spherical hitbox in the world.
+   *
+   * @param worldHandle the native world handle
+   * @param radiusMeters sphere hitbox radius in meters
+   * @param massKg gamepiece mass in kilograms
+   * @param restitution coefficient of restitution in [0, 1]
+   * @return the native gamepiece index
+   */
+  public static native int createGamepiece(
+      long worldHandle, double radiusMeters, double massKg, double restitution);
+
+  /**
    * Sets a body's position in meters.
    *
    * @param worldHandle the native world handle

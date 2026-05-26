@@ -83,6 +83,17 @@ int c_rsCreateBody(uint64_t world_handle, double mass_kg);
 int c_rsCreateBall(uint64_t world_handle);
 
 /**
+ * @brief Creates a new generic gamepiece using sphere hitbox parameters.
+ * @param world_handle Target world handle.
+ * @param radius_m Sphere hitbox radius in meters.
+ * @param mass_kg Gamepiece mass in kilograms.
+ * @param restitution Coefficient of restitution in [0, 1].
+ * @return Non-negative gamepiece index on success; negative value on failure.
+ */
+int c_rsCreateGamepiece(uint64_t world_handle, double radius_m,
+                        double mass_kg, double restitution);
+
+/**
  * @brief Sets a body's world-space position.
  * @param world_handle Target world handle.
  * @param body_index Zero-based body index returned by c_rsCreateBody().

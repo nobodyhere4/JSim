@@ -92,6 +92,21 @@ Java_jsim_jni_JSimJNI_createBall
 
 /*
  * Class:     jsim_jni_JSimJNI
+ * Method:    createGamepiece
+ * Signature: (JDDD)I
+ */
+JNIEXPORT jint JNICALL
+Java_jsim_jni_JSimJNI_createGamepiece
+  (JNIEnv*, jclass, jlong world_handle, jdouble radius_m,
+   jdouble mass_kg, jdouble restitution)
+{
+  return static_cast<jint>(
+      c_rsCreateGamepiece(static_cast<uint64_t>(world_handle),
+                          radius_m, mass_kg, restitution));
+}
+
+/*
+ * Class:     jsim_jni_JSimJNI
  * Method:    setBodyPosition
  * Signature: (JIDDD)I
  */
