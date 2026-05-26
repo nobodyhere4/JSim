@@ -104,7 +104,7 @@ int c_rsCreateGamepiece(uint64_t world_handle, double radius_m,
       3.14159265358979323846 * props.radius_m * props.radius_m;
 
   world->createBall(frcsim::BallPhysicsSim3D::Config(), props);
-  return static_cast<int>(world->balls().size() - 1);
+  return static_cast<int>(world->gamepieces().size() - 1);
 }
 
 int c_rsPickGamepiece(uint64_t world_handle, int gamepiece_index,
@@ -118,7 +118,7 @@ int c_rsPickGamepiece(uint64_t world_handle, int gamepiece_index,
     return -1;
   }
 
-  auto& gps = world->balls();
+  auto& gps = world->gamepieces();
   const std::size_t idx = static_cast<std::size_t>(gamepiece_index);
   if (idx >= gps.size()) {
     return -1;
@@ -141,7 +141,7 @@ int c_rsPlaceGamepiece(uint64_t world_handle, int gamepiece_index,
     return -1;
   }
 
-  auto& gps = world->balls();
+  auto& gps = world->gamepieces();
   const std::size_t idx = static_cast<std::size_t>(gamepiece_index);
   if (idx >= gps.size()) {
     return -1;
@@ -160,7 +160,7 @@ int c_rsOuttakeGamepiece(uint64_t world_handle, int gamepiece_index,
     return -1;
   }
 
-  auto& gps = world->balls();
+  auto& gps = world->gamepieces();
   const std::size_t idx = static_cast<std::size_t>(gamepiece_index);
   if (idx >= gps.size()) {
     return -1;
