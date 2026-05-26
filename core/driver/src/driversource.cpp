@@ -305,7 +305,7 @@ int c_rsSetBallPosition(uint64_t world_handle, int ball_index,
     return -1;
   }
 
-  auto& balls = world->balls();
+  auto& balls = world->gamepieces();
   const std::size_t idx = static_cast<std::size_t>(ball_index);
   if (idx >= balls.size()) {
     return -1;
@@ -325,7 +325,7 @@ int c_rsSetBallLinearVelocity(uint64_t world_handle, int ball_index,
     return -1;
   }
 
-  auto& balls = world->balls();
+  auto& balls = world->gamepieces();
   const std::size_t idx = static_cast<std::size_t>(ball_index);
   if (idx >= balls.size()) {
     return -1;
@@ -420,7 +420,7 @@ int c_rsGetBallPosition(uint64_t world_handle, int ball_index,
     return -1;
   }
 
-  const auto& balls = world->balls();
+  const auto& balls = world->gamepieces();
   const std::size_t idx = static_cast<std::size_t>(ball_index);
   if (idx >= balls.size()) {
     return -1;
@@ -445,7 +445,7 @@ int c_rsGetBallLinearVelocity(uint64_t world_handle, int ball_index,
     return -1;
   }
 
-  const auto& balls = world->balls();
+  const auto& balls = world->gamepieces();
   const std::size_t idx = static_cast<std::size_t>(ball_index);
   if (idx >= balls.size()) {
     return -1;
