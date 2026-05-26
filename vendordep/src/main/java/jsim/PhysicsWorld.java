@@ -26,6 +26,7 @@ public final class PhysicsWorld implements AutoCloseable {
 	 * Supported gamepiece hitbox families.
 	 */
 	public enum HitboxType {
+		/** Spherical hitbox using ball-style physics. */
 		SPHERE
 	}
 
@@ -331,6 +332,19 @@ public final class PhysicsWorld implements AutoCloseable {
 		}
 	}
 
+	/**
+	 * Requests pickup of a gamepiece into a carrier.
+	 *
+	 * @param gamepieceIndex native gamepiece index
+	 * @param intakeX intake world x position
+	 * @param intakeY intake world y position
+	 * @param intakeZ intake world z position
+	 * @param captureRadius pickup radius in meters
+	 * @param carryOffsetX carry offset x in meters
+	 * @param carryOffsetY carry offset y in meters
+	 * @param carryOffsetZ carry offset z in meters
+	 * @return zero on success
+	 */
 	public int pickGamepiece(int gamepieceIndex, double intakeX, double intakeY, double intakeZ,
 				double captureRadius, double carryOffsetX, double carryOffsetY, double carryOffsetZ) {
 		int rc = JSimJNI.pickGamepiece(worldHandle, gamepieceIndex,
@@ -339,6 +353,14 @@ public final class PhysicsWorld implements AutoCloseable {
 		return rc;
 	}
 
+	/**
+	 * Places a gamepiece at the given world position and marks it grounded.
+	 *
+	 * @param gamepieceIndex native gamepiece index
+	 * @param xMeters x position in meters
+	 * @param yMeters y position in meters
+	 * @param zMeters z position in meters
+	 */
 	public void placeGamepiece(int gamepieceIndex, double xMeters, double yMeters, double zMeters) {
 		int rc = JSimJNI.placeGamepiece(worldHandle, gamepieceIndex, xMeters, yMeters, zMeters);
 		if (rc != 0) {
@@ -347,6 +369,17 @@ public final class PhysicsWorld implements AutoCloseable {
 		}
 	}
 
+	/**
+	 * Outtakes a gamepiece from a pose with a linear velocity.
+	 *
+	 * @param gamepieceIndex native gamepiece index
+	 * @param px launch x position in meters
+	 * @param py launch y position in meters
+	 * @param pz launch z position in meters
+	 * @param vx launch x velocity in meters per second
+	 * @param vy launch y velocity in meters per second
+	 * @param vz launch z velocity in meters per second
+	 */
 	public void outtakeGamepiece(int gamepieceIndex, double px, double py, double pz,
 					double vx, double vy, double vz) {
 		int rc = JSimJNI.outtakeGamepiece(worldHandle, gamepieceIndex, px, py, pz, vx, vy, vz);
