@@ -36,9 +36,9 @@ void frcsim_set_body_sphere_geometry(RigidBody_t* body, double radius);
 void frcsim_set_body_position(RigidBody_t* body, double x, double y, double z);
 
 // Gamepiece-oriented accessors
-void frcsim_get_gamepiece_state(Gamepiece_t* gp, double* px, double* py, double* pz,
+void frcsim_get_gamepiece_state(Gamepiece_t* gamepiece, double* px, double* py, double* pz,
                                 double* vx, double* vy, double* vz);
-void frcsim_gamepiece_outtake(Gamepiece_t* gp, double px, double py, double pz,
+void frcsim_gamepiece_outtake(Gamepiece_t* gamepiece, double px, double py, double pz,
                               double vx, double vy, double vz);
 
 // Backwards-compatible Ball API that delegates to gamepiece functions.

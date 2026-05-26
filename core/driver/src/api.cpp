@@ -72,10 +72,10 @@ void frcsim_set_body_position(RigidBody_t* body, double x, double y, double z) {
   body->setPosition(x, y, z);
 }
 
-void frcsim_get_gamepiece_state(Gamepiece_t* gp, double* px, double* py, double* pz,
+void frcsim_get_gamepiece_state(Gamepiece_t* gamepiece, double* px, double* py, double* pz,
                                 double* vx, double* vy, double* vz) {
-  if (!gp) return;
-  const auto& state = gp->state();
+  if (!gamepiece) return;
+  const auto& state = gamepiece->state();
   if (px) *px = state.position_m.x;
   if (py) *py = state.position_m.y;
   if (pz) *pz = state.position_m.z;
@@ -84,12 +84,12 @@ void frcsim_get_gamepiece_state(Gamepiece_t* gp, double* px, double* py, double*
   if (vz) *vz = state.velocity_mps.z;
 }
 
-void frcsim_gamepiece_outtake(Gamepiece_t* gp, double px, double py, double pz,
+void frcsim_gamepiece_outtake(Gamepiece_t* gamepiece, double px, double py, double pz,
                               double vx, double vy, double vz) {
-  if (!gp) return;
+  if (!gamepiece) return;
   frcsim::Vector3 pos(px, py, pz);
   frcsim::Vector3 vel(vx, vy, vz);
-  gp->outtake(pos, vel);
+  gamepiece->outtake(pos, vel);
 }
 
 // Backwards-compatible Ball API delegates to gamepiece functions.

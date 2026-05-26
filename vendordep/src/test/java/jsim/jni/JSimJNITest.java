@@ -79,13 +79,13 @@ public class JSimJNITest {
   @Test
   void legacyBallWrapperStillWorks() {
     try (PhysicsWorld world = new PhysicsWorld(0.01, true)) {
-      Gamepiece gp = world.createGamepiece();
-      gp.outtake(new Pose3d(0.2, 0.0, 0.2, Rotation3d.kZero), new jsim.LinearVelocity3d(0.0, 0.0, 0.0));
+      Gamepiece gamepiece = world.createGamepiece();
+      gamepiece.outtake(new Pose3d(0.2, 0.0, 0.2, Rotation3d.kZero), new jsim.LinearVelocity3d(0.0, 0.0, 0.0));
 
       world.step(1);
 
-      assertTrue(gp.position().getZ() <= 0.2);
-      assertTrue(gp.gamepieceIndex() >= 0);
+      assertTrue(gamepiece.position().getZ() <= 0.2);
+      assertTrue(gamepiece.gamepieceIndex() >= 0);
     }
   }
 }
