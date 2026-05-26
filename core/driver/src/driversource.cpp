@@ -22,8 +22,8 @@ std::unordered_map<std::uint64_t, std::unique_ptr<frcsim::PhysicsWorld>>
     g_worlds;
 std::uint64_t g_next_handle = 1;
 
-// Mapping of world handle -> (gamepiece index -> type name)
-static std::unordered_map<std::uint64_t, std::unordered_map<int, std::string>>
+// Mapping of world handle -> (gamepiece index -> type tag)
+static std::unordered_map<std::uint64_t, std::unordered_map<int, int>>
   g_gamepiece_types;
 
 std::string typeNameForKind(int type) {
@@ -133,9 +133,9 @@ int c_rsCreateGamepieceWithType(uint64_t world_handle, int type, double radius_m
     return idx;
   }
 
-  const std::string type_name = typeNameForKind(type);
   std::lock_guard<std::mutex> lock(g_world_mutex);
-  g_gamepiece_types[world_handle][idx] = type_name;
+  g_gamepiece_types[world_handle][idx] = type;
+  const std::string type_name = typeNameForKind(type);
   frcsim::PhysicsWorld* world = getWorld(world_handle);
   if (world) {
     const std::size_t uidx = static_cast<std::size_t>(idx);
@@ -158,21 +158,16 @@ int c_rsCreateGamepieceWithTypeName(uint64_t world_handle, const char* type_name
   }
 
   std::lock_guard<std::mutex> lock(g_world_mutex);
-  if (type_name) {
-    g_gamepiece_types[world_handle][idx] = std::string(type_name);
-  } else {
-    g_gamepiece_types[world_handle][idx] = std::string();
-  }
-
-  // Also record the name on the native Gamepiece instance when available.
   frcsim::PhysicsWorld* world = getWorld(world_handle);
   if (world) {
     const std::size_t uidx = static_cast<std::size_t>(idx);
     if (uidx < world->gamepieces().size()) {
       try {
-        world->gamepieces()[uidx].setTypeName(g_gamepiece_types[world_handle][idx]);
+        if (type_name) {
+          world->gamepieces()[uidx].setTypeName(type_name);
+        }
       } catch (...) {
-        // setTypeName may not be present in older cores; ignore safely.
+        // best-effort only
       }
     }
   }
@@ -184,13 +179,27 @@ int c_rsGetGamepieceTypeName(uint64_t world_handle, int gamepiece_index,
   if (!out_buf || buf_len <= 0) return -1;
 
   std::lock_guard<std::mutex> lock(g_world_mutex);
-  if (!worldExists(world_handle)) return -1;
+  if (!worldExists(world_handle) || gamepiece_index < 0) return -1;
+  frcsim::PhysicsWorld* world = getWorld(world_handle);
+  if (world) {
+    auto& gamepieces = world->gamepieces();
+    const std::size_t idx = static_cast<std::size_t>(gamepiece_index);
+    if (idx < gamepieces.size()) {
+      const std::string& direct_name = gamepieces[idx].typeName();
+      if (!direct_name.empty()) {
+        const int to_copy = std::min(static_cast<int>(direct_name.size()), buf_len - 1);
+        memcpy(out_buf, direct_name.c_str(), to_copy);
+        out_buf[to_copy] = '\0';
+        return 0;
+      }
+    }
+  }
   auto it = g_gamepiece_types.find(world_handle);
   if (it == g_gamepiece_types.end()) return -1;
   auto it2 = it->second.find(gamepiece_index);
   if (it2 == it->second.end()) return -1;
 
-  const std::string& name = it2->second;
+  const std::string name = typeNameForKind(it2->second);
   if (name.empty()) {
     out_buf[0] = '\0';
     return 0;
@@ -231,20 +240,7 @@ int c_rsPickGamepiece(uint64_t world_handle, int gamepiece_index,
 
 int c_rsPlaceGamepiece(uint64_t world_handle, int gamepiece_index,
                       double x_m, double y_m, double z_m) {
-  std::lock_guard<std::mutex> lock(g_world_mutex);
-  frcsim::PhysicsWorld* world = getWorld(world_handle);
-  if (!world || gamepiece_index < 0) {
-    return -1;
-  }
-
-  auto& gps = world->gamepieces();
-  const std::size_t idx = static_cast<std::size_t>(gamepiece_index);
-  if (idx >= gps.size()) {
-    return -1;
-  }
-
-  gps[idx].place(frcsim::Vector3{x_m, y_m, z_m});
-  return 0;
+  return c_rsSetGamepiecePosition(world_handle, gamepiece_index, x_m, y_m, z_m);
 }
 
 int c_rsOuttakeGamepiece(uint64_t world_handle, int gamepiece_index,

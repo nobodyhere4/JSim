@@ -93,11 +93,13 @@ void frcsim_gamepiece_outtake(Gamepiece_t* gamepiece, double px, double py, doub
 }
 
 // Backwards-compatible Ball API delegates to gamepiece functions.
+[[deprecated("Use frcsim_get_gamepiece_state")]]
 void frcsim_get_ball_state(Ball_t* ball, double* px, double* py, double* pz,
                            double* vx, double* vy, double* vz) {
   frcsim_get_gamepiece_state(reinterpret_cast<Gamepiece_t*>(ball), px, py, pz, vx, vy, vz);
 }
 
+[[deprecated("Use frcsim_gamepiece_outtake")]]
 void frcsim_ball_shoot(Ball_t* ball, double px, double py, double pz,
                        double vx, double vy, double vz) {
   frcsim_gamepiece_outtake(reinterpret_cast<Gamepiece_t*>(ball), px, py, pz, vx, vy, vz);
