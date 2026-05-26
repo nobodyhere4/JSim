@@ -323,7 +323,7 @@ public final class PhysicsWorld implements AutoCloseable {
 	 * @param yMeters y position in meters
 	 * @param zMeters z position in meters
 	 */
-	void setGamepiecePosition(int gamepieceIndex, double xMeters, double yMeters, double zMeters) {
+	public void setGamepiecePosition(int gamepieceIndex, double xMeters, double yMeters, double zMeters) {
 		int rc = JSimJNI.setGamepiecePosition(worldHandle, gamepieceIndex, xMeters, yMeters, zMeters);
 		if (rc != 0) {
 			throw new JSimException("Failed to set gamepiece position", rc,
@@ -331,7 +331,7 @@ public final class PhysicsWorld implements AutoCloseable {
 		}
 	}
 
-	int pickGamepiece(int gamepieceIndex, double intakeX, double intakeY, double intakeZ,
+	public int pickGamepiece(int gamepieceIndex, double intakeX, double intakeY, double intakeZ,
 				double captureRadius, double carryOffsetX, double carryOffsetY, double carryOffsetZ) {
 		int rc = JSimJNI.pickGamepiece(worldHandle, gamepieceIndex,
 				intakeX, intakeY, intakeZ, captureRadius,
@@ -339,7 +339,7 @@ public final class PhysicsWorld implements AutoCloseable {
 		return rc;
 	}
 
-	void placeGamepiece(int gamepieceIndex, double xMeters, double yMeters, double zMeters) {
+	public void placeGamepiece(int gamepieceIndex, double xMeters, double yMeters, double zMeters) {
 		int rc = JSimJNI.placeGamepiece(worldHandle, gamepieceIndex, xMeters, yMeters, zMeters);
 		if (rc != 0) {
 			throw new JSimException("Failed to place gamepiece", rc,
@@ -347,7 +347,7 @@ public final class PhysicsWorld implements AutoCloseable {
 		}
 	}
 
-	void outtakeGamepiece(int gamepieceIndex, double px, double py, double pz,
+	public void outtakeGamepiece(int gamepieceIndex, double px, double py, double pz,
 					double vx, double vy, double vz) {
 		int rc = JSimJNI.outtakeGamepiece(worldHandle, gamepieceIndex, px, py, pz, vx, vy, vz);
 		if (rc != 0) {
@@ -366,7 +366,7 @@ public final class PhysicsWorld implements AutoCloseable {
 	 * @param vyMetersPerSecond y velocity in meters per second
 	 * @param vzMetersPerSecond z velocity in meters per second
 	 */
-	void setGamepieceLinearVelocity(int gamepieceIndex, double vxMetersPerSecond,
+	public void setGamepieceLinearVelocity(int gamepieceIndex, double vxMetersPerSecond,
 			double vyMetersPerSecond, double vzMetersPerSecond) {
 		int rc = JSimJNI.setGamepieceLinearVelocity(worldHandle, gamepieceIndex, vxMetersPerSecond,
 				vyMetersPerSecond, vzMetersPerSecond);
