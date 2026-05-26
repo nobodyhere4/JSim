@@ -148,7 +148,12 @@ public final class PhysicsWorld implements AutoCloseable {
 		return gamepiece;
 	}
 
-	/** Convenience: create a gamepiece of the given type using default physical parameters. */
+	/**
+	 * Convenience overload for creating a typed gamepiece with default physical parameters.
+	 *
+	 * @param type the gamepiece type to create
+	 * @return created gamepiece
+	 */
 	public Gamepiece createGamepiece(GamePieceType type) {
 		return createGamepiece(type, 0.12, 0.27, 0.45);
 	}
