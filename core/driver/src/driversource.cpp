@@ -174,12 +174,11 @@ int c_rsCreateGamepieceWithTypeName(uint64_t world_handle, const char* type_name
   return idx;
 }
 
-int c_rsGetGamepieceTypeName(uint64_t world_handle, int gamepiece_index,
-                            char* out_buf, int buf_len) {
-  if (!out_buf || buf_len <= 0) return -1;
+const char* c_rsGetGamepieceTypeName(uint64_t world_handle, int gamepiece_index) {
+  thread_local std::string type_name_storage;
 
   std::lock_guard<std::mutex> lock(g_world_mutex);
-  if (!worldExists(world_handle) || gamepiece_index < 0) return -1;
+  if (!worldExists(world_handle) || gamepiece_index < 0) return nullptr;
   frcsim::PhysicsWorld* world = getWorld(world_handle);
   if (world) {
     auto& gamepieces = world->gamepieces();
@@ -187,29 +186,18 @@ int c_rsGetGamepieceTypeName(uint64_t world_handle, int gamepiece_index,
     if (idx < gamepieces.size()) {
       const std::string& direct_name = gamepieces[idx].typeName();
       if (!direct_name.empty()) {
-        const int to_copy = std::min(static_cast<int>(direct_name.size()), buf_len - 1);
-        memcpy(out_buf, direct_name.c_str(), to_copy);
-        out_buf[to_copy] = '\0';
-        return 0;
+        type_name_storage = direct_name;
+        return type_name_storage.c_str();
       }
     }
   }
   auto it = g_gamepiece_types.find(world_handle);
-  if (it == g_gamepiece_types.end()) return -1;
+  if (it == g_gamepiece_types.end()) return nullptr;
   auto it2 = it->second.find(gamepiece_index);
-  if (it2 == it->second.end()) return -1;
+  if (it2 == it->second.end()) return nullptr;
 
-  const std::string name = typeNameForKind(it2->second);
-  if (name.empty()) {
-    out_buf[0] = '\0';
-    return 0;
-  }
-
-  // copy up to buf_len-1 chars and null-terminate
-  const int to_copy = std::min(static_cast<int>(name.size()), buf_len - 1);
-  memcpy(out_buf, name.c_str(), to_copy);
-  out_buf[to_copy] = '\0';
-  return 0;
+  type_name_storage = typeNameForKind(it2->second);
+  return type_name_storage.empty() ? nullptr : type_name_storage.c_str();
 }
 
 int c_rsPickGamepiece(uint64_t world_handle, int gamepiece_index,

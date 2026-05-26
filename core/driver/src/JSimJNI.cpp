@@ -160,12 +160,12 @@ JNIEXPORT jstring JNICALL
 Java_jsim_jni_JSimJNI_getGamepieceTypeName
   (JNIEnv* env, jclass, jlong world_handle, jint gamepiece_index)
 {
-  char buf[256];
-  const int rc = c_rsGetGamepieceTypeName(static_cast<uint64_t>(world_handle), gamepiece_index, buf, sizeof(buf));
-  if (rc != 0) {
+  const char* type_name = c_rsGetGamepieceTypeName(
+      static_cast<uint64_t>(world_handle), gamepiece_index);
+  if (!type_name) {
     return nullptr;
   }
-  return env->NewStringUTF(buf);
+  return env->NewStringUTF(type_name);
 }
 
 /*
