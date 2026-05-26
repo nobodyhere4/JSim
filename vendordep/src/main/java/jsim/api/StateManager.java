@@ -220,11 +220,11 @@ public class StateManager {
             double pitch = zone.getExitRotation().getY();
             double heading = robotPose.getRotation().getRadians() + zone.getExitRotation().getZ();
 
-            for (Gamepiece gp : physicsWorld.gamepieces()) {
-                Pose3d gpPose = physicsWorld.getGamepiecePosition(gp.gamepieceIndex());
-                double dx = gpPose.getTranslation().getX() - wx;
-                double dy = gpPose.getTranslation().getY() - wy;
-                double dz = gpPose.getTranslation().getZ() - wz;
+            for (Gamepiece gamepiece : physicsWorld.gamepieces()) {
+                Pose3d gamepiecePose = physicsWorld.getGamepiecePosition(gamepiece.gamepieceIndex());
+                double dx = gamepiecePose.getTranslation().getX() - wx;
+                double dy = gamepiecePose.getTranslation().getY() - wy;
+                double dz = gamepiecePose.getTranslation().getZ() - wz;
                 final double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
                 if (dist > kCaptureThresholdM) {
                     continue;
@@ -232,14 +232,14 @@ public class StateManager {
 
                 if (mode == GamepieceZone.Mode.INTAKE) {
                     // Attempt pickup — use small capture radius and zero carry offset.
-                    gp.pick(new Pose3d(wx, wy, wz, new Rotation3d()), 0.25, new Vec3(0.0, 0.0, 0.0));
+                    gamepiece.pick(new Pose3d(wx, wy, wz, new Rotation3d()), 0.25, new Vec3(0.0, 0.0, 0.0));
                 } else if (mode == GamepieceZone.Mode.OUTTAKE || mode == GamepieceZone.Mode.SHOOT) {
                     // Compute simple world-space velocity vector from robot heading and pitch.
                     final double cosPitch = Math.cos(pitch);
                     double vx = exitSpeed * Math.cos(heading) * cosPitch;
                     double vy = exitSpeed * Math.sin(heading) * cosPitch;
                     double vz = exitSpeed * Math.sin(pitch);
-                    physicsWorld.outtakeGamepiece(gp.gamepieceIndex(), wx, wy, wz, vx, vy, vz);
+                    physicsWorld.outtakeGamepiece(gamepiece.gamepieceIndex(), wx, wy, wz, vx, vy, vz);
                 }
             }
         }
