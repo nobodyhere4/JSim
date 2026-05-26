@@ -623,16 +623,3 @@ Java_jsim_jni_JSimJNI_getBallLinearVelocity
 }
 
 }  // extern "C"
-  double vz = 0.0;
-  const int rc = c_rsGetBallLinearVelocity(
-      static_cast<uint64_t>(world_handle), ball_index, &vx, &vy, &vz);
-  if (rc != 0) {
-    return rc;
-  }
-
-  jdouble values[3] = {vx, vy, vz};
-  env->SetDoubleArrayRegion(out_vxyz, 0, 3, values);
-  return 0;
-}
-
-}  // extern "C"
