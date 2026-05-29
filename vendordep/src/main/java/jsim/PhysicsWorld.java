@@ -10,6 +10,7 @@ import jsim.api.GamePieceType;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Translation3d;
 import jsim.jni.JSimJNI;
 
@@ -255,6 +256,24 @@ public final class PhysicsWorld implements AutoCloseable {
 	}
 
 	/**
+	 * Sets the body's world-space orientation.
+	 *
+	 * @param bodyIndex native body index
+	 * @param qw quaternion w component
+	 * @param qx quaternion x component
+	 * @param qy quaternion y component
+	 * @param qz quaternion z component
+	 */
+	void setBodyOrientation(int bodyIndex, double qw, double qx, double qy, double qz) {
+		int rc = JSimJNI.setBodyOrientation(worldHandle, bodyIndex, qw, qx, qy, qz);
+		if (rc != 0) {
+			throw new JSimException("Failed to set body orientation for bodyIndex=" + bodyIndex,
+				rc,
+				"Body index may be invalid or orientation values are non-finite. Check that bodyIndex >= 0 and all quaternion components are finite numbers.");
+		}
+	}
+
+	/**
 	 * Enables or disables gravity for the given body.
 	 *
 	 * @param bodyIndex native body index
@@ -448,6 +467,22 @@ public final class PhysicsWorld implements AutoCloseable {
 				"Verify the body index and that the world is initialized; check native logs for details.");
 		}
 		return new LinearVelocity3d(values[0], values[1], values[2]);
+	}
+
+	/**
+	 * Gets the world orientation for the given body.
+	 *
+	 * @param bodyIndex native body index
+	 * @return body orientation
+	 */
+	public Rotation3d getBodyOrientation(int bodyIndex) {
+		double[] values = new double[4];
+		int rc = JSimJNI.getBodyOrientation(worldHandle, bodyIndex, values);
+		if (rc != 0) {
+			throw new JSimException("Failed to get body orientation", rc,
+				"Verify the body index and that the world is initialized; check native logs for details.");
+		}
+		return new Rotation3d(new Quaternion(values[0], values[1], values[2], values[3]));
 	}
 
 	/**

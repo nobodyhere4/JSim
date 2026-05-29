@@ -7,6 +7,7 @@ package jsim;
 import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.Distance;
 
@@ -79,6 +80,16 @@ public final class PhysicsBody {
   }
 
   /**
+   * Sets the body's world-space orientation.
+   *
+   * @param orientation the new body orientation
+   */
+  public void setOrientation(Rotation3d orientation) {
+    var q = orientation.getQuaternion();
+    world.setBodyOrientation(bodyIndex, q.getW(), q.getX(), q.getY(), q.getZ());
+  }
+
+  /**
    * Enables or disables gravity for this body.
    *
    * @param enabled true to enable gravity
@@ -133,6 +144,15 @@ public final class PhysicsBody {
    */
   public LinearVelocity3d linearVelocity() {
     return world.getBodyLinearVelocity(bodyIndex);
+  }
+
+  /**
+   * Gets the current world-space orientation.
+   *
+   * @return the body orientation
+   */
+  public Rotation3d orientation() {
+    return world.getBodyOrientation(bodyIndex);
   }
 
 }

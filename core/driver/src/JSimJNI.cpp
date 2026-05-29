@@ -53,6 +53,21 @@ Java_jsim_jni_JSimJNI_createWorld
 }
 
 /*
+
+/*
+ * Class:     jsim_jni_JSimJNI
+ * Method:    setBodyOrientation
+ * Signature: (JIDDDD)I
+ */
+JNIEXPORT jint JNICALL
+Java_jsim_jni_JSimJNI_setBodyOrientation
+  (JNIEnv*, jclass, jlong world_handle, jint body_index, jdouble qw,
+   jdouble qx, jdouble qy, jdouble qz)
+{
+  return static_cast<jint>(
+      c_rsSetBodyOrientation(static_cast<uint64_t>(world_handle), body_index,
+                             qw, qx, qy, qz));
+}
  * Class:     jsim_jni_JSimJNI
  * Method:    destroyWorld
  * Signature: (J)V
@@ -606,6 +621,46 @@ Java_jsim_jni_JSimJNI_getBodyVelocity6Array
   const int rc = c_rsGetBodyVelocity6Array(static_cast<uint64_t>(world_handle),
                                            data, max_bodies);
   env->ReleaseDoubleArrayElements(out_velocity6, data, 0);
+  return static_cast<jint>(rc);
+}
+
+/*
+ * Class:     jsim_jni_JSimJNI
+ * Method:    getBodyOrientation
+ * Signature: (JI[D)I
+ */
+JNIEXPORT jint JNICALL
+Java_jsim_jni_JSimJNI_getBodyOrientation
+  (JNIEnv* env, jclass, jlong world_handle, jint body_index, jdoubleArray out_orientation)
+{
+  if (out_orientation == nullptr) {
+    return -1;
+  }
+
+  const jsize len = env->GetArrayLength(out_orientation);
+  if (len < 4) {
+    return -1;
+  }
+
+  jdouble* data = env->GetDoubleArrayElements(out_orientation, nullptr);
+  if (data == nullptr) {
+    return -1;
+  }
+
+  double qw = 0.0;
+  double qx = 0.0;
+  double qy = 0.0;
+  double qz = 0.0;
+  const int rc = c_rsGetBodyOrientation(static_cast<uint64_t>(world_handle), body_index,
+                                        &qw, &qx, &qy, &qz);
+  if (rc == 0) {
+    data[0] = qw;
+    data[1] = qx;
+    data[2] = qy;
+    data[3] = qz;
+  }
+
+  env->ReleaseDoubleArrayElements(out_orientation, data, 0);
   return static_cast<jint>(rc);
 }
 

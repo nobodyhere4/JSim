@@ -2,6 +2,7 @@ package jsim.api;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -9,6 +10,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import jsim.PhysicsWorld;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
@@ -55,5 +57,32 @@ class StateManagerTest {
     assertEquals(0.02, robot.getPose().getX(), 1e-9);
     assertEquals(GamepieceZone.Mode.OUTTAKE, zone.getMode());
     assertEquals(3.0, zone.getExitVelocity().in(MetersPerSecond), 1e-9);
+  }
+
+  @Test
+  void initializeRobotPreservesFrameVerticesAndCreatesBodyWithWorld() {
+    StateManager stateManager = StateManager.getInstance();
+    PhysicsWorld world = new PhysicsWorld(0.02, true);
+    stateManager.setPhysicsWorld(world);
+
+    Translation2d[] frameDimensions = new Translation2d[] {
+      new Translation2d(-0.3, -0.2),
+      new Translation2d(0.3, -0.2),
+      new Translation2d(0.3, 0.2),
+      new Translation2d(-0.3, 0.2)
+    };
+
+    SimRobot robot = stateManager.initializeRobot(
+        RobotID.BLUE_3,
+        new Pose2d(1.0, 2.0, new edu.wpi.first.math.geometry.Rotation2d(0.4)),
+        frameDimensions);
+
+    assertEquals(4, robot.getFrameVertices().length);
+    assertNotNull(stateManager.getRobotBody(RobotID.BLUE_3));
+
+    robot.setChassisSpeeds(new ChassisSpeeds(1.0, 0.0, 0.0));
+    stateManager.stepPhysics();
+
+    assertEquals(1.02, robot.getPose().getX(), 1e-9);
   }
 }

@@ -437,6 +437,23 @@ int c_rsSetBodyLinearVelocity(uint64_t world_handle, int body_index,
 }
 
 /**
+ * @brief Set a rigid body's orientation.
+ *
+ * @return 0 on success, -1 on error.
+ */
+int c_rsSetBodyOrientation(uint64_t world_handle, int body_index,
+                           double qw, double qx, double qy, double qz) {
+  std::lock_guard<std::mutex> lock(g_world_mutex);
+  frcsim::PhysicsWorld* world = getWorld(world_handle);
+  frcsim::RigidBody* body = getBody(world, body_index);
+  if (!body) {
+    return -1;
+  }
+  body->setOrientation(frcsim::Quaternion(qw, qx, qy, qz).normalized());
+  return 0;
+}
+
+/**
  * @brief Enable or disable gravity for a specific body.
  *
  * @param enabled Non-zero to enable gravity.
@@ -451,6 +468,28 @@ int c_rsSetBodyGravityEnabled(uint64_t world_handle, int body_index,
     return -1;
   }
   body->flags().enable_gravity = (enabled != 0);
+  return 0;
+}
+
+/**
+ * @brief Read a rigid body's orientation quaternion.
+ *
+ * @return 0 on success, -1 on error.
+ */
+int c_rsGetBodyOrientation(uint64_t world_handle, int body_index,
+                           double* out_qw, double* out_qx,
+                           double* out_qy, double* out_qz) {
+  std::lock_guard<std::mutex> lock(g_world_mutex);
+  frcsim::PhysicsWorld* world = getWorld(world_handle);
+  frcsim::RigidBody* body = getBody(world, body_index);
+  if (!body) {
+    return -1;
+  }
+  const auto& q = body->orientation();
+  if (out_qw) *out_qw = q.w;
+  if (out_qx) *out_qx = q.x;
+  if (out_qy) *out_qy = q.y;
+  if (out_qz) *out_qz = q.z;
   return 0;
 }
 

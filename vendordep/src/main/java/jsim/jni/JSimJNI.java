@@ -171,6 +171,20 @@ public class JSimJNI {
   public static native int setBodyLinearVelocity(
       long worldHandle, int bodyIndex, double vxMps, double vyMps, double vzMps);
 
+    /**
+     * Sets a body's world-space orientation as a quaternion.
+     *
+     * @param worldHandle the native world handle
+     * @param bodyIndex the native body index
+     * @param qw quaternion w component
+     * @param qx quaternion x component
+     * @param qy quaternion y component
+     * @param qz quaternion z component
+     * @return zero on success
+     */
+    public static native int setBodyOrientation(
+      long worldHandle, int bodyIndex, double qw, double qx, double qy, double qz);
+
   /**
    * Enables or disables gravity for a body.
    *
@@ -438,6 +452,17 @@ public class JSimJNI {
    */
   public static native int getBodyLinearVelocity(
       long worldHandle, int bodyIndex, double[] outVxyzMps);
+
+    /**
+     * Reads a body's orientation as a quaternion into {@code outWxyz}.
+     *
+     * @param worldHandle the native world handle
+     * @param bodyIndex the native body index
+     * @param outWxyz the output array that receives qw,qx,qy,qz
+     * @return zero on success
+     */
+    public static native int getBodyOrientation(
+      long worldHandle, int bodyIndex, double[] outWxyz);
 
   /**
    * Exports flattened body poses as [x, y, z, qw, qx, qy, qz] blocks.

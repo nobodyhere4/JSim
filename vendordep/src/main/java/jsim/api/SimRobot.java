@@ -1,6 +1,7 @@
 package jsim.api;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -31,6 +32,10 @@ public class SimRobot {
          * The current field-relative pose of the robot.
          */
         public Pose2d pose = new Pose2d();
+        /**
+         * The robot frame vertices relative to the robot center.
+         */
+        public Translation2d[] frameVertices = new Translation2d[0];
         /**
          * The current chassis speeds of the robot.
          */
@@ -117,6 +122,16 @@ public class SimRobot {
      */
     public Pose2d getPose() {
         return stateManagerRef.get().pose;
+    }
+
+    /**
+     * Returns the robot frame perimeter vertices used to build the robot body.
+     *
+     * @return cloned frame perimeter vertices
+     */
+    public Translation2d[] getFrameVertices() {
+        Translation2d[] frameVertices = stateManagerRef.get().frameVertices;
+        return frameVertices == null ? new Translation2d[0] : frameVertices.clone();
     }
 
     /**
