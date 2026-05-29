@@ -287,12 +287,6 @@ public class StateManager {
         return inside;
     }
 
-    private static Pose2d poseFromBody(PhysicsBody body) {
-        Pose3d position = body.position();
-        double yaw = body.orientation().getZ();
-        return new Pose2d(position.getX(), position.getY(), new edu.wpi.first.math.geometry.Rotation2d(yaw));
-    }
-
     /**
      * Registers a gamepiece zone to be refreshed on each simulation step.
      *
@@ -406,17 +400,6 @@ public class StateManager {
 
         if (physicsWorld != null) {
             physicsWorld.step();
-        }
-
-        for (SimRobot robot : robots.values()) {
-            if (robot == null) {
-                continue;
-            }
-
-            PhysicsBody robotBody = robotBodies.get(robot.getRobotID());
-            if (robotBody != null) {
-                robot.resetPose(poseFromBody(robotBody));
-            }
         }
 
         updateGamepieceZones();
