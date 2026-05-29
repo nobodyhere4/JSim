@@ -94,6 +94,58 @@ public class JSimJNI {
   public static native int createBall(long worldHandle);
 
   /**
+   * Creates a generic gamepiece using the legacy ball-compatible defaults.
+   *
+   * @param worldHandle the native world handle
+   * @return the native gamepiece index
+   */
+  public static native int createGamepiece(long worldHandle);
+
+  /**
+   * Creates a generic gamepiece with a spherical hitbox in the world.
+   *
+   * @param worldHandle the native world handle
+   * @param radiusMeters sphere hitbox radius in meters
+   * @param massKg gamepiece mass in kilograms
+   * @param restitution coefficient of restitution in [0, 1]
+   * @return the native gamepiece index
+   */
+  public static native int createGamepiece(
+      long worldHandle, double radiusMeters, double massKg, double restitution);
+
+    /**
+     * Creates a generic gamepiece with explicit type tag.
+     * @param worldHandle native world handle
+     * @param type ordinal value from GamePieceType
+     * @param radiusMeters sphere radius in meters
+     * @param massKg mass in kilograms
+     * @param restitution coefficient of restitution
+     * @return native gamepiece index
+     */
+  public static native int createGamepieceWithType(
+      long worldHandle, int type, double radiusMeters, double massKg, double restitution);
+
+      /**
+       * Creates a generic gamepiece with a string type name.
+       * @param worldHandle native world handle
+       * @param typeName human readable type name (e.g. "generic_sphere")
+       * @param radiusMeters sphere radius in meters
+       * @param massKg mass in kilograms
+       * @param restitution coefficient of restitution
+       * @return native gamepiece index
+       */
+  public static native int createGamepieceWithTypeName(
+      long worldHandle, String typeName, double radiusMeters, double massKg, double restitution);
+
+      /**
+       * Reads the registered type name for a gamepiece.
+       * @param worldHandle native world handle
+       * @param gamepieceIndex native gamepiece index
+       * @return UTF-8 type name or null when unknown
+       */
+  public static native String getGamepieceTypeName(long worldHandle, int gamepieceIndex);
+
+  /**
    * Sets a body's position in meters.
    *
    * @param worldHandle the native world handle
@@ -118,6 +170,20 @@ public class JSimJNI {
    */
   public static native int setBodyLinearVelocity(
       long worldHandle, int bodyIndex, double vxMps, double vyMps, double vzMps);
+
+    /**
+     * Sets a body's world-space orientation as a quaternion.
+     *
+     * @param worldHandle the native world handle
+     * @param bodyIndex the native body index
+     * @param qw quaternion w component
+     * @param qx quaternion x component
+     * @param qy quaternion y component
+     * @param qz quaternion z component
+     * @return zero on success
+     */
+    public static native int setBodyOrientation(
+      long worldHandle, int bodyIndex, double qw, double qx, double qy, double qz);
 
   /**
    * Enables or disables gravity for a body.
@@ -202,30 +268,108 @@ public class JSimJNI {
       double dragCoefficient);
 
     /**
-     * Sets a ball's world-space position from a Pose3d.
+     * Attempts to pick up a gamepiece into a carrier location.
      *
      * @param worldHandle the native world handle
-     * @param ballIndex the native ball index
-     * @param xMeters Pose3d position data
-     * @param yMeters Pose3d position data
-     * @param zMeters Pose3d position data
-     * @return zero on success
+     * @param gamepieceIndex the native gamepiece index
+     * @param intakeX world-space intake x coordinate
+     * @param intakeY world-space intake y coordinate
+     * @param intakeZ world-space intake z coordinate
+     * @param captureRadius capture radius in meters
+     * @param carryOffsetX carry offset x in meters
+     * @param carryOffsetY carry offset y in meters
+     * @param carryOffsetZ carry offset z in meters
+     * @return zero on success, non-zero on failure
      */
-    public static native int setBallPosition(
-      long worldHandle, int ballIndex, double xMeters, double yMeters, double zMeters);
+    public static native int pickGamepiece(
+      long worldHandle,
+      int gamepieceIndex,
+      double intakeX,
+      double intakeY,
+      double intakeZ,
+      double captureRadius,
+      double carryOffsetX,
+      double carryOffsetY,
+      double carryOffsetZ);
 
     /**
-     * Sets a ball's world-space linear velocity from a LinearVelocity3d.
+     * Places a gamepiece at the given world position and marks it grounded.
      *
      * @param worldHandle the native world handle
-     * @param ballIndex the native ball index
-     * @param vxMps LinearVelocity3d data
-     * @param vyMps LinearVelocity3d data
-     * @param vzMps LinearVelocity3d data
-     * @return zero on success
+     * @param gamepieceIndex the native gamepiece index
+     * @param xMeters x position in meters
+     * @param yMeters y position in meters
+     * @param zMeters z position in meters
+     * @return zero on success, non-zero on failure
      */
-    public static native int setBallLinearVelocity(
-      long worldHandle, int ballIndex, double vxMps, double vyMps, double vzMps);
+    public static native int placeGamepiece(long worldHandle, int gamepieceIndex,
+      double xMeters, double yMeters, double zMeters);
+
+    /**
+     * Launches (outtakes) a gamepiece with the specified position and velocity.
+     *
+     * @param worldHandle the native world handle
+     * @param gamepieceIndex the native gamepiece index
+     * @param px launch position x in meters
+     * @param py launch position y in meters
+     * @param pz launch position z in meters
+     * @param vx launch velocity x in m/s
+     * @param vy launch velocity y in m/s
+     * @param vz launch velocity z in m/s
+     * @return zero on success, non-zero on failure
+     */
+    public static native int outtakeGamepiece(long worldHandle, int gamepieceIndex,
+      double px, double py, double pz, double vx, double vy, double vz);
+
+    /**
+     * Native: set gamepiece position.
+     *
+     * @param worldHandle the native world handle
+     * @param gamepieceIndex the native gamepiece index
+     * @param xMeters x position in meters
+     * @param yMeters y position in meters
+     * @param zMeters z position in meters
+     * @return zero on success, non-zero on failure
+     */
+  public static native int setGamepiecePosition(
+      long worldHandle, int gamepieceIndex, double xMeters, double yMeters, double zMeters);
+
+    /**
+     * Native: set gamepiece linear velocity.
+     *
+     * @param worldHandle the native world handle
+     * @param gamepieceIndex the native gamepiece index
+     * @param vxMps x velocity in meters per second
+     * @param vyMps y velocity in meters per second
+     * @param vzMps z velocity in meters per second
+     * @return zero on success, non-zero on failure
+     */
+  public static native int setGamepieceLinearVelocity(
+      long worldHandle, int gamepieceIndex, double vxMps, double vyMps, double vzMps);
+
+    /**
+     * Native: get gamepiece position.
+     *
+     * @param worldHandle the native world handle
+     * @param gamepieceIndex the native gamepiece index
+     * @param outXyzMeters output array of length 3 receiving x,y,z in meters
+     * @return zero on success, non-zero on failure
+     */
+  public static native int getGamepiecePosition(
+      long worldHandle, int gamepieceIndex, double[] outXyzMeters);
+
+    /**
+     * Native: get gamepiece linear velocity.
+     *
+     * @param worldHandle the native world handle
+     * @param gamepieceIndex the native gamepiece index
+     * @param outVxyzMps output array of length 3 receiving vx,vy,vz in m/s
+     * @return zero on success, non-zero on failure
+     */
+  public static native int getGamepieceLinearVelocity(
+      long worldHandle, int gamepieceIndex, double[] outVxyzMps);
+
+    // Deprecated ball-named methods removed; use gamepiece equivalents.
 
   /**
    * Sets the world's gravity vector in meters per second squared.
@@ -309,6 +453,17 @@ public class JSimJNI {
   public static native int getBodyLinearVelocity(
       long worldHandle, int bodyIndex, double[] outVxyzMps);
 
+    /**
+     * Reads a body's orientation as a quaternion into {@code outWxyz}.
+     *
+     * @param worldHandle the native world handle
+     * @param bodyIndex the native body index
+     * @param outWxyz the output array that receives qw,qx,qy,qz
+     * @return zero on success
+     */
+    public static native int getBodyOrientation(
+      long worldHandle, int bodyIndex, double[] outWxyz);
+
   /**
    * Exports flattened body poses as [x, y, z, qw, qx, qy, qz] blocks.
    *
@@ -337,24 +492,5 @@ public class JSimJNI {
    */
   public static native int getBodyState13Array(long worldHandle, double[] outState13);
 
-  /**
-   * Reads a ball's world-space position as a Pose3d.
-   *
-   * @param worldHandle the native world handle
-   * @param ballIndex the native ball index
-   * @param outXyzMeters output array for Pose3d data
-   * @return zero on success
-   */
-  public static native int getBallPosition(long worldHandle, int ballIndex, double[] outXyzMeters);
-
-  /**
-   * Reads a ball's world-space linear velocity as a LinearVelocity3d.
-   *
-   * @param worldHandle the native world handle
-   * @param ballIndex the native ball index
-   * @param outVxyzMps output array for LinearVelocity3d data
-   * @return zero on success
-   */
-  public static native int getBallLinearVelocity(
-      long worldHandle, int ballIndex, double[] outVxyzMps);
+    // Deprecated ball-named getters removed; use gamepiece equivalents.
 }

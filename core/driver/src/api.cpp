@@ -17,20 +17,20 @@ RigidBody_t* frcsim_create_body(PhysicsWorld_t* w, double mass_kg) {
   return &w->createBody(mass_kg);
 }
 
-Ball_t* frcsim_create_ball(PhysicsWorld_t* w,
-                           const frcsim::BallPhysicsSim3D::Config* config,
-                           const frcsim::BallPhysicsSim3D::BallProperties* props) {
+Gamepiece_t* frcsim_create_gamepiece(PhysicsWorld_t* w,
+                                    const frcsim::Gamepiece::Config* config,
+                                    const frcsim::Gamepiece::Properties* props) {
   if (!w) return nullptr;
   if (config && props) {
-    return &w->createBall(*config, *props);
+    return static_cast<Gamepiece_t*>(&w->createBall(*config, *props));
   }
   if (config) {
-    return &w->createBall(*config, frcsim::BallPhysicsSim3D::BallProperties());
+    return static_cast<Gamepiece_t*>(&w->createBall(*config, frcsim::Gamepiece::Properties()));
   }
   if (props) {
-    return &w->createBall(frcsim::BallPhysicsSim3D::Config(), *props);
+    return static_cast<Gamepiece_t*>(&w->createBall(frcsim::Gamepiece::Config(), *props));
   }
-  return &w->createBall(frcsim::BallPhysicsSim3D::Config(), frcsim::BallPhysicsSim3D::BallProperties());
+  return static_cast<Gamepiece_t*>(&w->createBall(frcsim::Gamepiece::Config(), frcsim::Gamepiece::Properties()));
 }
 
 void frcsim_step_world(PhysicsWorld_t* w, double dt_s) {
@@ -65,24 +65,24 @@ void frcsim_set_body_position(RigidBody_t* body, double x, double y, double z) {
   body->setPosition(x, y, z);
 }
 
-void frcsim_get_ball_state(Ball_t* ball, double* px, double* py, double* pz,
-                           double* vx, double* vy, double* vz) {
-  if (!ball) return;
-  const auto& s = ball->state();
-  if (px) *px = s.position_m.x;
-  if (py) *py = s.position_m.y;
-  if (pz) *pz = s.position_m.z;
-  if (vx) *vx = s.velocity_mps.x;
-  if (vy) *vy = s.velocity_mps.y;
-  if (vz) *vz = s.velocity_mps.z;
+void frcsim_get_gamepiece_state(Gamepiece_t* gamepiece, double* px, double* py, double* pz,
+                                double* vx, double* vy, double* vz) {
+  if (!gamepiece) return;
+  const auto& state = gamepiece->state();
+  if (px) *px = state.position_m.x;
+  if (py) *py = state.position_m.y;
+  if (pz) *pz = state.position_m.z;
+  if (vx) *vx = state.velocity_mps.x;
+  if (vy) *vy = state.velocity_mps.y;
+  if (vz) *vz = state.velocity_mps.z;
 }
 
-void frcsim_ball_shoot(Ball_t* ball, double px, double py, double pz,
-                       double vx, double vy, double vz) {
-  if (!ball) return;
+void frcsim_gamepiece_outtake(Gamepiece_t* gamepiece, double px, double py, double pz,
+                              double vx, double vy, double vz) {
+  if (!gamepiece) return;
   frcsim::Vector3 pos(px, py, pz);
   frcsim::Vector3 vel(vx, vy, vz);
-  ball->shoot(pos, vel);
+  gamepiece->outtake(pos, vel);
 }
 
 }

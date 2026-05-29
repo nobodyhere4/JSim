@@ -65,6 +65,7 @@ int main() {
     assert(sim.state().position_m.z >= properties.radius_m - 1e-9);
     // Ground contact should eventually reduce vertical speed and keep it finite.
     assert(std::isfinite(sim.state().velocity_mps.z));
+    assert(sim.state().spin_radps.norm() == 0.0);
 
     // Drag should produce a shorter (non-parabolic) downrange trajectory than vacuum-like flight.
     frcsim::BallPhysicsSim3D::Config drag_cfg = config;

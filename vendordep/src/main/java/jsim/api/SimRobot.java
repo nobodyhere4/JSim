@@ -1,15 +1,18 @@
 package jsim.api;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import jsim.LinearVelocity3d;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import jsim.PhysicsBody;
 import jsim.api.StateManager;
 
 /**
@@ -28,6 +31,10 @@ public class SimRobot {
          * The current field-relative pose of the robot.
          */
         public Pose2d pose = new Pose2d();
+        /**
+         * The robot frame vertices relative to the robot center.
+         */
+        public Translation2d[] frameVertices = new Translation2d[0];
         /**
          * The current chassis speeds of the robot.
          */
@@ -117,6 +124,35 @@ public class SimRobot {
     }
 
     /**
+     * Returns the robot frame perimeter vertices used to build the robot body.
+     *
+     * @return cloned frame perimeter vertices
+     */
+    public Translation2d[] getFrameVertices() {
+        Translation2d[] frameVertices = stateManagerRef.get().frameVertices;
+        return frameVertices == null ? new Translation2d[0] : frameVertices.clone();
+    }
+
+    /**
+     * Returns the robot's current measured chassis velocity when physics is attached.
+     * Falls back to the last commanded chassis speeds until a body is registered.
+     *
+     * @return the current chassis velocity snapshot
+     */
+    public ChassisSpeeds getVelocity() {
+        PhysicsBody robotBody = StateManager.getInstance().getRobotBody(robotID);
+        if (robotBody != null) {
+            LinearVelocity3d velocity = robotBody.linearVelocity();
+            return new ChassisSpeeds(
+                velocity.getVxMetersPerSecond(),
+                velocity.getVyMetersPerSecond(),
+                0.0);
+        }
+
+        return stateManagerRef.get().speeds;
+    }
+
+    /**
      * Hard overrides the state manager's simulation pose for this robot.
      * @param pose the new pose to set for the robot.
      */
@@ -130,6 +166,28 @@ public class SimRobot {
      */
     public void setChassisSpeeds(ChassisSpeeds speeds) {
         stateManagerRef.get().speeds = speeds;
+    }
+
+    /**
+     * Advances the robot state by one simulation tick.
+     *
+     * @param dtSeconds timestep in seconds
+     */
+    public void update(double dtSeconds) {
+        if (dtSeconds <= 0.0) {
+            return;
+        }
+
+        RobotState state = stateManagerRef.get();
+        if (state == null || state.pose == null || state.speeds == null) {
+            return;
+        }
+
+        double xMeters = state.pose.getX() + (state.speeds.vxMetersPerSecond * dtSeconds);
+        double yMeters = state.pose.getY() + (state.speeds.vyMetersPerSecond * dtSeconds);
+        double thetaRadians =
+            state.pose.getRotation().getRadians() + (state.speeds.omegaRadiansPerSecond * dtSeconds);
+        state.pose = new Pose2d(xMeters, yMeters, new Rotation2d(thetaRadians));
     }
 
     /**

@@ -22,19 +22,25 @@ public class Fuel2026 extends GamePieceState {
     public void shoot(Translation3d relativeStart, double timeOfFlight, Rotation3d exitAngle) {
         setExitAngle(exitAngle);
 
-        // Convert Rotation3d to Quaternion (assuming ZYX order)
-        Quaternion q = quaternionFromRotation3d(exitAngle);
-
         // Example: rotate a velocity vector by the exit angle
         Translation3d velocity = new Translation3d(1, 0, 0);
-        Translation3d rotatedVelocity = q.rotate(velocity);
+        Translation3d rotatedVelocity = rotateVectorByRotation3d(exitAngle, velocity);
 
         // Example: use a matrix for further transformation (identity for now)
         Matrix3 m = Matrix3.identity();
         m.multiply(rotatedVelocity);
     }
 
-    private static Quaternion quaternionFromRotation3d(Rotation3d r) {
+    private static Translation3d rotateVectorByRotation3d(Rotation3d rotation, Translation3d vector) {
+        double[] quaternion = quaternionFromRotation3d(rotation);
+        double[] vectorQuaternion = multiplyQuaternion(0.0, vector.getX(), vector.getY(), vector.getZ(),
+                quaternion[0], quaternion[1], quaternion[2], quaternion[3]);
+        double[] rotatedQuaternion = multiplyQuaternion(vectorQuaternion[0], vectorQuaternion[1], vectorQuaternion[2], vectorQuaternion[3],
+                quaternion[0], -quaternion[1], -quaternion[2], -quaternion[3]);
+        return new Translation3d(rotatedQuaternion[1], rotatedQuaternion[2], rotatedQuaternion[3]);
+    }
+
+    private static double[] quaternionFromRotation3d(Rotation3d r) {
         double cy = Math.cos(r.getZ() * 0.5);
         double sy = Math.sin(r.getZ() * 0.5);
         double cp = Math.cos(r.getY() * 0.5);
@@ -46,6 +52,23 @@ public class Fuel2026 extends GamePieceState {
         double x = sr * cp * cy - cr * sp * sy;
         double y = cr * sp * cy + sr * cp * sy;
         double z = cr * cp * sy - sr * sp * cy;
-        return new Quaternion(w, x, y, z);
+        return new double[] {w, x, y, z};
+    }
+
+    private static double[] multiplyQuaternion(
+            double aw,
+            double ax,
+            double ay,
+            double az,
+            double bw,
+            double bx,
+            double by,
+            double bz) {
+        return new double[] {
+                aw * bw - ax * bx - ay * by - az * bz,
+                aw * bx + ax * bw + ay * bz - az * by,
+                aw * by - ax * bz + ay * bw + az * bx,
+                aw * bz + ax * by - ay * bx + az * bw
+        };
     }
 }

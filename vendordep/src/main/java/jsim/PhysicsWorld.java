@@ -5,11 +5,12 @@
 package jsim;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import jsim.api.GamePieceType;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Translation3d;
 import jsim.jni.JSimJNI;
 
@@ -18,8 +19,17 @@ import jsim.jni.JSimJNI;
  */
 public final class PhysicsWorld implements AutoCloseable {
 	private long worldHandle;
-	private final List<Ball> balls = new ArrayList<>();
+	private final double fixedDtSeconds;
+	private final List<Gamepiece> gamepieces = new ArrayList<>();
 	private final List<Runnable> stepListeners = new ArrayList<>();
+
+	/**
+	 * Supported gamepiece hitbox families.
+	 */
+	public enum HitboxType {
+		/** Spherical hitbox using ball-style physics. */
+		SPHERE
+	}
 
 	/**
 	 * Creates a native physics world.
@@ -29,11 +39,21 @@ public final class PhysicsWorld implements AutoCloseable {
 	 */
 	public PhysicsWorld(double fixedDtSeconds, boolean enableGravity) {
 		JSimJNI.forceLoad();
+		this.fixedDtSeconds = fixedDtSeconds;
 		this.worldHandle = JSimJNI.createWorld(fixedDtSeconds, enableGravity);
 		if (worldHandle == 0) {
 			throw new JSimException("Failed to create native PhysicsWorld", 0,
 				"Ensure the native JSim library is available and that permissions allow loading it.");
 		}
+	}
+
+	/**
+	 * Returns the fixed timestep configured for this world.
+	 *
+	 * @return fixed timestep in seconds
+	 */
+	public double getFixedDtSeconds() {
+		return fixedDtSeconds;
 	}
 
 	/**
@@ -76,29 +96,119 @@ public final class PhysicsWorld implements AutoCloseable {
 	}
 
 	/**
-	 * Creates a new ball in the world.
+	 * Creates a new generic gamepiece in the world.
 	 *
-	 * @return the created ball handle
+	 * <p>Current native support is spherical hitboxes. Additional hitbox types can
+	 * be added without changing the top-level gamepiece abstraction.
+	 *
+	 * @param radiusMeters sphere radius in meters
+	 * @param massKg gamepiece mass in kilograms
+	 * @param restitution coefficient of restitution in [0, 1]
+	 * @return the created gamepiece handle
 	 */
-	public Ball createBall() {
-		int index = JSimJNI.createBall(worldHandle);
+	public Gamepiece createGamepiece(double radiusMeters, double massKg, double restitution) {
+		int index = JSimJNI.createGamepiece(worldHandle, radiusMeters, massKg, restitution);
 		if (index < 0) {
-			throw new JSimException("Failed to create ball in physics world", index,
-				"The physics world may have reached its maximum capacity or internal resources are exhausted. Ensure the world is properly initialized.");
+			throw new JSimException(
+				"Failed to create gamepiece in physics world",
+				index,
+				"Verify hitbox and material parameters. Radius and mass must be positive finite values.");
 		}
-		Ball ball = new Ball(this, index);
-		balls.add(ball);
-		return ball;
+
+		Gamepiece gamepiece = new Gamepiece(this, index);
+		gamepieces.add(gamepiece);
+		return gamepiece;
+	}
+
+	// Deprecated overload removed; use createGamepiece(double, double, double).
+
+	/**
+	 * Creates a spherical gamepiece with default physical parameters.
+	 *
+	 * @return the created gamepiece handle
+	 */
+	public Gamepiece createGamepiece() {
+		return createGamepiece(0.12, 0.27, 0.45);
 	}
 
 	/**
-	 * Returns the balls created through this world wrapper in insertion order.
+	 * Creates a new gamepiece with an explicit type tag.
 	 *
-	 * @return immutable view of the created balls
+	 * @param type gamepiece type enum
+	 * @param radiusMeters sphere radius in meters
+	 * @param massKg mass in kilograms
+	 * @param restitution coefficient of restitution
+	 * @return created gamepiece
 	 */
-	public List<Ball> balls() {
-		return Collections.unmodifiableList(balls);
+	public Gamepiece createGamepiece(GamePieceType type, double radiusMeters, double massKg, double restitution) {
+		int index = JSimJNI.createGamepieceWithType(worldHandle, type.ordinal(), radiusMeters, massKg, restitution);
+		if (index < 0) {
+			throw new JSimException(
+				"Failed to create gamepiece in physics world",
+				index,
+				"Verify hitbox and material parameters. Radius and mass must be positive finite values.");
+		}
+
+		Gamepiece gamepiece = new Gamepiece(this, index, type);
+		gamepieces.add(gamepiece);
+		return gamepiece;
 	}
+
+	/**
+	 * Convenience overload for creating a typed gamepiece with default physical parameters.
+	 *
+	 * @param type the gamepiece type to create
+	 * @return created gamepiece
+	 */
+	public Gamepiece createGamepiece(GamePieceType type) {
+		return createGamepiece(type, 0.12, 0.27, 0.45);
+	}
+
+	/**
+	 * Convenience overload for creating a named gamepiece type with default physical parameters.
+	 *
+	 * @param typeName human readable type name (e.g. "generic_sphere", "fuel_rebuilt_2026")
+	 * @return created gamepiece
+	 */
+	public Gamepiece createGamepiece(String typeName) {
+		return createGamepiece(typeName, 0.12, 0.27, 0.45);
+	}
+
+	/**
+	 * Creates a new named gamepiece type (useful for season definitions or CAD-imported types).
+	 *
+	 * @param typeName human readable type name (e.g. "generic_sphere", "fuel_rebuilt_2026")
+	 * @param radiusMeters sphere radius in meters
+	 * @param massKg mass in kilograms
+	 * @param restitution coefficient of restitution
+	 * @return created gamepiece
+	 */
+	public Gamepiece createGamepiece(String typeName, double radiusMeters, double massKg, double restitution) {
+		int index = JSimJNI.createGamepieceWithTypeName(worldHandle, typeName, radiusMeters, massKg, restitution);
+		if (index < 0) {
+			throw new JSimException(
+				"Failed to create gamepiece in physics world",
+				index,
+				"Verify hitbox and material parameters. Radius and mass must be positive finite values.");
+		}
+
+		Gamepiece gamepiece = new Gamepiece(this, index);
+		gamepieces.add(gamepiece);
+		return gamepiece;
+	}
+
+	// Deprecated `Ball` wrapper removed; use `createGamepiece()` instead.
+
+	/**
+	 * Returns gamepieces created through this world wrapper in insertion order.
+	 *
+	 * @return live list of created gamepieces
+	 */
+	public List<Gamepiece> gamepieces() {
+		return gamepieces;
+	}
+
+	// `balls()` deprecated; use `gamepieces()`.
 
 	/**
 	 * Registers a callback that runs after each successful physics step.
@@ -142,6 +252,24 @@ public final class PhysicsWorld implements AutoCloseable {
 		if (rc != 0) {
 			throw new JSimException("Failed to set body linear velocity for bodyIndex=" + bodyIndex + " to (" + vxMetersPerSecond + ", " + vyMetersPerSecond + ", " + vzMetersPerSecond + ") m/s", rc,
 				"Body index may be invalid or velocity values are non-finite. Check that bodyIndex >= 0 and all velocities are finite numbers.");
+		}
+	}
+
+	/**
+	 * Sets the body's world-space orientation.
+	 *
+	 * @param bodyIndex native body index
+	 * @param qw quaternion w component
+	 * @param qx quaternion x component
+	 * @param qy quaternion y component
+	 * @param qz quaternion z component
+	 */
+	void setBodyOrientation(int bodyIndex, double qw, double qx, double qy, double qz) {
+		int rc = JSimJNI.setBodyOrientation(worldHandle, bodyIndex, qw, qx, qy, qz);
+		if (rc != 0) {
+			throw new JSimException("Failed to set body orientation for bodyIndex=" + bodyIndex,
+				rc,
+				"Body index may be invalid or orientation values are non-finite. Check that bodyIndex >= 0 and all quaternion components are finite numbers.");
 		}
 	}
 
@@ -215,38 +343,99 @@ public final class PhysicsWorld implements AutoCloseable {
 	}
 
 	/**
-	 * Sets the ball's world-space position in meters.
+	 * Sets the gamepiece's world-space position in meters.
 	 *
-	 * @param ballIndex native ball index
+	 * @param gamepieceIndex native gamepiece index
 	 * @param xMeters x position in meters
 	 * @param yMeters y position in meters
 	 * @param zMeters z position in meters
 	 */
-	void setBallPosition(int ballIndex, double xMeters, double yMeters, double zMeters) {
-		int rc = JSimJNI.setBallPosition(worldHandle, ballIndex, xMeters, yMeters, zMeters);
+	public void setGamepiecePosition(int gamepieceIndex, double xMeters, double yMeters, double zMeters) {
+		int rc = JSimJNI.setGamepiecePosition(worldHandle, gamepieceIndex, xMeters, yMeters, zMeters);
 		if (rc != 0) {
-			throw new JSimException("Failed to set ball position", rc,
-				"Verify the ball index and that the native world is valid; check native logs for details.");
+			throw new JSimException("Failed to set gamepiece position", rc,
+				"Verify the gamepiece index and that the native world is valid; check native logs for details.");
 		}
 	}
 
 	/**
-	 * Sets the ball's world-space linear velocity in meters per second.
+	 * Requests pickup of a gamepiece into a carrier.
 	 *
-	 * @param ballIndex native ball index
+	 * @param gamepieceIndex native gamepiece index
+	 * @param intakeX intake world x position
+	 * @param intakeY intake world y position
+	 * @param intakeZ intake world z position
+	 * @param captureRadius pickup radius in meters
+	 * @param carryOffsetX carry offset x in meters
+	 * @param carryOffsetY carry offset y in meters
+	 * @param carryOffsetZ carry offset z in meters
+	 * @return zero on success
+	 */
+	public int pickGamepiece(int gamepieceIndex, double intakeX, double intakeY, double intakeZ,
+				double captureRadius, double carryOffsetX, double carryOffsetY, double carryOffsetZ) {
+		int rc = JSimJNI.pickGamepiece(worldHandle, gamepieceIndex,
+				intakeX, intakeY, intakeZ, captureRadius,
+				carryOffsetX, carryOffsetY, carryOffsetZ);
+		return rc;
+	}
+
+	/**
+	 * Places a gamepiece at the given world position and marks it grounded.
+	 *
+	 * @param gamepieceIndex native gamepiece index
+	 * @param xMeters x position in meters
+	 * @param yMeters y position in meters
+	 * @param zMeters z position in meters
+	 */
+	public void placeGamepiece(int gamepieceIndex, double xMeters, double yMeters, double zMeters) {
+		int rc = JSimJNI.placeGamepiece(worldHandle, gamepieceIndex, xMeters, yMeters, zMeters);
+		if (rc != 0) {
+			throw new JSimException("Failed to place gamepiece", rc,
+				"Verify the gamepiece index and that the native world is valid; check native logs for details.");
+		}
+	}
+
+	/**
+	 * Outtakes a gamepiece from a pose with a linear velocity.
+	 *
+	 * @param gamepieceIndex native gamepiece index
+	 * @param px launch x position in meters
+	 * @param py launch y position in meters
+	 * @param pz launch z position in meters
+	 * @param vx launch x velocity in meters per second
+	 * @param vy launch y velocity in meters per second
+	 * @param vz launch z velocity in meters per second
+	 */
+	public void outtakeGamepiece(int gamepieceIndex, double px, double py, double pz,
+					double vx, double vy, double vz) {
+		int rc = JSimJNI.outtakeGamepiece(worldHandle, gamepieceIndex, px, py, pz, vx, vy, vz);
+		if (rc != 0) {
+			throw new JSimException("Failed to outtake gamepiece", rc,
+				"Verify the gamepiece index and parameters; check native logs for details.");
+		}
+	}
+
+	// Deprecated ball setters removed. Use gamepiece setters above.
+
+	/**
+	 * Sets the gamepiece's world-space linear velocity in meters per second.
+	 *
+	 * @param gamepieceIndex native gamepiece index
 	 * @param vxMetersPerSecond x velocity in meters per second
 	 * @param vyMetersPerSecond y velocity in meters per second
 	 * @param vzMetersPerSecond z velocity in meters per second
 	 */
-	void setBallLinearVelocity(int ballIndex, double vxMetersPerSecond, double vyMetersPerSecond,
-			double vzMetersPerSecond) {
-		int rc = JSimJNI.setBallLinearVelocity(worldHandle, ballIndex, vxMetersPerSecond,
+	public void setGamepieceLinearVelocity(int gamepieceIndex, double vxMetersPerSecond,
+			double vyMetersPerSecond, double vzMetersPerSecond) {
+		int rc = JSimJNI.setGamepieceLinearVelocity(worldHandle, gamepieceIndex, vxMetersPerSecond,
 				vyMetersPerSecond, vzMetersPerSecond);
 		if (rc != 0) {
-			throw new JSimException("Failed to set ball linear velocity", rc,
-				"Verify the ball index and velocity parameters; check native logs for details.");
+			throw new JSimException("Failed to set gamepiece linear velocity", rc,
+				"Verify the gamepiece index and velocity parameters; check native logs for details.");
 		}
 	}
+
+	// Deprecated ball velocity setters removed. Use gamepiece setters above.
 
 	/**
 	 * Gets the world position for the given body.
@@ -281,6 +470,22 @@ public final class PhysicsWorld implements AutoCloseable {
 	}
 
 	/**
+	 * Gets the world orientation for the given body.
+	 *
+	 * @param bodyIndex native body index
+	 * @return body orientation
+	 */
+	public Rotation3d getBodyOrientation(int bodyIndex) {
+		double[] values = new double[4];
+		int rc = JSimJNI.getBodyOrientation(worldHandle, bodyIndex, values);
+		if (rc != 0) {
+			throw new JSimException("Failed to get body orientation", rc,
+				"Verify the body index and that the world is initialized; check native logs for details.");
+		}
+		return new Rotation3d(new Quaternion(values[0], values[1], values[2], values[3]));
+	}
+
+	/**
 	 * Exports full body state blocks.
 	 *
 	 * <p>Layout per body is: [x, y, z, qw, qx, qy, qz, vx, vy, vz, wx, wy, wz].
@@ -298,35 +503,51 @@ public final class PhysicsWorld implements AutoCloseable {
 	}
 
 	/**
-	 * Gets the world position for the given ball.
+	 * Gets the world position for the given gamepiece.
 	 *
-	 * @param ballIndex native ball index
-	 * @return ball position as a Pose3d with zero rotation
+	 * @param gamepieceIndex native gamepiece index
+	 * @return gamepiece position as a Pose3d with zero rotation
 	 */
-	public Pose3d getBallPosition(int ballIndex) {
+	public Pose3d getGamepiecePosition(int gamepieceIndex) {
 		double[] values = new double[3];
-		int rc = JSimJNI.getBallPosition(worldHandle, ballIndex, values);
+		int rc = JSimJNI.getGamepiecePosition(worldHandle, gamepieceIndex, values);
 		if (rc != 0) {
-			throw new JSimException("Failed to get ball position", rc,
-				"Verify the ball index and that the world is initialized; check native logs for details.");
+			throw new JSimException("Failed to get gamepiece position", rc,
+				"Verify the gamepiece index and that the world is initialized; check native logs for details.");
 		}
 		return new Pose3d(values[0], values[1], values[2], Rotation3d.kZero);
 	}
+
 	/**
-	 * Gets the world linear velocity for the given ball.
+	 * Returns the registered type name for the given gamepiece.
 	 *
-	 * @param ballIndex native ball index
-	 * @return ball linear velocity as a LinearVelocity3d
+	 * @param gamepieceIndex native gamepiece index
+	 * @return human-readable type name or null if none
 	 */
-	public LinearVelocity3d getBallLinearVelocity(int ballIndex) {
+	public String getGamepieceTypeName(int gamepieceIndex) {
+		return JSimJNI.getGamepieceTypeName(worldHandle, gamepieceIndex);
+	}
+
+	// Deprecated ball accessors removed. Use `getGamepiecePosition` instead.
+
+	/**
+	 * Gets the world linear velocity for the given gamepiece.
+	 *
+	 * @param gamepieceIndex native gamepiece index
+	 * @return gamepiece linear velocity as a LinearVelocity3d
+	 */
+	public LinearVelocity3d getGamepieceLinearVelocity(int gamepieceIndex) {
 		double[] values = new double[3];
-		int rc = JSimJNI.getBallLinearVelocity(worldHandle, ballIndex, values);
+		int rc = JSimJNI.getGamepieceLinearVelocity(worldHandle, gamepieceIndex, values);
 		if (rc != 0) {
-			throw new JSimException("Failed to get ball linear velocity for ballIndex=" + ballIndex, rc,
-				"Ball index may be invalid or does not exist. Check that ballIndex >= 0 and refers to an existing ball in this world.");
+			throw new JSimException(
+				"Failed to get gamepiece linear velocity for gamepieceIndex=" + gamepieceIndex,
+				rc,
+				"Gamepiece index may be invalid or does not exist.");
 		}
 		return new LinearVelocity3d(values[0], values[1], values[2]);
 	}
+	// Deprecated ball accessors removed. Use `getGamepieceLinearVelocity` instead.
 	/**
 	 * Advances the simulation by one step.
 	 */

@@ -83,6 +83,89 @@ int c_rsCreateBody(uint64_t world_handle, double mass_kg);
 int c_rsCreateBall(uint64_t world_handle);
 
 /**
+ * @brief Creates a new generic gamepiece using sphere hitbox parameters.
+ * @param world_handle Target world handle.
+ * @param radius_m Sphere hitbox radius in meters.
+ * @param mass_kg Gamepiece mass in kilograms.
+ * @param restitution Coefficient of restitution in [0, 1].
+ * @return Non-negative gamepiece index on success; negative value on failure.
+ */
+int c_rsCreateGamepiece(uint64_t world_handle, double radius_m,
+                        double mass_kg, double restitution);
+
+/**
+ * @brief Creates a new generic gamepiece with an explicit type tag.
+ * @param world_handle Target world handle.
+ * @param type Integer type tag (application-defined). For Java usage, map from GamePieceType.ordinal().
+ * @param radius_m Sphere hitbox radius in meters (ignored for non-spherical types currently).
+ * @param mass_kg Gamepiece mass in kilograms.
+ * @param restitution Coefficient of restitution in [0, 1].
+ * @return Non-negative gamepiece index on success; negative value on failure.
+ */
+int c_rsCreateGamepieceWithType(uint64_t world_handle, int type, double radius_m,
+                                double mass_kg, double restitution);
+
+/**
+ * @brief Creates a new generic gamepiece with a human-readable type name.
+ *
+ * This API lets callers register/import named gamepiece types (for example
+ * "generic_sphere", "generic_cube", "fuel_rebuilt_2026"). The driver will
+ * store the provided name for use by higher-level tooling; core physics will
+ * continue to use spherical defaults until specific type implementations are
+ * available.
+ *
+ * @param world_handle Target world handle.
+ * @param type_name Null-terminated UTF-8 name for the gamepiece type. May be
+ *                  NULL to indicate unnamed/default.
+ * @param radius_m Sphere hitbox radius in meters (ignored for non-spherical types currently).
+ * @param mass_kg Gamepiece mass in kilograms.
+ * @param restitution Coefficient of restitution in [0, 1].
+ * @return Non-negative gamepiece index on success; negative value on failure.
+ */
+int c_rsCreateGamepieceWithTypeName(uint64_t world_handle, const char* type_name,
+                                   double radius_m, double mass_kg, double restitution);
+
+/**
+ * @brief Reads the registered type name for a gamepiece.
+ * @param world_handle Target world handle.
+ * @param gamepiece_index Zero-based gamepiece index.
+ * @return Null-terminated UTF-8 type name on success, or NULL on failure.
+ */
+const char* c_rsGetGamepieceTypeName(uint64_t world_handle, int gamepiece_index);
+
+/**
+ * @brief Request pickup of a gamepiece into a carrier.
+ * @param world_handle Target world handle.
+ * @param gamepiece_index Zero-based gamepiece index returned by c_rsCreateGamepiece().
+ * @param intake_x Intake world x position.
+ * @param intake_y Intake world y position.
+ * @param intake_z Intake world z position.
+ * @param capture_radius Capture radius in meters.
+ * @param carry_offset_x Carry offset x in meters.
+ * @param carry_offset_y Carry offset y in meters.
+ * @param carry_offset_z Carry offset z in meters.
+ * @return 0 on success (picked), non-zero on failure.
+ */
+int c_rsPickGamepiece(uint64_t world_handle, int gamepiece_index,
+                      double intake_x, double intake_y, double intake_z,
+                      double capture_radius,
+                      double carry_offset_x, double carry_offset_y,
+                      double carry_offset_z);
+
+/**
+ * @brief Place a gamepiece at a world position and mark grounded.
+ */
+int c_rsPlaceGamepiece(uint64_t world_handle, int gamepiece_index,
+                      double x_m, double y_m, double z_m);
+
+/**
+ * @brief Outtake a gamepiece from a muzzle pose with velocity (launch).
+ */
+int c_rsOuttakeGamepiece(uint64_t world_handle, int gamepiece_index,
+                      double px, double py, double pz,
+                      double vx, double vy, double vz);
+
+/**
  * @brief Sets a body's world-space position.
  * @param world_handle Target world handle.
  * @param body_index Zero-based body index returned by c_rsCreateBody().
@@ -105,6 +188,40 @@ int c_rsSetBodyPosition(uint64_t world_handle, int body_index,
  */
 int c_rsSetBodyLinearVelocity(uint64_t world_handle, int body_index,
                               double vx_mps, double vy_mps, double vz_mps);
+
+/**
+ * @brief Set a rigid body's orientation.
+ *
+ * @return 0 on success, non-zero on error.
+ */
+int c_rsSetBodyOrientation(uint64_t world_handle, int body_index,
+                           double qw, double qx, double qy, double qz);
+
+/**
+ * @brief Read a rigid body's orientation quaternion.
+ *
+ * @return 0 on success, non-zero on error.
+ */
+int c_rsGetBodyOrientation(uint64_t world_handle, int body_index,
+                           double* out_qw, double* out_qx,
+                           double* out_qy, double* out_qz);
+
+/**
+ * @brief Set a rigid body's orientation.
+ *
+ * @return 0 on success, non-zero on error.
+ */
+int c_rsSetBodyOrientation(uint64_t world_handle, int body_index,
+                           double qw, double qx, double qy, double qz);
+
+/**
+ * @brief Read a rigid body's orientation quaternion.
+ *
+ * @return 0 on success, non-zero on error.
+ */
+int c_rsGetBodyOrientation(uint64_t world_handle, int body_index,
+                           double* out_qw, double* out_qx,
+                           double* out_qy, double* out_qz);
 
 /**
  * @brief Enables or disables gravity for a single body.
@@ -185,52 +302,52 @@ int c_rsSetBodyAerodynamicBox(uint64_t world_handle, int body_index,
                               double drag_coefficient);
 
 /**
- * @brief Sets a ball's world-space position.
+ * @brief Sets a gamepiece's world-space position.
  * @param world_handle Target world handle.
- * @param ball_index Zero-based ball index.
+ * @param gamepiece_index Zero-based gamepiece index.
  * @param x_m Position x in meters.
  * @param y_m Position y in meters.
  * @param z_m Position z in meters.
  * @return 0 on success, non-zero on failure.
  */
-int c_rsSetBallPosition(uint64_t world_handle, int ball_index,
+int c_rsSetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
                         double x_m, double y_m, double z_m);
 
 /**
- * @brief Sets a ball's world-space linear velocity.
+ * @brief Sets a gamepiece's world-space linear velocity.
  * @param world_handle Target world handle.
- * @param ball_index Zero-based ball index.
+ * @param gamepiece_index Zero-based gamepiece index.
  * @param vx_mps Velocity x component in meters/second.
  * @param vy_mps Velocity y component in meters/second.
  * @param vz_mps Velocity z component in meters/second.
  * @return 0 on success, non-zero on failure.
  */
-int c_rsSetBallLinearVelocity(uint64_t world_handle, int ball_index,
-                              double vx_mps, double vy_mps, double vz_mps);
+int c_rsSetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
+                                   double vx_mps, double vy_mps, double vz_mps);
 
 /**
- * @brief Reads a ball's world-space position.
+ * @brief Reads a gamepiece's world-space position.
  * @param world_handle Target world handle.
- * @param ball_index Zero-based ball index.
+ * @param gamepiece_index Zero-based gamepiece index.
  * @param x_m Output pointer for x position in meters.
  * @param y_m Output pointer for y position in meters.
  * @param z_m Output pointer for z position in meters.
  * @return 0 on success, non-zero on failure.
  */
-int c_rsGetBallPosition(uint64_t world_handle, int ball_index,
-                        double* x_m, double* y_m, double* z_m);
+int c_rsGetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
+                             double* x_m, double* y_m, double* z_m);
 
 /**
- * @brief Reads a ball's world-space linear velocity.
+ * @brief Reads a gamepiece's world-space linear velocity.
  * @param world_handle Target world handle.
- * @param ball_index Zero-based ball index.
+ * @param gamepiece_index Zero-based gamepiece index.
  * @param vx_mps Output pointer for x velocity in meters/second.
  * @param vy_mps Output pointer for y velocity in meters/second.
  * @param vz_mps Output pointer for z velocity in meters/second.
  * @return 0 on success, non-zero on failure.
  */
-int c_rsGetBallLinearVelocity(uint64_t world_handle, int ball_index,
-                              double* vx_mps, double* vy_mps, double* vz_mps);
+int c_rsGetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
+                                   double* vx_mps, double* vy_mps, double* vz_mps);
 
 /**
  * @brief Configures world-level aerodynamic constants and feature toggle.

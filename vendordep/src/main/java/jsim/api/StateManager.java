@@ -1,6 +1,14 @@
 package jsim.api;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import jsim.Gamepiece;
+import jsim.Vec3;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import java.util.ArrayList;
@@ -13,7 +21,6 @@ import jsim.PhysicsWorld;
 import jsim.field.FieldConfig;
 import jsim.field.FieldElement;
 import java.util.Objects;
-import jsim.field.FieldConfig;
 
 /**
  * System Rules:
@@ -23,6 +30,7 @@ import jsim.field.FieldConfig;
  */
 public class StateManager {
     private static final StateManager INSTANCE = new StateManager();
+    private static final double DEFAULT_STEP_SECONDS = 0.02;
 
     private final Map<RobotID, FieldState<SimRobot.RobotState>> robotStates = new EnumMap<>(RobotID.class);
     private final Map<RobotID, SimRobot> robots = new EnumMap<>(RobotID.class);
@@ -39,6 +47,20 @@ public class StateManager {
      */
     public static StateManager getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Clears all tracked simulation state and detaches the active physics world.
+     *
+     * <p>Primarily used by tests to ensure deterministic, isolated state between runs.
+     */
+    public synchronized void reset() {
+        robotStates.clear();
+        robots.clear();
+        robotBodies.clear();
+        gamepieceZones.clear();
+        fieldElements.clear();
+        physicsWorld = null;
     }
 
     /**
@@ -81,11 +103,16 @@ public class StateManager {
     public SimRobot initializeRobot(RobotID id, Pose2d startingPose, Translation2d[] frameVertices) {
         SimRobot.RobotState internalState = new SimRobot.RobotState();
         internalState.pose = startingPose;
+        internalState.frameVertices = frameVertices == null ? new Translation2d[0] : frameVertices.clone();
         
         FieldState<SimRobot.RobotState> stateRef = new FieldState<>(internalState);
         robotStates.put(id, stateRef);
         SimRobot robot = new SimRobot(id, stateRef);
         robots.put(id, robot);
+
+        if (physicsWorld != null) {
+            registerRobotBody(id, startingPose, internalState.frameVertices);
+        }
         return robot;
     }
 
@@ -119,6 +146,17 @@ public class StateManager {
      */
     public synchronized void setPhysicsWorld(PhysicsWorld physicsWorld) {
         this.physicsWorld = physicsWorld;
+        robotBodies.clear();
+
+        if (physicsWorld != null) {
+            for (Map.Entry<RobotID, FieldState<SimRobot.RobotState>> entry : robotStates.entrySet()) {
+                RobotID id = entry.getKey();
+                SimRobot.RobotState state = entry.getValue().get();
+                if (state != null) {
+                    registerRobotBody(id, state.pose, state.frameVertices);
+                }
+            }
+        }
     }
 
     /**
@@ -167,6 +205,88 @@ public class StateManager {
         }
     }
 
+    private void registerRobotBody(RobotID id, Pose2d pose, Translation2d[] frameVertices) {
+        if (physicsWorld == null || id == null) {
+            return;
+        }
+
+        PhysicsBody existingBody = robotBodies.get(id);
+        if (existingBody != null) {
+            return;
+        }
+
+        PhysicsBody robotBody = physicsWorld.createBody(50.0);
+        robotBody.setGravityEnabled(false);
+
+        double widthMeters = 0.7;
+        double depthMeters = 0.7;
+        if (frameVertices != null && frameVertices.length > 0) {
+            double minX = frameVertices[0].getX();
+            double maxX = frameVertices[0].getX();
+            double minY = frameVertices[0].getY();
+            double maxY = frameVertices[0].getY();
+            for (Translation2d vertex : frameVertices) {
+                if (vertex == null) {
+                    continue;
+                }
+                minX = Math.min(minX, vertex.getX());
+                maxX = Math.max(maxX, vertex.getX());
+                minY = Math.min(minY, vertex.getY());
+                maxY = Math.max(maxY, vertex.getY());
+            }
+            widthMeters = Math.max(0.05, maxX - minX);
+            depthMeters = Math.max(0.05, maxY - minY);
+        }
+
+        robotBody.setCollisionBox(widthMeters, depthMeters, 0.35);
+        robotBody.setPosition(new Pose3d(pose.getX(), pose.getY(), 0.175,
+                new Rotation3d(0.0, 0.0, pose.getRotation().getRadians())));
+        robotBody.setOrientation(new Rotation3d(0.0, 0.0, pose.getRotation().getRadians()));
+        robotBody.setLinearVelocity(0.0, 0.0, 0.0);
+        robotBody.setCollisionFilter(0xFFFF, 0xFFFF);
+        robotBodies.put(id, robotBody);
+    }
+
+    private static Translation2d[] transformZonePolygon(Pose2d robotPose, GamepieceZone zone) {
+        Transform3d[] zoneDimensions = zone.getZoneDimensions();
+        Translation2d[] polygon = new Translation2d[zoneDimensions.length];
+        double yaw = robotPose.getRotation().getRadians() + zone.getRobotRotation().getZ();
+        double cosYaw = Math.cos(yaw);
+        double sinYaw = Math.sin(yaw);
+
+        for (int i = 0; i < zoneDimensions.length; i++) {
+            Translation3d local = zoneDimensions[i].getTranslation();
+            double x = robotPose.getX() + (local.getX() * cosYaw) - (local.getY() * sinYaw);
+            double y = robotPose.getY() + (local.getX() * sinYaw) + (local.getY() * cosYaw);
+            polygon[i] = new Translation2d(x, y);
+        }
+
+        return polygon;
+    }
+
+    private static boolean pointInPolygon(double x, double y, Translation2d[] polygon) {
+        if (polygon == null || polygon.length < 3) {
+            return false;
+        }
+
+        boolean inside = false;
+        for (int i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+            Translation2d pi = polygon[i];
+            Translation2d pj = polygon[j];
+            if (pi == null || pj == null) {
+                continue;
+            }
+
+            boolean intersects = ((pi.getY() > y) != (pj.getY() > y))
+                    && (x < (pj.getX() - pi.getX()) * (y - pi.getY())
+                        / ((pj.getY() - pi.getY()) == 0.0 ? 1e-9 : (pj.getY() - pi.getY())) + pi.getX());
+            if (intersects) {
+                inside = !inside;
+            }
+        }
+        return inside;
+    }
+
     /**
      * Registers a gamepiece zone to be refreshed on each simulation step.
      *
@@ -178,9 +298,77 @@ public class StateManager {
         }
     }
 
-    private synchronized void refreshGamepieceZones() {
+    private synchronized void updateGamepieceZones() {
         for (GamepieceZone gamepieceZone : gamepieceZones) {
-            gamepieceZone.refresh();
+            gamepieceZone.update();
+        }
+        refreshZoneGamepieceActions();
+    }
+
+    private synchronized void refreshZoneGamepieceActions() {
+        // Apply zone-driven actions: when a zone is actively OUTTAKE or SHOOT,
+        // convert nearby grounded gamepieces into airborne (full physics) by
+        // calling the PhysicsWorld shoot API. For INTAKE, attempt pickup.
+        if (physicsWorld == null) {
+            return;
+        }
+
+        final double kCaptureThresholdM = 0.5; // proximity threshold (tuned)
+
+        for (GamepieceZone zone : gamepieceZones) {
+            GamepieceZone.Mode mode = zone.getMode();
+            if (mode == GamepieceZone.Mode.DISABLED) {
+                continue;
+            }
+            SimRobot owner = zone.getRobot();
+            if (owner == null) {
+                continue;
+            }
+
+            Pose2d robotPose = owner.getPose();
+            Translation3d exitTrans = zone.getExitTranslation();
+            double zoneYaw = robotPose.getRotation().getRadians() + zone.getRobotRotation().getZ();
+            double cosYaw = Math.cos(zoneYaw);
+            double sinYaw = Math.sin(zoneYaw);
+
+            // world-space exit point: robot pose + rotated zone-local translation
+            double wx = robotPose.getX() + (exitTrans.getX() * cosYaw) - (exitTrans.getY() * sinYaw);
+            double wy = robotPose.getY() + (exitTrans.getX() * sinYaw) + (exitTrans.getY() * cosYaw);
+            double wz = exitTrans.getZ();
+
+            double exitSpeed = zone.getExitVelocity().in(MetersPerSecond);
+            // Use zone rotation yaw as heading offset and Y as pitch.
+            double pitch = zone.getExitRotation().getY();
+            double heading = zoneYaw + zone.getExitRotation().getZ();
+
+            Translation2d[] worldPolygon = transformZonePolygon(robotPose, zone);
+
+            for (Gamepiece gamepiece : physicsWorld.gamepieces()) {
+                Pose3d gamepiecePose = physicsWorld.getGamepiecePosition(gamepiece.gamepieceIndex());
+                double dx = gamepiecePose.getTranslation().getX() - wx;
+                double dy = gamepiecePose.getTranslation().getY() - wy;
+                double dz = gamepiecePose.getTranslation().getZ() - wz;
+                final double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                boolean insideZone = pointInPolygon(
+                        gamepiecePose.getTranslation().getX(),
+                        gamepiecePose.getTranslation().getY(),
+                        worldPolygon);
+                if (dist > kCaptureThresholdM && !insideZone) {
+                    continue;
+                }
+
+                if (mode == GamepieceZone.Mode.INTAKE) {
+                    // Attempt pickup - use small capture radius and zero carry offset.
+                    gamepiece.pick(new Pose3d(wx, wy, wz, new Rotation3d()), 0.25, new Vec3(0.0, 0.0, 0.0));
+                } else if (mode == GamepieceZone.Mode.OUTTAKE || mode == GamepieceZone.Mode.SHOOT) {
+                    // Compute simple world-space velocity vector from robot heading and pitch.
+                    final double cosPitch = Math.cos(pitch);
+                    double vx = exitSpeed * Math.cos(heading) * cosPitch;
+                    double vy = exitSpeed * Math.sin(heading) * cosPitch;
+                    double vz = exitSpeed * Math.sin(pitch);
+                    physicsWorld.outtakeGamepiece(gamepiece.gamepieceIndex(), wx, wy, wz, vx, vy, vz);
+                }
+            }
         }
     }
 
@@ -188,9 +376,32 @@ public class StateManager {
      * Advances the tracked physics world and refreshes gamepiece zones.
      */
     public synchronized void stepPhysics() {
+        final double dtSeconds = physicsWorld != null
+                ? physicsWorld.getFixedDtSeconds()
+                : DEFAULT_STEP_SECONDS;
+
+        for (SimRobot robot : robots.values()) {
+            if (robot != null) {
+                robot.update(dtSeconds);
+                PhysicsBody robotBody = robotBodies.get(robot.getRobotID());
+                if (robotBody != null) {
+                    Pose2d pose = robot.getPose();
+                    robotBody.setPosition(new Pose3d(pose.getX(), pose.getY(), 0.175,
+                            new Rotation3d(0.0, 0.0, pose.getRotation().getRadians())));
+                    robotBody.setOrientation(new Rotation3d(0.0, 0.0, pose.getRotation().getRadians()));
+                    ChassisSpeeds speeds = robot.getVelocity();
+                    robotBody.setLinearVelocity(
+                            speeds.vxMetersPerSecond,
+                            speeds.vyMetersPerSecond,
+                            0.0);
+                }
+            }
+        }
+
         if (physicsWorld != null) {
             physicsWorld.step();
-            refreshGamepieceZones();
         }
+
+        updateGamepieceZones();
     }
 }
