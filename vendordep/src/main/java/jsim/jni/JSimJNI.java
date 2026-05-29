@@ -323,6 +323,10 @@ public class JSimJNI {
 
     /**
      * Native: get gamepiece position.
+     *
+     * @param worldHandle the native world handle
+     * @param gamepieceIndex the native gamepiece index
+     * @param outXyzMeters output array of length 3 receiving x,y,z in meters
      * @return zero on success, non-zero on failure
      */
   public static native int getGamepiecePosition(
@@ -330,6 +334,10 @@ public class JSimJNI {
 
     /**
      * Native: get gamepiece linear velocity.
+     *
+     * @param worldHandle the native world handle
+     * @param gamepieceIndex the native gamepiece index
+     * @param outVxyzMps output array of length 3 receiving vx,vy,vz in m/s
      * @return zero on success, non-zero on failure
      */
   public static native int getGamepieceLinearVelocity(
