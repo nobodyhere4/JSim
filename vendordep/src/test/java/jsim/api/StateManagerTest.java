@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
@@ -36,8 +37,18 @@ class StateManagerTest {
         },
         new Rotation3d());
 
-    AtomicReference<GamepieceZone.Mode> mode = new AtomicReference<>(GamepieceZone.Mode.OUTTAKE);
-    zone.configure(mode::get, () -> MetersPerSecond.of(3.0), () -> new Rotation3d());
+    AtomicBoolean enter = new AtomicBoolean(true);
+    AtomicBoolean exit = new AtomicBoolean(false);
+    AtomicReference<Double> rate = new AtomicReference<>(3.0);
+    AtomicReference<Rotation3d> rotation = new AtomicReference<>(new Rotation3d());
+    AtomicReference<Translation3d> translation = new AtomicReference<>(new Translation3d());
+    zone.configure(
+      GamepieceZone.Mode.OUTTAKE,
+      enter::get,
+      exit::get,
+      rate::get,
+      rotation::get,
+      translation::get);
 
     stateManager.stepPhysics();
 
