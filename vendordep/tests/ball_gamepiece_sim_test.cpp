@@ -283,6 +283,49 @@ int main() {
         const double spin_norm_b = spin_sim.balls()[1].sim.state().spin_radps.norm();
         assert(spin_norm_a > 1e-3 || spin_norm_b > 1e-3);
 
+        // Non-scoring contact regression: robot and field-boundary contacts
+        // should not preserve spin state across the tick.
+        frcsim::BallGamepieceSim::FieldConfig contact_field;
+        contact_field.wall_friction = 0.0;
+        contact_field.free_ball_spin_decay_per_s = 0.0;
+        contact_field.ccd_enabled = false;
+        frcsim::BallGamepieceSim contact_sim(contact_field);
+        contact_sim.setSimulationSubsteps(2);
+
+        frcsim::BallGamepieceSim::RobotState contact_robot;
+        contact_robot.position_m = frcsim::Vector3(3.0, 3.0, 0.0);
+        contact_robot.radius_m = 0.5;
+        contact_sim.addRobot(contact_robot);
+
+        frcsim::BallPhysicsSim3D::Config contact_cfg = spin_cfg;
+        contact_cfg.rolling_friction_per_s = 0.0;
+        contact_cfg.magnus_scale = 0.0;
+
+        frcsim::BallPhysicsSim3D::BallState robot_contact_ball;
+        robot_contact_ball.position_m = frcsim::Vector3(3.25, 3.0, spin_props.radius_m);
+        robot_contact_ball.velocity_mps = frcsim::Vector3(0.0, 0.0, 0.0);
+        robot_contact_ball.spin_radps = frcsim::Vector3(0.0, 22.0, 0.0);
+        contact_sim.addBall(robot_contact_ball, contact_cfg, spin_props);
+
+        frcsim::EnvironmentalBoundary contact_wall;
+        contact_wall.type = frcsim::BoundaryType::kPlane;
+        contact_wall.position_m = frcsim::Vector3(4.5, 0.0, 0.0);
+        contact_wall.orientation = frcsim::Quaternion::fromAxisAngle(frcsim::Vector3::unitY(), -1.57079632679);
+        contact_wall.restitution = 0.5;
+        contact_wall.friction_coefficient = 0.15;
+        contact_wall.is_active = true;
+        contact_sim.addFieldElement(contact_wall);
+
+        frcsim::BallPhysicsSim3D::BallState wall_contact_ball;
+        wall_contact_ball.position_m = frcsim::Vector3(4.48, 4.0, spin_props.radius_m);
+        wall_contact_ball.velocity_mps = frcsim::Vector3(0.4, 0.0, 0.0);
+        wall_contact_ball.spin_radps = frcsim::Vector3(0.0, 18.0, 0.0);
+        contact_sim.addBall(wall_contact_ball, contact_cfg, spin_props);
+
+        contact_sim.step(0.02);
+        assert(contact_sim.balls()[0].sim.state().spin_radps.norm() == 0.0);
+        assert(contact_sim.balls()[1].sim.state().spin_radps.norm() == 0.0);
+
         // CCD regression: fast ball should not tunnel through a thin box boundary.
         frcsim::BallGamepieceSim::FieldConfig ccd_field;
         ccd_field.ccd_enabled = true;

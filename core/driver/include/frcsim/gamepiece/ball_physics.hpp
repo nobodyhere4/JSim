@@ -344,6 +344,7 @@ class BallPhysicsSim3D {
         std::max(0.0, 1.0 - config_.rolling_friction_per_s * dt_s);
     state_.velocity_mps.x *= decay;
     state_.velocity_mps.y *= decay;
+    state_.spin_radps = Vector3::zero();
   }
 
   Config config_{};

@@ -1286,6 +1286,7 @@ class BallGamepieceSim {
               scaledRobotBallRestitution(normal_impact_speed),
               field_.robot_ball_contact_friction);
       state.velocity_mps = robot.velocity_mps + relative_velocity;
+      state.spin_radps = Vector3::zero();
     }
 
     ball.sim.setState(state);
@@ -1493,6 +1494,8 @@ class BallGamepieceSim {
       state.velocity_mps.x *= (1.0 - field_.wall_friction);
     }
 
+    state.spin_radps = Vector3::zero();
+
     ball.sim.setState(state);
   }
 
@@ -1598,6 +1601,7 @@ class BallGamepieceSim {
               scaledWallRestitution(boundary.restitution,
                           impact_speed),
               boundary.friction_coefficient);
+    state.spin_radps = Vector3::zero();
   }
 
   /** @brief Resolves penetration and impulse response for oriented box
@@ -1651,6 +1655,7 @@ class BallGamepieceSim {
               scaledWallRestitution(boundary.restitution,
                           impact_speed),
               boundary.friction_coefficient);
+    state.spin_radps = Vector3::zero();
   }
 
   /** @brief Resolves penetration and impulse response for cylinder
@@ -1687,6 +1692,7 @@ class BallGamepieceSim {
               scaledWallRestitution(boundary.restitution,
                           impact_speed),
               boundary.friction_coefficient);
+    state.spin_radps = Vector3::zero();
   }
 
   FieldConfig field_{};
