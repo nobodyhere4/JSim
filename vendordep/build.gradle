@@ -100,7 +100,6 @@ doxygen {
             option "project_number", "$pubVersion"
 
             // Driver C++ headers + sources
-            sources "src/main/driver/cpp"
             sources "src/main/driver/include"
 
             // Java (for JNI + API docs)
