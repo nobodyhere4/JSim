@@ -15,6 +15,7 @@ Java_jsim_jni_JSimJNI_placeGamepiece
 Java_jsim_jni_JSimJNI_outtakeGamepiece
 Java_jsim_jni_JSimJNI_setBodyPosition
 Java_jsim_jni_JSimJNI_setBodyLinearVelocity
+Java_jsim_jni_JSimJNI_setBodyOrientation
 Java_jsim_jni_JSimJNI_setBodyGravityEnabled
 Java_jsim_jni_JSimJNI_setBodyMaterial
 Java_jsim_jni_JSimJNI_setBodyMaterialId
@@ -51,6 +52,7 @@ c_rsDestroyWorld
 c_rsCreateBody
 c_rsCreateBall
 c_rsSetBodyPosition
+c_rsSetBodyOrientation
 c_rsSetBodyLinearVelocity
 c_rsSetBodyGravityEnabled
 c_rsSetBodyMaterial
@@ -65,6 +67,7 @@ c_rsSetMaterialInteraction
 c_rsGetBodyPosition
 c_rsGetBodyLinearVelocity
 c_rsGetBodyPose7Array
+c_rsGetBodyOrientation
 c_rsGetBodyVelocity6Array
 c_rsSetGamepiecePosition
 c_rsSetGamepieceLinearVelocity
