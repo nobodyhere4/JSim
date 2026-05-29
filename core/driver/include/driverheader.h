@@ -268,62 +268,50 @@ int c_rsSetBodyAerodynamicBox(uint64_t world_handle, int body_index,
                               double drag_coefficient);
 
 /**
- * @brief Sets a ball's world-space position.
+ * @brief Sets a gamepiece's world-space position.
  * @param world_handle Target world handle.
- * @param ball_index Zero-based ball index.
+ * @param gamepiece_index Zero-based gamepiece index.
  * @param x_m Position x in meters.
  * @param y_m Position y in meters.
  * @param z_m Position z in meters.
  * @return 0 on success, non-zero on failure.
  */
-// Deprecated ball-named position setter removed; use c_rsSetGamepiecePosition.
-
-/** Gamepiece-named alias for setting position (delegates to ball API). */
 int c_rsSetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
                         double x_m, double y_m, double z_m);
 
 /**
- * @brief Sets a ball's world-space linear velocity.
+ * @brief Sets a gamepiece's world-space linear velocity.
  * @param world_handle Target world handle.
- * @param ball_index Zero-based ball index.
+ * @param gamepiece_index Zero-based gamepiece index.
  * @param vx_mps Velocity x component in meters/second.
  * @param vy_mps Velocity y component in meters/second.
  * @param vz_mps Velocity z component in meters/second.
  * @return 0 on success, non-zero on failure.
  */
-// Deprecated ball-named velocity setter removed; use c_rsSetGamepieceLinearVelocity.
-
-/** Gamepiece-named alias for setting linear velocity (delegates to ball API). */
 int c_rsSetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
                                    double vx_mps, double vy_mps, double vz_mps);
 
 /**
- * @brief Reads a ball's world-space position.
+ * @brief Reads a gamepiece's world-space position.
  * @param world_handle Target world handle.
- * @param ball_index Zero-based ball index.
+ * @param gamepiece_index Zero-based gamepiece index.
  * @param x_m Output pointer for x position in meters.
  * @param y_m Output pointer for y position in meters.
  * @param z_m Output pointer for z position in meters.
  * @return 0 on success, non-zero on failure.
  */
-// Deprecated ball-named getter removed; use c_rsGetGamepiecePosition.
-
-/** Gamepiece-named alias for getting position (delegates to ball API). */
 int c_rsGetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
                              double* x_m, double* y_m, double* z_m);
 
 /**
- * @brief Reads a ball's world-space linear velocity.
+ * @brief Reads a gamepiece's world-space linear velocity.
  * @param world_handle Target world handle.
- * @param ball_index Zero-based ball index.
+ * @param gamepiece_index Zero-based gamepiece index.
  * @param vx_mps Output pointer for x velocity in meters/second.
  * @param vy_mps Output pointer for y velocity in meters/second.
  * @param vz_mps Output pointer for z velocity in meters/second.
  * @return 0 on success, non-zero on failure.
  */
-// Deprecated ball-named getter removed; use c_rsGetGamepieceLinearVelocity.
-
-/** Gamepiece-named alias for getting linear velocity (delegates to ball API). */
 int c_rsGetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
                                    double* vx_mps, double* vy_mps, double* vz_mps);
 
