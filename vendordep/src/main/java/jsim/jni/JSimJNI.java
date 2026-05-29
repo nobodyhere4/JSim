@@ -309,6 +309,12 @@ public class JSimJNI {
 
     /**
      * Native: set gamepiece position.
+     *
+     * @param worldHandle the native world handle
+     * @param gamepieceIndex the native gamepiece index
+     * @param xMeters x position in meters
+     * @param yMeters y position in meters
+     * @param zMeters z position in meters
      * @return zero on success, non-zero on failure
      */
   public static native int setGamepiecePosition(
@@ -316,6 +322,12 @@ public class JSimJNI {
 
     /**
      * Native: set gamepiece linear velocity.
+     *
+     * @param worldHandle the native world handle
+     * @param gamepieceIndex the native gamepiece index
+     * @param vxMps x velocity in meters per second
+     * @param vyMps y velocity in meters per second
+     * @param vzMps z velocity in meters per second
      * @return zero on success, non-zero on failure
      */
   public static native int setGamepieceLinearVelocity(

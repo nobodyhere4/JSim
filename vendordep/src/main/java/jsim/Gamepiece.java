@@ -15,8 +15,13 @@ import jsim.api.GamePieceType;
  * Generic handle for a gamepiece managed by {@link PhysicsWorld}.
  */
 public class Gamepiece {
+  /** The owning physics world for this handle. */
   protected final PhysicsWorld world;
+
+  /** Native index for this gamepiece in the driver. */
   protected final int gamepieceIndex;
+
+  /** Declared gamepiece type when created from a typed API. */
   protected final GamePieceType type;
 
   Gamepiece(PhysicsWorld world, int gamepieceIndex) {
@@ -180,6 +185,8 @@ public class Gamepiece {
 
   /**
    * Place this gamepiece at the given world position and mark grounded.
+   *
+   * @param pos world-space position in meters
    */
   public void place(Translation3d pos) {
     world.placeGamepiece(gamepieceIndex, pos.getX(), pos.getY(), pos.getZ());
@@ -216,6 +223,8 @@ public class Gamepiece {
 
   /**
    * Convenience: is this gamepiece a ball (default spherical physics)?
+   *
+   * @return true when this gamepiece should be treated as a ball/sphere
    */
   public boolean isBall() {
     String t = typeName();
