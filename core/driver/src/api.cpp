@@ -33,13 +33,6 @@ Gamepiece_t* frcsim_create_gamepiece(PhysicsWorld_t* w,
   return static_cast<Gamepiece_t*>(&w->createBall(frcsim::Gamepiece::Config(), frcsim::Gamepiece::Properties()));
 }
 
-Ball_t* frcsim_create_ball(PhysicsWorld_t* w,
-                           const frcsim::Gamepiece::Config* config,
-                           const frcsim::Gamepiece::Properties* props) {
-  // Delegate to new gamepiece factory for backward compatibility.
-  return reinterpret_cast<Ball_t*>(frcsim_create_gamepiece(w, config, props));
-}
-
 void frcsim_step_world(PhysicsWorld_t* w, double dt_s) {
   if (!w) return;
   // Use configured fixed_dt_s if dt_s <= 0
@@ -90,17 +83,6 @@ void frcsim_gamepiece_outtake(Gamepiece_t* gamepiece, double px, double py, doub
   frcsim::Vector3 pos(px, py, pz);
   frcsim::Vector3 vel(vx, vy, vz);
   gamepiece->outtake(pos, vel);
-}
-
-// Backwards-compatible Ball API delegates to gamepiece functions.
-void frcsim_get_ball_state(Ball_t* ball, double* px, double* py, double* pz,
-                           double* vx, double* vy, double* vz) {
-  frcsim_get_gamepiece_state(reinterpret_cast<Gamepiece_t*>(ball), px, py, pz, vx, vy, vz);
-}
-
-void frcsim_ball_shoot(Ball_t* ball, double px, double py, double pz,
-                       double vx, double vy, double vz) {
-  frcsim_gamepiece_outtake(reinterpret_cast<Gamepiece_t*>(ball), px, py, pz, vx, vy, vz);
 }
 
 }

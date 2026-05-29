@@ -276,8 +276,7 @@ int c_rsSetBodyAerodynamicBox(uint64_t world_handle, int body_index,
  * @param z_m Position z in meters.
  * @return 0 on success, non-zero on failure.
  */
-int c_rsSetBallPosition(uint64_t world_handle, int ball_index,
-                        double x_m, double y_m, double z_m);
+// Deprecated ball-named position setter removed; use c_rsSetGamepiecePosition.
 
 /** Gamepiece-named alias for setting position (delegates to ball API). */
 int c_rsSetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
@@ -292,8 +291,7 @@ int c_rsSetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
  * @param vz_mps Velocity z component in meters/second.
  * @return 0 on success, non-zero on failure.
  */
-int c_rsSetBallLinearVelocity(uint64_t world_handle, int ball_index,
-                              double vx_mps, double vy_mps, double vz_mps);
+// Deprecated ball-named velocity setter removed; use c_rsSetGamepieceLinearVelocity.
 
 /** Gamepiece-named alias for setting linear velocity (delegates to ball API). */
 int c_rsSetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
@@ -308,8 +306,7 @@ int c_rsSetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
  * @param z_m Output pointer for z position in meters.
  * @return 0 on success, non-zero on failure.
  */
-int c_rsGetBallPosition(uint64_t world_handle, int ball_index,
-                        double* x_m, double* y_m, double* z_m);
+// Deprecated ball-named getter removed; use c_rsGetGamepiecePosition.
 
 /** Gamepiece-named alias for getting position (delegates to ball API). */
 int c_rsGetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
@@ -324,8 +321,7 @@ int c_rsGetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
  * @param vz_mps Output pointer for z velocity in meters/second.
  * @return 0 on success, non-zero on failure.
  */
-int c_rsGetBallLinearVelocity(uint64_t world_handle, int ball_index,
-                              double* vx_mps, double* vy_mps, double* vz_mps);
+// Deprecated ball-named getter removed; use c_rsGetGamepieceLinearVelocity.
 
 /** Gamepiece-named alias for getting linear velocity (delegates to ball API). */
 int c_rsGetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,

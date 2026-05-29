@@ -108,13 +108,7 @@ public final class PhysicsWorld implements AutoCloseable {
 		return gamepiece;
 	}
 
-	/**
-	 * @deprecated Use {@link #createGamepiece(double, double, double)}.
-	 */
-	@Deprecated(forRemoval = false)
-	public Gamepiece createGamepiece(HitboxType hitboxType, double radiusMeters, double massKg, double restitution) {
-		return createGamepiece(radiusMeters, massKg, restitution);
-	}
+	// Deprecated overload removed; use createGamepiece(double, double, double).
 
 	/**
 	 * Creates a spherical gamepiece with default physical parameters.

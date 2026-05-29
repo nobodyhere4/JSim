@@ -377,10 +377,7 @@ int c_rsSetBodyAerodynamicBox(uint64_t world_handle, int body_index,
   return 0;
 }
 
-int c_rsSetBallPosition(uint64_t world_handle, int ball_index,
-                        double x_m, double y_m, double z_m) {
-  return c_rsSetGamepiecePosition(world_handle, ball_index, x_m, y_m, z_m);
-}
+// Deprecated ball-named setters removed; use gamepiece APIs below.
 
 // New gamepiece-named ABI wrappers own the implementation; legacy ball
 // functions delegate to them for compatibility.
@@ -404,10 +401,7 @@ int c_rsSetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
   return 0;
 }
 
-int c_rsSetBallLinearVelocity(uint64_t world_handle, int ball_index,
-                              double vx_mps, double vy_mps, double vz_mps) {
-  return c_rsSetGamepieceLinearVelocity(world_handle, ball_index, vx_mps, vy_mps, vz_mps);
-}
+// Deprecated ball-named setters removed; use gamepiece APIs below.
 
 int c_rsSetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
                                    double vx_mps, double vy_mps, double vz_mps) {
@@ -500,10 +494,6 @@ int c_rsSetWorldGravity(uint64_t world_handle, double gx_mps2,
   return 0;
 }
 
-int c_rsGetBallPosition(uint64_t world_handle, int ball_index,
-                        double* x_m, double* y_m, double* z_m) {
-  return c_rsGetGamepiecePosition(world_handle, ball_index, x_m, y_m, z_m);
-}
 
 int c_rsGetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
                              double* x_m, double* y_m, double* z_m) {
@@ -530,10 +520,6 @@ int c_rsGetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
   return 0;
 }
 
-int c_rsGetBallLinearVelocity(uint64_t world_handle, int ball_index,
-                              double* vx_mps, double* vy_mps, double* vz_mps) {
-  return c_rsGetGamepieceLinearVelocity(world_handle, ball_index, vx_mps, vy_mps, vz_mps);
-}
 
 int c_rsGetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
                                    double* vx_mps, double* vy_mps, double* vz_mps) {
