@@ -253,7 +253,21 @@ public class JSimJNI {
       double zMeters,
       double dragCoefficient);
 
-  public static native int pickGamepiece(
+    /**
+     * Attempts to pick up a gamepiece into a carrier location.
+     *
+     * @param worldHandle the native world handle
+     * @param gamepieceIndex the native gamepiece index
+     * @param intakeX world-space intake x coordinate
+     * @param intakeY world-space intake y coordinate
+     * @param intakeZ world-space intake z coordinate
+     * @param captureRadius capture radius in meters
+     * @param carryOffsetX carry offset x in meters
+     * @param carryOffsetY carry offset y in meters
+     * @param carryOffsetZ carry offset z in meters
+     * @return zero on success, non-zero on failure
+     */
+    public static native int pickGamepiece(
       long worldHandle,
       int gamepieceIndex,
       double intakeX,
@@ -264,25 +278,60 @@ public class JSimJNI {
       double carryOffsetY,
       double carryOffsetZ);
 
-  public static native int placeGamepiece(long worldHandle, int gamepieceIndex,
+    /**
+     * Places a gamepiece at the given world position and marks it grounded.
+     *
+     * @param worldHandle the native world handle
+     * @param gamepieceIndex the native gamepiece index
+     * @param xMeters x position in meters
+     * @param yMeters y position in meters
+     * @param zMeters z position in meters
+     * @return zero on success, non-zero on failure
+     */
+    public static native int placeGamepiece(long worldHandle, int gamepieceIndex,
       double xMeters, double yMeters, double zMeters);
 
-  public static native int outtakeGamepiece(long worldHandle, int gamepieceIndex,
+    /**
+     * Launches (outtakes) a gamepiece with the specified position and velocity.
+     *
+     * @param worldHandle the native world handle
+     * @param gamepieceIndex the native gamepiece index
+     * @param px launch position x in meters
+     * @param py launch position y in meters
+     * @param pz launch position z in meters
+     * @param vx launch velocity x in m/s
+     * @param vy launch velocity y in m/s
+     * @param vz launch velocity z in m/s
+     * @return zero on success, non-zero on failure
+     */
+    public static native int outtakeGamepiece(long worldHandle, int gamepieceIndex,
       double px, double py, double pz, double vx, double vy, double vz);
 
-    /** Native: set gamepiece position. */
+    /**
+     * Native: set gamepiece position.
+     * @return zero on success, non-zero on failure
+     */
   public static native int setGamepiecePosition(
       long worldHandle, int gamepieceIndex, double xMeters, double yMeters, double zMeters);
 
-    /** Native: set gamepiece linear velocity. */
+    /**
+     * Native: set gamepiece linear velocity.
+     * @return zero on success, non-zero on failure
+     */
   public static native int setGamepieceLinearVelocity(
       long worldHandle, int gamepieceIndex, double vxMps, double vyMps, double vzMps);
 
-    /** Native: get gamepiece position. */
+    /**
+     * Native: get gamepiece position.
+     * @return zero on success, non-zero on failure
+     */
   public static native int getGamepiecePosition(
       long worldHandle, int gamepieceIndex, double[] outXyzMeters);
 
-    /** Native: get gamepiece linear velocity. */
+    /**
+     * Native: get gamepiece linear velocity.
+     * @return zero on success, non-zero on failure
+     */
   public static native int getGamepieceLinearVelocity(
       long worldHandle, int gamepieceIndex, double[] outVxyzMps);
 
