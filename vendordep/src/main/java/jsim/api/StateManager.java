@@ -102,7 +102,7 @@ public class StateManager {
      */
     public SimRobot initializeRobot(RobotID id, Pose2d startingPose, Translation2d[] frameVertices) {
         SimRobot.RobotState internalState = new SimRobot.RobotState();
-        internalState.pose = startingPose;
+        internalState.robotPose = startingPose;
         internalState.frameVertices = frameVertices == null ? new Translation2d[0] : frameVertices.clone();
         
         FieldState<SimRobot.RobotState> stateRef = new FieldState<>(internalState);
@@ -134,7 +134,7 @@ public class StateManager {
     public Map<RobotID, Pose2d> getRobotPoses() {
         Map<RobotID, Pose2d> poses = new EnumMap<>(RobotID.class);
         for (Map.Entry<RobotID, FieldState<SimRobot.RobotState>> entry : robotStates.entrySet()) {
-            poses.put(entry.getKey(), entry.getValue().get().pose);
+            poses.put(entry.getKey(), entry.getValue().get().robotPose);
         }
         return Collections.unmodifiableMap(poses);
     }
@@ -153,7 +153,7 @@ public class StateManager {
                 RobotID id = entry.getKey();
                 SimRobot.RobotState state = entry.getValue().get();
                 if (state != null) {
-                    registerRobotBody(id, state.pose, state.frameVertices);
+                    registerRobotBody(id, state.robotPose, state.frameVertices);
                 }
             }
         }

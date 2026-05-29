@@ -30,7 +30,7 @@ public class SimRobot {
         /**
          * The current field-relative pose of the robot.
          */
-        public Pose2d pose = new Pose2d();
+        public Pose2d robotPose = new Pose2d();
         /**
          * The robot frame vertices relative to the robot center.
          */
@@ -120,7 +120,7 @@ public class SimRobot {
      * @return the current pose of the robot.
      */
     public Pose2d getPose() {
-        return stateManagerRef.get().pose;
+        return stateManagerRef.get().robotPose;
     }
 
     /**
@@ -157,7 +157,7 @@ public class SimRobot {
      * @param pose the new pose to set for the robot.
      */
     public void resetPose(Pose2d pose) {
-        stateManagerRef.get().pose = pose;
+        stateManagerRef.get().robotPose = pose;
     }
 
     /**
@@ -179,15 +179,15 @@ public class SimRobot {
         }
 
         RobotState state = stateManagerRef.get();
-        if (state == null || state.pose == null || state.speeds == null) {
+        if (state == null || state.robotPose == null || state.speeds == null) {
             return;
         }
 
-        double xMeters = state.pose.getX() + (state.speeds.vxMetersPerSecond * dtSeconds);
-        double yMeters = state.pose.getY() + (state.speeds.vyMetersPerSecond * dtSeconds);
+        double xMeters = state.robotPose.getX() + (state.speeds.vxMetersPerSecond * dtSeconds);
+        double yMeters = state.robotPose.getY() + (state.speeds.vyMetersPerSecond * dtSeconds);
         double thetaRadians =
-            state.pose.getRotation().getRadians() + (state.speeds.omegaRadiansPerSecond * dtSeconds);
-        state.pose = new Pose2d(xMeters, yMeters, new Rotation2d(thetaRadians));
+            state.robotPose.getRotation().getRadians() + (state.speeds.omegaRadiansPerSecond * dtSeconds);
+        state.robotPose = new Pose2d(xMeters, yMeters, new Rotation2d(thetaRadians));
     }
 
     /**
