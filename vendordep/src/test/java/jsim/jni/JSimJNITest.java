@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import jsim.Gamepiece;
 import jsim.PhysicsBody;
 import jsim.PhysicsWorld;
+import jsim.api.GamePieceType;
 
 public class JSimJNITest {
   @Test
@@ -60,8 +61,8 @@ public class JSimJNITest {
       bumper.setCollisionBox(0.6, 0.6, 0.2);
       bumper.setPosition(Meters.of(0.0), Meters.of(0.0), Meters.of(0.1));
 
-      Gamepiece gamepiece = world.createGamepiece(
-          PhysicsWorld.HitboxType.SPHERE,
+        Gamepiece gamepiece = world.createGamepiece(
+          GamePieceType.BALL,
           0.12,
           0.27,
           0.45);
