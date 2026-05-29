@@ -10,7 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 public class RobotState {
 
     /** Current robot pose on the field. */
-    public Pose2d pose;
+    public Pose2d robotPose;
     /** Robot frame perimeter vertices. */
     public final Translation2d[] frameVertices;
     /** Current commanded or measured chassis speeds. */
@@ -22,12 +22,12 @@ public class RobotState {
      * Creates a robot state snapshot.
      *
      * @param id robot identifier
-     * @param pose initial pose
+     * @param robotPose initial pose
      * @param frameVertices frame perimeter vertices
      */
-    public RobotState(RobotID id, Pose2d pose, Translation2d[] frameVertices) {
+    public RobotState(RobotID id, Pose2d robotPose, Translation2d[] frameVertices) {
         this.id = id;
-        this.pose = pose;
+        this.robotPose = robotPose;
         this.frameVertices = frameVertices;
         this.chassisSpeeds = new ChassisSpeeds(0, 0, 0);
     }
