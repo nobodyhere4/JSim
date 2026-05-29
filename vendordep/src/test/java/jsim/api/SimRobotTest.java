@@ -7,9 +7,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import jsim.PhysicsBody;
 import jsim.PhysicsWorld;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class SimRobotTest {
+  @BeforeEach
+  void resetStateManager() {
+    StateManager.getInstance().reset();
+  }
+
   @Test
   void getVelocityFallsBackToCommandedSpeedsWhenNoBodyExists() {
     SimRobot robot = SimRobot.createRobot(

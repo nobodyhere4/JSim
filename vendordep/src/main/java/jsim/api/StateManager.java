@@ -21,7 +21,6 @@ import jsim.PhysicsWorld;
 import jsim.field.FieldConfig;
 import jsim.field.FieldElement;
 import java.util.Objects;
-import jsim.field.FieldConfig;
 
 /**
  * System Rules:
@@ -48,6 +47,20 @@ public class StateManager {
      */
     public static StateManager getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Clears all tracked simulation state and detaches the active physics world.
+     *
+     * <p>Primarily used by tests to ensure deterministic, isolated state between runs.
+     */
+    public synchronized void reset() {
+        robotStates.clear();
+        robots.clear();
+        robotBodies.clear();
+        gamepieceZones.clear();
+        fieldElements.clear();
+        physicsWorld = null;
     }
 
     /**
@@ -133,13 +146,11 @@ public class StateManager {
      */
     public synchronized void setPhysicsWorld(PhysicsWorld physicsWorld) {
         this.physicsWorld = physicsWorld;
+        robotBodies.clear();
 
         if (physicsWorld != null) {
             for (Map.Entry<RobotID, FieldState<SimRobot.RobotState>> entry : robotStates.entrySet()) {
                 RobotID id = entry.getKey();
-                if (robotBodies.containsKey(id)) {
-                    continue;
-                }
                 SimRobot.RobotState state = entry.getValue().get();
                 if (state != null) {
                     registerRobotBody(id, state.pose, state.frameVertices);

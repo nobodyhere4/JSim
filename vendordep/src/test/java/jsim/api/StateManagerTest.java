@@ -13,9 +13,15 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import jsim.PhysicsWorld;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class StateManagerTest {
+  @BeforeEach
+  void resetStateManager() {
+    StateManager.getInstance().reset();
+  }
+
   @Test
   void stepPhysicsUpdatesRobotAndZoneState() {
     StateManager stateManager = StateManager.getInstance();
