@@ -288,6 +288,14 @@ public class GamepieceZone {
     }
   }
 
+  /**
+   * Advances the zone state for one simulation tick.
+   */
+  public void update() {
+    refresh();
+    evaluate();
+  }
+
   private GamepieceZone(
       SimRobot robot,
       String name,

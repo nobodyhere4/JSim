@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -130,6 +131,28 @@ public class SimRobot {
      */
     public void setChassisSpeeds(ChassisSpeeds speeds) {
         stateManagerRef.get().speeds = speeds;
+    }
+
+    /**
+     * Advances the robot state by one simulation tick.
+     *
+     * @param dtSeconds timestep in seconds
+     */
+    public void update(double dtSeconds) {
+        if (dtSeconds <= 0.0) {
+            return;
+        }
+
+        RobotState state = stateManagerRef.get();
+        if (state == null || state.pose == null || state.speeds == null) {
+            return;
+        }
+
+        Twist2d twist = new Twist2d(
+            state.speeds.vxMetersPerSecond * dtSeconds,
+            state.speeds.vyMetersPerSecond * dtSeconds,
+            state.speeds.omegaRadiansPerSecond * dtSeconds);
+        state.pose = state.pose.exp(twist);
     }
 
     /**

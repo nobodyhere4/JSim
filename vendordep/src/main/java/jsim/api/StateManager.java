@@ -30,6 +30,7 @@ import jsim.field.FieldConfig;
  */
 public class StateManager {
     private static final StateManager INSTANCE = new StateManager();
+    private static final double DEFAULT_STEP_SECONDS = 0.02;
 
     private final Map<RobotID, FieldState<SimRobot.RobotState>> robotStates = new EnumMap<>(RobotID.class);
     private final Map<RobotID, SimRobot> robots = new EnumMap<>(RobotID.class);
@@ -185,10 +186,14 @@ public class StateManager {
         }
     }
 
-    private synchronized void refreshGamepieceZones() {
+    private synchronized void updateGamepieceZones() {
         for (GamepieceZone gamepieceZone : gamepieceZones) {
-            gamepieceZone.refresh();
+            gamepieceZone.update();
         }
+        refreshZoneGamepieceActions();
+    }
+
+    private synchronized void refreshZoneGamepieceActions() {
         // Apply zone-driven actions: when a zone is actively OUTTAKE or SHOOT,
         // convert nearby grounded gamepieces into airborne (full physics) by
         // calling the PhysicsWorld shoot API. For INTAKE, attempt pickup.
@@ -249,9 +254,20 @@ public class StateManager {
      * Advances the tracked physics world and refreshes gamepiece zones.
      */
     public synchronized void stepPhysics() {
+        final double dtSeconds = physicsWorld != null
+                ? physicsWorld.getFixedDtSeconds()
+                : DEFAULT_STEP_SECONDS;
+
+        for (SimRobot robot : robots.values()) {
+            if (robot != null) {
+                robot.update(dtSeconds);
+            }
+        }
+
         if (physicsWorld != null) {
             physicsWorld.step();
-            refreshGamepieceZones();
         }
+
+        updateGamepieceZones();
     }
 }

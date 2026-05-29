@@ -18,6 +18,7 @@ import jsim.jni.JSimJNI;
  */
 public final class PhysicsWorld implements AutoCloseable {
 	private long worldHandle;
+	private final double fixedDtSeconds;
 	private final List<Gamepiece> gamepieces = new ArrayList<>();
 	private final List<Runnable> stepListeners = new ArrayList<>();
 
@@ -37,11 +38,21 @@ public final class PhysicsWorld implements AutoCloseable {
 	 */
 	public PhysicsWorld(double fixedDtSeconds, boolean enableGravity) {
 		JSimJNI.forceLoad();
+		this.fixedDtSeconds = fixedDtSeconds;
 		this.worldHandle = JSimJNI.createWorld(fixedDtSeconds, enableGravity);
 		if (worldHandle == 0) {
 			throw new JSimException("Failed to create native PhysicsWorld", 0,
 				"Ensure the native JSim library is available and that permissions allow loading it.");
 		}
+	}
+
+	/**
+	 * Returns the fixed timestep configured for this world.
+	 *
+	 * @return fixed timestep in seconds
+	 */
+	public double getFixedDtSeconds() {
+		return fixedDtSeconds;
 	}
 
 	/**
