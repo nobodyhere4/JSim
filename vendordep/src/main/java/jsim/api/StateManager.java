@@ -231,7 +231,7 @@ public class StateManager {
                 }
 
                 if (mode == GamepieceZone.Mode.INTAKE) {
-                    // Attempt pickup — use small capture radius and zero carry offset.
+                    // Attempt pickup - use small capture radius and zero carry offset.
                     gamepiece.pick(new Pose3d(wx, wy, wz, new Rotation3d()), 0.25, new Vec3(0.0, 0.0, 0.0));
                 } else if (mode == GamepieceZone.Mode.OUTTAKE || mode == GamepieceZone.Mode.SHOOT) {
                     // Compute simple world-space velocity vector from robot heading and pitch.
