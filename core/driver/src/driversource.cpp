@@ -17,15 +17,37 @@
 
 namespace {
 
+/**
+ * @file driversource.cpp
+ * @brief C ABI wrappers and driver helpers for the frcsim physics world.
+ *
+ * This file exposes a C-compatible API used by higher-level language
+ * bindings. The functions here are thin wrappers around the C++ simulation
+ * primitives and include best-effort safety checks for invalid handles.
+ */
+
+/// Mutex protecting global world map and related state.
 std::mutex g_world_mutex;
+
+/// Map from handle -> owned PhysicsWorld instance.
 std::unordered_map<std::uint64_t, std::unique_ptr<frcsim::PhysicsWorld>>
     g_worlds;
+
+/// Monotonic handle allocator for new worlds.
 std::uint64_t g_next_handle = 1;
 
-// Mapping of world handle -> (gamepiece index -> type tag)
+/// Mapping of world handle -> (gamepiece index -> type tag)
 static std::unordered_map<std::uint64_t, std::unordered_map<int, int>>
   g_gamepiece_types;
 
+/**
+ * @brief Convert a small integer kind tag to a human readable type name.
+ *
+ * This is a convenience mapping used for legacy/compact type tags.
+ *
+ * @param type Integer type tag.
+ * @return Corresponding string name, or "unknown" if not recognised.
+ */
 std::string typeNameForKind(int type) {
   switch (type) {
     case 0: return "ball";
@@ -39,10 +61,22 @@ std::string typeNameForKind(int type) {
   }
 }
 
+/**
+ * @brief Check whether a world handle refers to a live world.
+ *
+ * @param handle World handle to check.
+ * @return true if the world exists, false otherwise.
+ */
 bool worldExists(std::uint64_t handle) {
   return g_worlds.find(handle) != g_worlds.end();
 }
 
+/**
+ * @brief Lookup a world pointer for a handle.
+ *
+ * @param handle World handle.
+ * @return Pointer to the world, or nullptr if not found.
+ */
 frcsim::PhysicsWorld* lookupWorld(std::uint64_t handle) {
   if (!worldExists(handle)) {
     return nullptr;
@@ -51,10 +85,25 @@ frcsim::PhysicsWorld* lookupWorld(std::uint64_t handle) {
   return g_worlds.at(handle).get();
 }
 
+/**
+ * @brief Alias for lookupWorld (keeps historical naming).
+ *
+ * @param handle World handle.
+ * @return Pointer to the world, or nullptr if not found.
+ */
 frcsim::PhysicsWorld* getWorld(std::uint64_t handle) {
   return lookupWorld(handle);
 }
 
+/**
+ * @brief Safely get a body pointer from a world by index.
+ *
+ * Returns nullptr for invalid indices or null world pointers.
+ *
+ * @param world PhysicsWorld pointer.
+ * @param body_index Index of the requested body.
+ * @return Pointer to the body or nullptr.
+ */
 frcsim::RigidBody* getBody(frcsim::PhysicsWorld* world, int body_index) {
   if (!world || body_index < 0) {
     return nullptr;
@@ -70,8 +119,26 @@ frcsim::RigidBody* getBody(frcsim::PhysicsWorld* world, int body_index) {
 }  // namespace
 
 extern "C" {
+/**
+ * @brief C-compatible API exported for language bindings.
+ *
+ * The functions below use plain C types and simple return codes where
+ * appropriate (0 for success, -1 for error) to make interop straightforward.
+ */
+
+/**
+ * @brief No-op helper kept for binary compatibility.
+ */
 void c_doThing(void) {}
 
+/**
+ * @brief Create a new physics world and return its opaque handle.
+ *
+ * @param fixed_dt_s Fixed simulation timestep (seconds). If <= 0, a
+ * reasonable default is used.
+ * @param enable_gravity Non-zero to enable default gravity.
+ * @return Opaque world handle (non-zero) on success.
+ */
 uint64_t c_rsCreateWorld(double fixed_dt_s, int enable_gravity) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
   frcsim::PhysicsConfig config;
@@ -83,11 +150,25 @@ uint64_t c_rsCreateWorld(double fixed_dt_s, int enable_gravity) {
   return handle;
 }
 
+/**
+ * @brief Destroy a previously created world and release resources.
+ *
+ * Calling with an invalid handle is a no-op.
+ *
+ * @param world_handle Handle returned from c_rsCreateWorld.
+ */
 void c_rsDestroyWorld(uint64_t world_handle) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
   g_worlds.erase(world_handle);
 }
 
+/**
+ * @brief Create a rigid body in the given world.
+ *
+ * @param world_handle Target world handle.
+ * @param mass_kg Mass in kilograms for the body.
+ * @return Index of the created body within the world, or -1 on error.
+ */
 int c_rsCreateBody(uint64_t world_handle, double mass_kg) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
   frcsim::PhysicsWorld* world = getWorld(world_handle);
@@ -99,10 +180,24 @@ int c_rsCreateBody(uint64_t world_handle, double mass_kg) {
   return static_cast<int>(world->bodies().size() - 1);
 }
 
+/**
+ * @brief Legacy helper to create a default ball gamepiece.
+ *
+ * Delegates to c_rsCreateGamepiece with sensible defaults.
+ */
 int c_rsCreateBall(uint64_t world_handle) {
   return c_rsCreateGamepiece(world_handle, 0.12, 0.27, 0.45);
 }
 
+/**
+ * @brief Create a spherical gamepiece (ball) in the world.
+ *
+ * @param world_handle Target world handle.
+ * @param radius_m Radius in meters.
+ * @param mass_kg Mass in kilograms.
+ * @param restitution Coefficient of restitution [0..1].
+ * @return Index of the created gamepiece, or -1 on error.
+ */
 int c_rsCreateGamepiece(uint64_t world_handle, double radius_m,
                         double mass_kg, double restitution) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
@@ -126,6 +221,19 @@ int c_rsCreateGamepiece(uint64_t world_handle, double radius_m,
   return static_cast<int>(world->gamepieces().size() - 1);
 }
 
+/**
+ * @brief Create a gamepiece and associate a small integer type tag.
+ *
+ * This helper stores the type tag in an internal map and attempts to set
+ * a readable type name on the gamepiece when available.
+ *
+ * @param world_handle World handle.
+ * @param type Integer type tag.
+ * @param radius_m Radius in meters.
+ * @param mass_kg Mass in kg.
+ * @param restitution Restitution [0..1].
+ * @return Index of the created gamepiece, or -1 on error.
+ */
 int c_rsCreateGamepieceWithType(uint64_t world_handle, int type, double radius_m,
                                 double mass_kg, double restitution) {
   const int idx = c_rsCreateGamepiece(world_handle, radius_m, mass_kg, restitution);
@@ -149,6 +257,16 @@ int c_rsCreateGamepieceWithType(uint64_t world_handle, int type, double radius_m
   return idx;
 }
 
+/**
+ * @brief Create a gamepiece and set a textual type name.
+ *
+ * @param world_handle World handle.
+ * @param type_name Null-terminated type name (best-effort; may be ignored).
+ * @param radius_m Radius in meters.
+ * @param mass_kg Mass in kg.
+ * @param restitution Restitution [0..1].
+ * @return Index of the created gamepiece, or -1 on error.
+ */
 int c_rsCreateGamepieceWithTypeName(uint64_t world_handle, const char* type_name,
                                    double radius_m, double mass_kg, double restitution) {
   // Create the gamepiece using existing spherical defaults today.
@@ -174,6 +292,16 @@ int c_rsCreateGamepieceWithTypeName(uint64_t world_handle, const char* type_name
   return idx;
 }
 
+/**
+ * @brief Retrieve the type name for a gamepiece.
+ *
+ * Returns a pointer to thread-local storage which remains valid until the
+ * next call on the same thread.
+ *
+ * @param world_handle World handle.
+ * @param gamepiece_index Index of the gamepiece.
+ * @return Null-terminated name or nullptr if unavailable.
+ */
 const char* c_rsGetGamepieceTypeName(uint64_t world_handle, int gamepiece_index) {
   thread_local std::string type_name_storage;
 
@@ -200,6 +328,20 @@ const char* c_rsGetGamepieceTypeName(uint64_t world_handle, int gamepiece_index)
   return type_name_storage.empty() ? nullptr : type_name_storage.c_str();
 }
 
+/**
+ * @brief Attempt to pick up a gamepiece with an intake position.
+ *
+ * @param world_handle World handle.
+ * @param gamepiece_index Index of the gamepiece to pick.
+ * @param intake_x Intake x position (m).
+ * @param intake_y Intake y position (m).
+ * @param intake_z Intake z position (m).
+ * @param capture_radius Capture radius (m).
+ * @param carry_offset_x Carry offset x component (m).
+ * @param carry_offset_y Carry offset y component (m).
+ * @param carry_offset_z Carry offset z component (m).
+ * @return 0 on success, -1 on failure.
+ */
 int c_rsPickGamepiece(uint64_t world_handle, int gamepiece_index,
                       double intake_x, double intake_y, double intake_z,
                       double capture_radius,
@@ -226,11 +368,21 @@ int c_rsPickGamepiece(uint64_t world_handle, int gamepiece_index,
   return ok ? 0 : -1;
 }
 
+/**
+ * @brief Place a gamepiece at the given world-space position.
+ *
+ * Convenience wrapper around c_rsSetGamepiecePosition.
+ */
 int c_rsPlaceGamepiece(uint64_t world_handle, int gamepiece_index,
                       double x_m, double y_m, double z_m) {
   return c_rsSetGamepiecePosition(world_handle, gamepiece_index, x_m, y_m, z_m);
 }
 
+/**
+ * @brief Eject (outtake) a held gamepiece with given position and velocity.
+ *
+ * @return 0 on success, -1 on error.
+ */
 int c_rsOuttakeGamepiece(uint64_t world_handle, int gamepiece_index,
                       double px, double py, double pz,
                       double vx, double vy, double vz) {
@@ -250,6 +402,11 @@ int c_rsOuttakeGamepiece(uint64_t world_handle, int gamepiece_index,
   return 0;
 }
 
+/**
+ * @brief Set the position of a rigid body by index.
+ *
+ * @return 0 on success, -1 on error.
+ */
 int c_rsSetBodyPosition(uint64_t world_handle, int body_index,
                         double x_m, double y_m, double z_m) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
@@ -262,6 +419,11 @@ int c_rsSetBodyPosition(uint64_t world_handle, int body_index,
   return 0;
 }
 
+/**
+ * @brief Set a body's linear velocity.
+ *
+ * @return 0 on success, -1 on error.
+ */
 int c_rsSetBodyLinearVelocity(uint64_t world_handle, int body_index,
                               double vx_mps, double vy_mps, double vz_mps) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
@@ -274,6 +436,12 @@ int c_rsSetBodyLinearVelocity(uint64_t world_handle, int body_index,
   return 0;
 }
 
+/**
+ * @brief Enable or disable gravity for a specific body.
+ *
+ * @param enabled Non-zero to enable gravity.
+ * @return 0 on success, -1 on error.
+ */
 int c_rsSetBodyGravityEnabled(uint64_t world_handle, int body_index,
                               int enabled) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
@@ -286,6 +454,12 @@ int c_rsSetBodyGravityEnabled(uint64_t world_handle, int body_index,
   return 0;
 }
 
+/**
+ * @brief Set material properties for a body.
+ *
+ * Values are clamped to reasonable ranges where applicable.
+ * @return 0 on success, -1 on error.
+ */
 int c_rsSetBodyMaterial(uint64_t world_handle, int body_index,
                         double restitution, double friction_kinetic,
                         double friction_static, double collision_damping) {
@@ -309,6 +483,11 @@ int c_rsSetBodyMaterial(uint64_t world_handle, int body_index,
   return 0;
 }
 
+/**
+ * @brief Assign a material identifier to a body for interaction lookup.
+ *
+ * @return 0 on success, -1 on error.
+ */
 int c_rsSetBodyMaterialId(uint64_t world_handle, int body_index,
                           int32_t material_id) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
@@ -322,6 +501,11 @@ int c_rsSetBodyMaterialId(uint64_t world_handle, int body_index,
   return 0;
 }
 
+/**
+ * @brief Configure collision layer/mask bits for a body.
+ *
+ * @return 0 on success, -1 on error.
+ */
 int c_rsSetBodyCollisionFilter(uint64_t world_handle, int body_index,
                                uint32_t collision_layer_bits,
                                uint32_t collision_mask_bits) {
@@ -337,6 +521,12 @@ int c_rsSetBodyCollisionFilter(uint64_t world_handle, int body_index,
   return 0;
 }
 
+/**
+ * @brief Define a spherical aerodynamic proxy for the body.
+ *
+ * Also updates the world's default drag coefficient when provided.
+ * @return 0 on success, -1 on error.
+ */
 int c_rsSetBodyAerodynamicSphere(uint64_t world_handle, int body_index,
                                  double radius_m, double drag_coefficient) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
@@ -356,6 +546,10 @@ int c_rsSetBodyAerodynamicSphere(uint64_t world_handle, int body_index,
   return 0;
 }
 
+/**
+ * @brief Define a box-shaped aerodynamic proxy for the body.
+ * @return 0 on success, -1 on error.
+ */
 int c_rsSetBodyAerodynamicBox(uint64_t world_handle, int body_index,
                               double x_m, double y_m, double z_m,
                               double drag_coefficient) {
@@ -381,6 +575,11 @@ int c_rsSetBodyAerodynamicBox(uint64_t world_handle, int body_index,
 
 // New gamepiece-named ABI wrappers own the implementation; legacy ball
 // functions delegate to them for compatibility.
+/**
+ * @brief Directly set a gamepiece's position.
+ *
+ * @return 0 on success, -1 on error.
+ */
 int c_rsSetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
                              double x_m, double y_m, double z_m) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
@@ -403,6 +602,10 @@ int c_rsSetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
 
 // Deprecated ball-named setters removed; use gamepiece APIs below.
 
+/**
+ * @brief Set a gamepiece's linear velocity.
+ * @return 0 on success, -1 on error.
+ */
 int c_rsSetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
                                    double vx_mps, double vy_mps, double vz_mps) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
@@ -423,6 +626,10 @@ int c_rsSetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
   return 0;
 }
 
+/**
+ * @brief Configure global aerodynamics settings for a world.
+ * @return 0 on success, -1 on error.
+ */
 int c_rsSetWorldAerodynamics(uint64_t world_handle, int enabled,
                              double air_density_kgpm3,
                              double linear_drag_coefficient_n_per_mps,
@@ -448,6 +655,11 @@ int c_rsSetWorldAerodynamics(uint64_t world_handle, int enabled,
   return 0;
 }
 
+/**
+ * @brief Define interaction properties between two material ids.
+ *
+ * @return 0 on success, -1 on error.
+ */
 int c_rsSetMaterialInteraction(uint64_t world_handle, int32_t material_a_id,
                                int32_t material_b_id, double restitution,
                                double friction, int enabled) {
@@ -467,6 +679,12 @@ int c_rsSetMaterialInteraction(uint64_t world_handle, int32_t material_a_id,
   return 0;
 }
 
+/**
+ * @brief Advance the world's simulation by a number of fixed steps.
+ *
+ * @param steps Number of internal fixed steps to run (clamped to >= 1).
+ * @return 0 on success, -1 on error.
+ */
 int c_rsStepWorld(uint64_t world_handle, int steps) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
   frcsim::PhysicsWorld* world = getWorld(world_handle);
@@ -481,6 +699,11 @@ int c_rsStepWorld(uint64_t world_handle, int steps) {
   return 0;
 }
 
+/**
+ * @brief Set the world's gravity vector (m/s^2) and enable gravity.
+ *
+ * @return 0 on success, -1 on error.
+ */
 int c_rsSetWorldGravity(uint64_t world_handle, double gx_mps2,
                         double gy_mps2, double gz_mps2) {
   std::lock_guard<std::mutex> lock(g_world_mutex);
@@ -495,6 +718,12 @@ int c_rsSetWorldGravity(uint64_t world_handle, double gx_mps2,
 }
 
 
+/**
+ * @brief Read a gamepiece's position into output pointers.
+ *
+ * All output pointers must be non-null.
+ * @return 0 on success, -1 on error.
+ */
 int c_rsGetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
                              double* x_m, double* y_m, double* z_m) {
   if (!x_m || !y_m || !z_m) {
@@ -521,6 +750,10 @@ int c_rsGetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
 }
 
 
+/**
+ * @brief Read a gamepiece's linear velocity into output pointers.
+ * @return 0 on success, -1 on error.
+ */
 int c_rsGetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
                                    double* vx_mps, double* vy_mps, double* vz_mps) {
   if (!vx_mps || !vy_mps || !vz_mps) {
@@ -546,6 +779,10 @@ int c_rsGetGamepieceLinearVelocity(uint64_t world_handle, int gamepiece_index,
   return 0;
 }
 
+/**
+ * @brief Read a rigid body's position into output pointers.
+ * @return 0 on success, -1 on error.
+ */
 int c_rsGetBodyPosition(uint64_t world_handle, int body_index,
                         double* x_m, double* y_m, double* z_m) {
   if (!x_m || !y_m || !z_m) {
@@ -566,6 +803,10 @@ int c_rsGetBodyPosition(uint64_t world_handle, int body_index,
   return 0;
 }
 
+/**
+ * @brief Read a rigid body's linear velocity into output pointers.
+ * @return 0 on success, -1 on error.
+ */
 int c_rsGetBodyLinearVelocity(uint64_t world_handle, int body_index,
                               double* vx_mps, double* vy_mps, double* vz_mps) {
   if (!vx_mps || !vy_mps || !vz_mps) {
@@ -586,6 +827,12 @@ int c_rsGetBodyLinearVelocity(uint64_t world_handle, int body_index,
   return 0;
 }
 
+/**
+ * @brief Fill an array with pose (x,y,z, qw,qx,qy,qz) for up to max_bodies.
+ *
+ * The caller supplies a buffer of size at least 7*max_bodies doubles.
+ * @return Number of bodies written, or -1 on error.
+ */
 int c_rsGetBodyPose7Array(uint64_t world_handle, double* out_pose7,
                           int max_bodies) {
   if (!out_pose7 || max_bodies < 0) {
@@ -616,6 +863,10 @@ int c_rsGetBodyPose7Array(uint64_t world_handle, double* out_pose7,
   return count;
 }
 
+/**
+ * @brief Fill an array with linear and angular velocity (vx,vy,vz,wx,wy,wz).
+ * @return Number of bodies written, or -1 on error.
+ */
 int c_rsGetBodyVelocity6Array(uint64_t world_handle, double* out_velocity6,
                               int max_bodies) {
   if (!out_velocity6 || max_bodies < 0) {
@@ -645,6 +896,11 @@ int c_rsGetBodyVelocity6Array(uint64_t world_handle, double* out_velocity6,
   return count;
 }
 
+/**
+ * @brief Fill an array with a compact 13-element state per body
+ * (pos(3), quat(4), linvel(3), angvel(3)).
+ * @return Number of bodies written, or -1 on error.
+ */
 int c_rsGetBodyState13Array(uint64_t world_handle, double* out_state13,
                             int max_bodies) {
   if (!out_state13 || max_bodies < 0) {

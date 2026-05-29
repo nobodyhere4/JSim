@@ -13,6 +13,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jsim.field.FieldDefinitionCatalog;
 import jsim.field.FieldConfig;
+import jsim.api.GamePieceType;
+import jsim.Gamepiece;
+import edu.wpi.first.math.geometry.Translation3d;
 
 /**
  * Public entry point for common JSim accessors.
@@ -101,6 +104,38 @@ public final class JSim {
     try {
       FieldConfig cfg = MAPPER.treeToValue(node, FieldConfig.class);
       StateManager.getInstance().initializeField(cfg);
+      // If a physics world has been created, spawn a centered 6x30 fuel grid.
+      try {
+        if (physicsWorld != null && year == 2026) {
+          double fieldLength = node.path("field_dimensions").path("length").asDouble(16.541);
+          double fieldWidth = node.path("field_dimensions").path("width").asDouble(8.069);
+          double centerX = fieldLength / 2.0;
+          double centerY = fieldWidth / 2.0;
+
+          final int cols = 6;
+          final int rows = 30;
+          // Use 2026 fuel diameter from presets ~0.15m -> radius ~0.075m
+          final double diameter = 0.15;
+          final double spacing = diameter * 1.05; // slight gap
+
+          double totalWidth = cols * spacing;
+          double totalHeight = rows * spacing;
+          double startX = centerX - (totalWidth / 2.0) + (spacing / 2.0);
+          double startY = centerY - (totalHeight / 2.0) + (spacing / 2.0);
+
+          for (int r = 0; r < rows; ++r) {
+            for (int c = 0; c < cols; ++c) {
+              Gamepiece gp = physicsWorld.createGamepiece(GamePieceType.FUEL);
+              double x = startX + c * spacing;
+              double y = startY + r * spacing;
+              // Place slightly above ground by radius to avoid initial penetration.
+              gp.setPosition(new Translation3d(x, y, diameter * 0.5));
+            }
+          }
+        }
+      } catch (Throwable t) {
+        // Swallow to avoid breaking field initialization when physics/world isn't ready.
+      }
     } catch (Exception e) {
       throw new RuntimeException("Failed to initialize field for year " + year, e);
     }
