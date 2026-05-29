@@ -7,10 +7,12 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import jsim.LinearVelocity3d;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import jsim.PhysicsBody;
 import jsim.api.StateManager;
 
 /**
@@ -115,6 +117,25 @@ public class SimRobot {
      */
     public Pose2d getPose() {
         return stateManagerRef.get().pose;
+    }
+
+    /**
+     * Returns the robot's current measured chassis velocity when physics is attached.
+     * Falls back to the last commanded chassis speeds until a body is registered.
+     *
+     * @return the current chassis velocity snapshot
+     */
+    public ChassisSpeeds getVelocity() {
+        PhysicsBody robotBody = StateManager.getInstance().getRobotBody(robotID);
+        if (robotBody != null) {
+            LinearVelocity3d velocity = robotBody.linearVelocity();
+            return new ChassisSpeeds(
+                velocity.getVxMetersPerSecond(),
+                velocity.getVyMetersPerSecond(),
+                0.0);
+        }
+
+        return stateManagerRef.get().speeds;
     }
 
     /**
