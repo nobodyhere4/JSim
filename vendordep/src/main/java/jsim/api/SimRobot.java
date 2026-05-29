@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import jsim.LinearVelocity3d;
 import java.util.Collections;
@@ -184,11 +183,11 @@ public class SimRobot {
             return;
         }
 
-        Twist2d twist = new Twist2d(
-            state.speeds.vxMetersPerSecond * dtSeconds,
-            state.speeds.vyMetersPerSecond * dtSeconds,
-            state.speeds.omegaRadiansPerSecond * dtSeconds);
-        state.pose = state.pose.exp(twist);
+        double xMeters = state.pose.getX() + (state.speeds.vxMetersPerSecond * dtSeconds);
+        double yMeters = state.pose.getY() + (state.speeds.vyMetersPerSecond * dtSeconds);
+        double thetaRadians =
+            state.pose.getRotation().getRadians() + (state.speeds.omegaRadiansPerSecond * dtSeconds);
+        state.pose = new Pose2d(xMeters, yMeters, new Rotation2d(thetaRadians));
     }
 
     /**
