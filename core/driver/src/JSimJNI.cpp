@@ -54,6 +54,107 @@ Java_jsim_jni_JSimJNI_createWorld
 
 /*
  * Class:     jsim_jni_JSimJNI
+ * Method:    destroyWorld
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL
+Java_jsim_jni_JSimJNI_destroyWorld
+  (JNIEnv*, jclass, jlong world_handle)
+{
+  c_rsDestroyWorld(static_cast<uint64_t>(world_handle));
+}
+
+/*
+ * Class:     jsim_jni_JSimJNI
+ * Method:    createBody
+ * Signature: (JD)I
+ */
+JNIEXPORT jint JNICALL
+Java_jsim_jni_JSimJNI_createBody
+  (JNIEnv*, jclass, jlong world_handle, jdouble mass_kg)
+{
+  return static_cast<jint>(
+      c_rsCreateBody(static_cast<uint64_t>(world_handle), mass_kg));
+}
+
+/*
+ * Class:     jsim_jni_JSimJNI
+ * Method:    createBall
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL
+Java_jsim_jni_JSimJNI_createBall
+  (JNIEnv*, jclass, jlong world_handle)
+{
+  return static_cast<jint>(
+      c_rsCreateBall(static_cast<uint64_t>(world_handle)));
+}
+
+/*
+ * Class:     jsim_jni_JSimJNI
+ * Method:    createGamepiece
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL
+Java_jsim_jni_JSimJNI_createGamepiece__J
+  (JNIEnv*, jclass, jlong world_handle)
+{
+  return static_cast<jint>(
+      c_rsCreateBall(static_cast<uint64_t>(world_handle)));
+}
+
+/*
+ * Class:     jsim_jni_JSimJNI
+ * Method:    createGamepiece
+ * Signature: (JDDD)I
+ */
+JNIEXPORT jint JNICALL
+Java_jsim_jni_JSimJNI_createGamepiece__JDDD
+  (JNIEnv*, jclass, jlong world_handle, jdouble radius_m,
+   jdouble mass_kg, jdouble restitution)
+{
+  return static_cast<jint>(
+      c_rsCreateGamepiece(static_cast<uint64_t>(world_handle), radius_m, mass_kg, restitution));
+}
+
+/*
+ * Class:     jsim_jni_JSimJNI
+ * Method:    createGamepieceWithType
+ * Signature: (JIDDD)I
+ */
+JNIEXPORT jint JNICALL
+Java_jsim_jni_JSimJNI_createGamepieceWithType
+  (JNIEnv*, jclass, jlong world_handle, jint type, jdouble radius_m,
+   jdouble mass_kg, jdouble restitution)
+{
+  return static_cast<jint>(
+      c_rsCreateGamepieceWithType(static_cast<uint64_t>(world_handle),
+                                  static_cast<int>(type), radius_m, mass_kg, restitution));
+}
+
+/*
+ * Class:     jsim_jni_JSimJNI
+ * Method:    createGamepieceWithTypeName
+ * Signature: (JLjava/lang/String;DDD)I
+ */
+JNIEXPORT jint JNICALL
+Java_jsim_jni_JSimJNI_createGamepieceWithTypeName
+  (JNIEnv* env, jclass, jlong world_handle, jstring typeName,
+   jdouble radius_m, jdouble mass_kg, jdouble restitution)
+{
+  const char* cname = nullptr;
+  if (typeName != nullptr) {
+    cname = env->GetStringUTFChars(typeName, nullptr);
+  }
+  jint rc = static_cast<jint>(
+      c_rsCreateGamepieceWithTypeName(static_cast<uint64_t>(world_handle),
+                                      cname, radius_m, mass_kg, restitution));
+  if (cname) env->ReleaseStringUTFChars(typeName, cname);
+  return rc;
+}
+
+/*
+ * Class:     jsim_jni_JSimJNI
  * Method:    getGamepieceTypeName
  * Signature: (JI)Ljava/lang/String;
  */
