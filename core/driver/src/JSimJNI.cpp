@@ -51,9 +51,6 @@ Java_jsim_jni_JSimJNI_createWorld
   return static_cast<jlong>(
       c_rsCreateWorld(fixed_dt_seconds, enable_gravity ? 1 : 0));
 }
-
-/*
-
 /*
  * Class:     jsim_jni_JSimJNI
  * Method:    setBodyOrientation
@@ -68,6 +65,7 @@ Java_jsim_jni_JSimJNI_setBodyOrientation
       c_rsSetBodyOrientation(static_cast<uint64_t>(world_handle), body_index,
                              qw, qx, qy, qz));
 }
+/*
  * Class:     jsim_jni_JSimJNI
  * Method:    destroyWorld
  * Signature: (J)V
