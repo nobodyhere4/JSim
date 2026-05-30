@@ -71,6 +71,7 @@ mkdocs serve --config-file mkdocs/mkdocs.yml
 - Deployed docs: https://jsim.dev
 - Java API (Javadocs): https://jsim.dev/api/javadoc/
 - Native API (Doxygen): https://jsim.dev/api/doxygen/html/
+- Example project
 
 ## Contributing
 
