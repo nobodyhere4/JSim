@@ -358,6 +358,64 @@ void PhysicsWorld::step() {
     ball.setState(s);
   }
 
+  // Resolve ball <-> ball collisions (pairwise) so gamepieces interact with each
+  // other. We only consider airborne gamepieces here to match rigid-body
+  // collision handling.
+  for (std::size_t i = 0; i < gamepieces_.size(); ++i) {
+    for (std::size_t j = i + 1; j < gamepieces_.size(); ++j) {
+      auto& a = gamepieces_[i];
+      auto& b = gamepieces_[j];
+
+      if (a.getGamepieceState() != Gamepiece::State::kAirborne ||
+          b.getGamepieceState() != Gamepiece::State::kAirborne) {
+        continue;
+      }
+
+      auto sa = a.state();
+      auto sb = b.state();
+
+      const auto& ap = a.ballProperties();
+      const auto& bp = b.ballProperties();
+      const double ra = std::max(0.0, ap.radius_m);
+      const double rb = std::max(0.0, bp.radius_m);
+      const double ma = std::max(1e-9, ap.mass_kg);
+      const double mb = std::max(1e-9, bp.mass_kg);
+      const double inv_ma = 1.0 / ma;
+      const double inv_mb = 1.0 / mb;
+
+      Vector3 rel = sa.position_m - sb.position_m;
+      const double dist = rel.norm();
+      const double contact_dist = ra + rb;
+      if (dist <= contact_dist) {
+        Vector3 normal = dist > 1e-9 ? rel / dist : Vector3::unitZ();
+
+        // positional correction: separate proportionally to mass
+        const double penetration = contact_dist - dist;
+        const double total_m = ma + mb;
+        if (total_m > 0.0) {
+          sa.position_m += normal * (penetration * (mb / total_m));
+          sb.position_m -= normal * (penetration * (ma / total_m));
+        }
+
+        const Vector3 rel_vel = sa.velocity_mps - sb.velocity_mps;
+        const double vn = rel_vel.dot(normal);
+        if (vn < 0.0) {
+          const double ea = ap.restitution;
+          const double eb = bp.restitution;
+          const double e = std::clamp(0.5 * (ea + eb), 0.0, 1.0);
+          const double j = -(1.0 + e) * vn / (inv_ma + inv_mb);
+          const Vector3 impulse = normal * j;
+
+          sa.velocity_mps += impulse * inv_ma;
+          sb.velocity_mps -= impulse * inv_mb;
+        }
+
+        a.setState(sa);
+        b.setState(sb);
+      }
+    }
+  }
+
   ++step_count_;
   accumulated_sim_time_s_ += dt_s;
 }
