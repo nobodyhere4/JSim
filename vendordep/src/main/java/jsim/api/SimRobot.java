@@ -115,11 +115,17 @@ public class SimRobot {
     }
 
     /**
-     * Retrieves the current field-relative odometry pose. 
-     * Pulled strictly from the StateManager snapshot.
+     * Retrieves the current field-relative physics pose when physics is attached.
+     * Falls back to the commanded pose until a physics body is registered.
      * @return the current pose of the robot.
      */
     public Pose2d getPose() {
+        PhysicsBody robotBody = StateManager.getInstance().getRobotBody(robotID);
+        if (robotBody != null) {
+            Pose3d physicsPos = robotBody.position();
+            Rotation3d physicsRot = robotBody.orientation();
+            return new Pose2d(physicsPos.getX(), physicsPos.getY(), new Rotation2d(physicsRot.getZ()));
+        }
         return stateManagerRef.get().robotPose;
     }
 
