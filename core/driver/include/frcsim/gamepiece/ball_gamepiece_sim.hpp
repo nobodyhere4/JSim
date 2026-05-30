@@ -148,6 +148,9 @@ class BallGamepieceSim {
     /** Approximate planar collision radius. */
     double radius_m{0.45};
 
+    /** Intake capture radius for proximity-based ball pickup. */
+    double intake_radius_m{0.5};
+
   };
 
   /**
