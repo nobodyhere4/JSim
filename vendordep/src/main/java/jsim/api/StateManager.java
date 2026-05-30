@@ -385,10 +385,11 @@ public class StateManager {
                 robot.update(dtSeconds);
                 PhysicsBody robotBody = robotBodies.get(robot.getRobotID());
                 if (robotBody != null) {
-                    Pose2d pose = robot.getPose();
-                    robotBody.setPosition(new Pose3d(pose.getX(), pose.getY(), 0.175,
-                            new Rotation3d(0.0, 0.0, pose.getRotation().getRadians())));
-                    robotBody.setOrientation(new Rotation3d(0.0, 0.0, pose.getRotation().getRadians()));
+                    // Use the internal odometry pose for physics sync, not getPose() which may return physics body pose
+                    Pose2d odometryPose = robot.getOdometryPose();
+                    robotBody.setPosition(new Pose3d(odometryPose.getX(), odometryPose.getY(), 0.175,
+                            new Rotation3d(0.0, 0.0, odometryPose.getRotation().getRadians())));
+                    robotBody.setOrientation(new Rotation3d(0.0, 0.0, odometryPose.getRotation().getRadians()));
                     ChassisSpeeds speeds = robot.getVelocity();
                     robotBody.setLinearVelocity(
                             speeds.vxMetersPerSecond,
