@@ -1,6 +1,6 @@
 # Contributing to JSim
 
-Welcome to the JSim project! This guide outlines the conventions and rules to follow when making contributions.
+Welcome to JSim! This guide outlines the conventions and rules to follow when making contributions.
 
 ## Codebase Organization Conventions
 
@@ -22,3 +22,4 @@ Welcome to the JSim project! This guide outlines the conventions and rules to fo
 - FRC C++ logic matches standard `googletest` syntax. Add tests for all new mechanisms (`drivetrain`, `collision`).
 - All code must pass the GitHub Actions CI pipelines (Windows, Linux, macOS).
 - Use `./scripts/run-tests.sh` to validate locally before making a PR.
+- Before being merged PR must be approved by a code owner with merge permissions. 
