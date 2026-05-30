@@ -131,6 +131,15 @@ public class SimRobot {
     }
 
     /**
+     * Retrieves the current odometry pose. This is always the commanded pose, not the physics body pose.
+     * Used internally for syncing with the physics engine.
+     * @return the current odometry pose of the robot.
+     */
+    public Pose2d getOdometryPose() {
+        return stateManagerRef.get().robotPose;
+    }
+
+    /**
      * Returns the robot frame perimeter vertices used to build the robot body.
      *
      * @return cloned frame perimeter vertices
