@@ -90,19 +90,7 @@ Java_jsim_jni_JSimJNI_createBody
       c_rsCreateBody(static_cast<uint64_t>(world_handle), mass_kg));
 }
 
-/*
- * Class:     jsim_jni_JSimJNI
- * Method:    createBall
- * Signature: (J)I
- */
-JNIEXPORT jint JNICALL
-Java_jsim_jni_JSimJNI_createBall
-  (JNIEnv*, jclass, jlong world_handle)
-{
-  // Backwards-compatibility: map legacy createBall to the new gamepiece API.
-  return static_cast<jint>(
-      c_rsCreateGamepiece(static_cast<uint64_t>(world_handle), 0.12, 0.27, 0.45));
-}
+/* Deprecated: legacy ball-named JNI methods removed; use gamepiece equivalents. */
 
 /*
  * Class:     jsim_jni_JSimJNI

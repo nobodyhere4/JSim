@@ -179,6 +179,16 @@ int c_rsCreateBody(uint64_t world_handle, double mass_kg) {
 }
 
 /**
+ * @brief Backwards-compatible wrapper for legacy 'ball' API.
+ *
+ * Some language bindings and export definitions still reference
+ * `c_rsCreateBall`. Provide a thin wrapper that forwards to the
+ * new `c_rsCreateGamepiece` implementation.
+ */
+// Legacy `c_rsCreateBall` compatibility wrapper removed; use
+// `c_rsCreateGamepiece` instead.
+
+/**
  * @brief Create a spherical gamepiece in the world.
 
  * @param world_handle Target world handle.
