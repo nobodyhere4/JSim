@@ -14,8 +14,21 @@ plugins {
 
 // WPILib Version
 ext.wpilibVersion = "2026.2.1"
+ext.frcYear = ext.wpilibVersion.split(/\./)[0] as Integer
 ext.releasePath = "$buildDir/maven"
 ext.pubVersion = System.getenv("releaseVersion") ?: System.getenv("releaseName") ?: "test"
+
+// Generate version properties file at build time
+tasks.register('generateVersionProperties') {
+    def propsFile = file("$buildDir/resources/main/jsim_version.properties")
+    outputs.file(propsFile)
+    doLast {
+        propsFile.parentFile.mkdirs()
+        propsFile.text = "frc.year=${frcYear}\n"
+    }
+}
+
+processResources.dependsOn generateVersionProperties
 
 repositories {
     mavenCentral()

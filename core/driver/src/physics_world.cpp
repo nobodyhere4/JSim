@@ -283,22 +283,22 @@ void PhysicsWorld::step() {
     }
   }
 
-  for (auto& gp : gamepieces_) {
-    gp.step(dt_s);
+  for (auto& gamepiece : gamepieces_) {
+    gamepiece.step(dt_s);
   }
 
   // Resolve gamepiece <-> rigid-body collisions after the gamepiece has advanced its own physics.
-  for (auto& gp : gamepieces_) {
+  for (auto& gamepiece : gamepieces_) {
     // Only consider airborne gamepieces for rigid-body collisions.
-    if (gp.getGamepieceState() != Gamepiece::State::kAirborne) {
+    if (gamepiece.getGamepieceState() != Gamepiece::State::kAirborne) {
       continue;
     }
-    BallPhysicsSim3D::BallState s = gp.state();
+    BallPhysicsSim3D::BallState s = gamepiece.state();
 
-    const BallPhysicsSim3D::BallProperties& bp = gp.ballProperties();
-    const double gp_r = std::max(0.0, bp.radius_m);
-    const double gp_m = std::max(1e-9, bp.mass_kg);
-    const double inv_gp_m = 1.0 / gp_m;
+    const BallPhysicsSim3D::BallProperties& bp = gamepiece.ballProperties();
+    const double gamepiece_r = std::max(0.0, bp.radius_m);
+    const double gamepiece_m = std::max(1e-9, bp.mass_kg);
+    const double inv_gamepiece_m = 1.0 / gamepiece_m;
 
     auto apply_impulse = [&](RigidBody& body, const Vector3& contact_normal) {
       Vector3 normal = contact_normal;
@@ -329,7 +329,7 @@ void PhysicsWorld::step() {
     };
 
     if (!config_.enable_collision_detection) {
-      ball.setState(s);
+      gp.setState(s);
       continue;
     }
 

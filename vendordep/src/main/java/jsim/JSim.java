@@ -16,6 +16,9 @@ import jsim.field.FieldConfig;
 import jsim.api.GamePieceType;
 import jsim.Gamepiece;
 import edu.wpi.first.math.geometry.Translation3d;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * Public entry point for common JSim accessors.
@@ -27,6 +30,25 @@ public final class JSim {
   private JSim() {}
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
+
+  /** Current FRC season year, read from build.gradle wpilibVersion at build time */
+  private static final int CURRENT_FRC_YEAR = loadFrcYear();
+
+  private static int loadFrcYear() {
+    try (InputStream is = JSim.class.getResourceAsStream("/jsim_version.properties")) {
+      if (is != null) {
+        Properties props = new Properties();
+        props.load(is);
+        String year = props.getProperty("frc.year");
+        if (year != null) {
+          return Integer.parseInt(year);
+        }
+      }
+    } catch (IOException | NumberFormatException e) {
+      // Fall back to 2026 if properties file is unavailable
+    }
+    return 2026;
+  }
 
   /**
    * Returns the shared simulation state manager.
@@ -106,7 +128,7 @@ public final class JSim {
       StateManager.getInstance().initializeField(cfg);
       // If a physics world has been created, spawn a centered 6x30 fuel grid.
       try {
-        if (physicsWorld != null && year == 2026) {
+        if (physicsWorld != null && year == CURRENT_FRC_YEAR) {
           double fieldLength = node.path("field_dimensions").path("length").asDouble(16.541);
           double fieldWidth = node.path("field_dimensions").path("width").asDouble(8.069);
           double centerX = fieldLength / 2.0;
@@ -125,11 +147,11 @@ public final class JSim {
 
           for (int r = 0; r < rows; ++r) {
             for (int c = 0; c < cols; ++c) {
-              Gamepiece gp = physicsWorld.createGamepiece(GamePieceType.FUEL);
+              Gamepiece gamepiece = physicsWorld.createGamepiece(GamePieceType.FUEL);
               double x = startX + c * spacing;
               double y = startY + r * spacing;
               // Place slightly above ground by radius to avoid initial penetration.
-              gp.setPosition(new Translation3d(x, y, diameter * 0.5));
+              gamepiece.setPosition(new Translation3d(x, y, diameter * 0.5));
             }
           }
         }
