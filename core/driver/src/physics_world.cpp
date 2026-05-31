@@ -319,17 +319,17 @@ void PhysicsWorld::step() {
           body_mat ? body_mat->coefficient_of_restitution : 0.4;
       const double e = std::clamp(0.5 * (bp.restitution + body_restitution), 0.0, 1.0);
       const double inv_body_m = body.flags().is_kinematic ? 0.0 : body.inverseMass();
-      const double j = -(1.0 + e) * vn / (inv_gp_m + inv_body_m);
+      const double j = -(1.0 + e) * vn / (inv_gamepiece_m + inv_body_m);
       const Vector3 impulse = normal * j;
 
-      s.velocity_mps += impulse * inv_gp_m;
+      s.velocity_mps += impulse * inv_gamepiece_m;
       if (!body.flags().is_kinematic) {
         body.setLinearVelocity(body.linearVelocity() - impulse * inv_body_m);
       }
     };
 
     if (!config_.enable_collision_detection) {
-      gp.setState(s);
+      gamepiece.setState(s);
       continue;
     }
 
@@ -337,7 +337,7 @@ void PhysicsWorld::step() {
       const double body_r = body_collision_radius_m(body);
       const Vector3 rel = s.position_m - body.position();
       const double dist = rel.norm();
-      const double contact_dist = gp_r + body_r;
+      const double contact_dist = gamepiece_r + body_r;
       if (dist <= contact_dist) {
         const Vector3 normal = dist > 1e-9 ? rel / dist : Vector3::unitZ();
         s.position_m += normal * (contact_dist - dist);
@@ -355,7 +355,7 @@ void PhysicsWorld::step() {
       }
     }
 
-    gp.setState(s);
+    gamepiece.setState(s);
   }
 
   // Resolve gamepiece <-> gamepiece collisions (pairwise) so gamepieces interact with each

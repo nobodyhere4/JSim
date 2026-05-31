@@ -99,8 +99,9 @@ JNIEXPORT jint JNICALL
 Java_jsim_jni_JSimJNI_createBall
   (JNIEnv*, jclass, jlong world_handle)
 {
+  // Backwards-compatibility: map legacy createBall to the new gamepiece API.
   return static_cast<jint>(
-      c_rsCreateBall(static_cast<uint64_t>(world_handle)));
+      c_rsCreateGamepiece(static_cast<uint64_t>(world_handle), 0.12, 0.27, 0.45));
 }
 
 /*
