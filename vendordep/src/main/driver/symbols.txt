@@ -4,7 +4,6 @@ Java_jsim_jni_JSimJNI_initialize
 Java_jsim_jni_JSimJNI_createWorld
 Java_jsim_jni_JSimJNI_destroyWorld
 Java_jsim_jni_JSimJNI_createBody
-Java_jsim_jni_JSimJNI_createBall
 Java_jsim_jni_JSimJNI_createGamepiece__J
 Java_jsim_jni_JSimJNI_createGamepiece__JDDD
 Java_jsim_jni_JSimJNI_createGamepieceWithType
@@ -51,7 +50,6 @@ c_doThing
 c_rsCreateWorld
 c_rsDestroyWorld
 c_rsCreateBody
-c_rsCreateBall
 c_rsSetBodyPosition
 c_rsSetBodyOrientation
 c_rsSetBodyLinearVelocity

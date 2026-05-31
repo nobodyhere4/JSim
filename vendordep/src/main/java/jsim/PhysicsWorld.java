@@ -120,8 +120,6 @@ public final class PhysicsWorld implements AutoCloseable {
 		return gamepiece;
 	}
 
-	// Deprecated overload removed; use createGamepiece(double, double, double).
-
 	/**
 	 * Creates a spherical gamepiece with default physical parameters.
 	 *
@@ -197,8 +195,6 @@ public final class PhysicsWorld implements AutoCloseable {
 		return gamepiece;
 	}
 
-	// Deprecated `Ball` wrapper removed; use `createGamepiece()` instead.
-
 	/**
 	 * Returns gamepieces created through this world wrapper in insertion order.
 	 *
@@ -207,8 +203,6 @@ public final class PhysicsWorld implements AutoCloseable {
 	public List<Gamepiece> gamepieces() {
 		return gamepieces;
 	}
-
-	// `balls()` deprecated; use `gamepieces()`.
 
 	/**
 	 * Registers a callback that runs after each successful physics step.

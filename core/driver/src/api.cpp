@@ -22,15 +22,15 @@ Gamepiece_t* frcsim_create_gamepiece(PhysicsWorld_t* w,
                                     const frcsim::Gamepiece::Properties* props) {
   if (!w) return nullptr;
   if (config && props) {
-    return static_cast<Gamepiece_t*>(&w->createBall(*config, *props));
+    return static_cast<Gamepiece_t*>(&w->createGamepiece(*config, *props));
   }
   if (config) {
-    return static_cast<Gamepiece_t*>(&w->createBall(*config, frcsim::Gamepiece::Properties()));
+    return static_cast<Gamepiece_t*>(&w->createGamepiece(*config, frcsim::Gamepiece::Properties()));
   }
   if (props) {
-    return static_cast<Gamepiece_t*>(&w->createBall(frcsim::Gamepiece::Config(), *props));
+    return static_cast<Gamepiece_t*>(&w->createGamepiece(frcsim::Gamepiece::Config(), *props));
   }
-  return static_cast<Gamepiece_t*>(&w->createBall(frcsim::Gamepiece::Config(), frcsim::Gamepiece::Properties()));
+  return static_cast<Gamepiece_t*>(&w->createGamepiece(frcsim::Gamepiece::Config(), frcsim::Gamepiece::Properties()));
 }
 
 void frcsim_step_world(PhysicsWorld_t* w, double dt_s) {

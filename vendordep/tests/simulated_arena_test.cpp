@@ -1,7 +1,7 @@
 #include <cassert>
 
 #include "frcsim/arena/simulated_arena.hpp"
-#include "frcsim/gamepiece/ball_gamepiece_presets.hpp"
+#include "frcsim/gamepiece/season_2026_gamepiece_presets.hpp"
 
 int main() {
     frcsim::SimulatedArena arena(frcsim::BallGamepiecePresets::season2026FieldConfig());

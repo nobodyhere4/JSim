@@ -9,7 +9,7 @@
 #include <functional>
 #include <string>
 
-#include "frcsim/gamepiece/ball_gamepiece_sim.hpp"
+#include "frcsim/gamepiece/gamepiece_sim.hpp"
 
 namespace frcsim {
 

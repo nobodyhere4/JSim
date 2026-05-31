@@ -1,8 +1,8 @@
 #include <cassert>
 #include <cmath>
 
-#include "frcsim/gamepiece/ball_gamepiece_sim.hpp"
-#include "frcsim/gamepiece/ball_gamepiece_presets.hpp"
+#include "frcsim/gamepiece/gamepiece_sim.hpp"
+#include "frcsim/gamepiece/season_2026_gamepiece_presets.hpp"
 
 int main() {
     frcsim::BallGamepieceSim::FieldConfig field;

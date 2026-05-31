@@ -86,14 +86,6 @@ public class JSimJNI {
   public static native int createBody(long worldHandle, double massKg);
 
   /**
-   * Creates a ball simulator in the world.
-   *
-   * @param worldHandle the native world handle
-   * @return the native ball index
-   */
-  public static native int createBall(long worldHandle);
-
-  /**
    * Creates a generic gamepiece using the legacy ball-compatible defaults.
    *
    * @param worldHandle the native world handle

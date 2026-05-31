@@ -1,0 +1,13 @@
+// Copyright (c) JSim contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the LGPLv3 license file in the root directory of this project.
+
+#pragma once
+
+#include "frcsim/gamepiece/ball_gamepiece_sim.hpp"
+
+namespace frcsim {
+
+using GamepieceSim = BallGamepieceSim;
+
+}  // namespace frcsim
