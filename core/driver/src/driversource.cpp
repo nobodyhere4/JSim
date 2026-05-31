@@ -43,8 +43,6 @@ static std::unordered_map<std::uint64_t, std::unordered_map<int, int>>
 /**
  * @brief Convert a small integer kind tag to a human readable type name.
  *
- * This is a convenience mapping used for legacy/compact type tags.
- *
  * @param type Integer type tag.
  * @return Corresponding string name, or "unknown" if not recognised.
  */
@@ -178,15 +176,6 @@ int c_rsCreateBody(uint64_t world_handle, double mass_kg) {
 
   world->createBody(mass_kg);
   return static_cast<int>(world->bodies().size() - 1);
-}
-
-/**
- * @brief Legacy helper to create a default spherical gamepiece.
-
- * Delegates to c_rsCreateGamepiece with sensible defaults.
- */
-int c_rsCreateBall(uint64_t world_handle) {
-  return c_rsCreateGamepiece(world_handle, 0.12, 0.27, 0.45);
 }
 
 /**
@@ -610,10 +599,6 @@ int c_rsSetBodyAerodynamicBox(uint64_t world_handle, int body_index,
   return 0;
 }
 
-// Deprecated ball-named setters removed; use gamepiece APIs below.
-
-// New gamepiece-named ABI wrappers own the implementation; legacy ball
-// functions delegate to them for compatibility.
 /**
  * @brief Directly set a gamepiece's position.
  *
@@ -638,8 +623,6 @@ int c_rsSetGamepiecePosition(uint64_t world_handle, int gamepiece_index,
   gamepieces[idx].setState(state);
   return 0;
 }
-
-// Deprecated ball-named setters removed; use gamepiece APIs below.
 
 /**
  * @brief Set a gamepiece's linear velocity.

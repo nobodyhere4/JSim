@@ -76,15 +76,6 @@ void c_rsDestroyWorld(uint64_t world_handle);
 int c_rsCreateBody(uint64_t world_handle, double mass_kg);
 
 /**
- * @brief Creates a new ball simulator in a world. (Deprecated)
- * @note This legacy API is a backwards-compatible wrapper. Prefer
- *       `c_rsCreateGamepiece` for new code which supports generic gamepieces.
- * @param world_handle Target world handle.
- * @return Non-negative ball index on success; negative value on failure.
- */
-int c_rsCreateBall(uint64_t world_handle);
-
-/**
  * @brief Creates a new generic gamepiece using sphere hitbox parameters.
  * @param world_handle Target world handle.
  * @param radius_m Sphere hitbox radius in meters.
