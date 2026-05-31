@@ -112,8 +112,9 @@ JNIEXPORT jint JNICALL
 Java_jsim_jni_JSimJNI_createGamepiece__J
   (JNIEnv*, jclass, jlong world_handle)
 {
+  // Prefer the generic gamepiece API; use the same defaults as the legacy ball helper.
   return static_cast<jint>(
-      c_rsCreateBall(static_cast<uint64_t>(world_handle)));
+      c_rsCreateGamepiece(static_cast<uint64_t>(world_handle), 0.12, 0.27, 0.45));
 }
 
 /*

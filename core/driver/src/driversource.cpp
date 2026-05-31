@@ -50,9 +50,9 @@ static std::unordered_map<std::uint64_t, std::unordered_map<int, int>>
  */
 std::string typeNameForKind(int type) {
   switch (type) {
-    case 0: return "ball";
-    case 1: return "fuel";
-    case 2: return "coral";
+    case 0: return "Ball";
+    case 1: return "Fuel";
+    case 2: return "Coral";
     case 3: return "custom1";
     case 4: return "custom2";
     case 5: return "custom3";
@@ -181,8 +181,8 @@ int c_rsCreateBody(uint64_t world_handle, double mass_kg) {
 }
 
 /**
- * @brief Legacy helper to create a default ball gamepiece.
- *
+ * @brief Legacy helper to create a default spherical gamepiece.
+
  * Delegates to c_rsCreateGamepiece with sensible defaults.
  */
 int c_rsCreateBall(uint64_t world_handle) {
@@ -190,8 +190,8 @@ int c_rsCreateBall(uint64_t world_handle) {
 }
 
 /**
- * @brief Create a spherical gamepiece (ball) in the world.
- *
+ * @brief Create a spherical gamepiece in the world.
+
  * @param world_handle Target world handle.
  * @param radius_m Radius in meters.
  * @param mass_kg Mass in kilograms.

@@ -7,7 +7,7 @@ extern "C" {
 
 using PhysicsWorld_t = frcsim::PhysicsWorld;
 using RigidBody_t = frcsim::RigidBody;
-// Backwards-compatible alias for older APIs.
+// Backwards-compatible alias for older APIs. Deprecated — prefer `Gamepiece_t`.
 using Ball_t = frcsim::BallPhysicsSim3D;
 // New long-term alias: Gamepiece (generic wrapper over ball physics for now).
 using Gamepiece_t = frcsim::Gamepiece;

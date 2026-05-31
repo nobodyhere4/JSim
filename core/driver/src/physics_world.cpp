@@ -283,22 +283,22 @@ void PhysicsWorld::step() {
     }
   }
 
-  for (auto& ball : gamepieces_) {
-    ball.step(dt_s);
+  for (auto& gp : gamepieces_) {
+    gp.step(dt_s);
   }
 
-  // Resolve ball <-> rigid-body collisions after the ball has advanced its own physics.
-  for (auto& ball : gamepieces_) {
+  // Resolve gamepiece <-> rigid-body collisions after the gamepiece has advanced its own physics.
+  for (auto& gp : gamepieces_) {
     // Only consider airborne gamepieces for rigid-body collisions.
-    if (ball.getGamepieceState() != Gamepiece::State::kAirborne) {
+    if (gp.getGamepieceState() != Gamepiece::State::kAirborne) {
       continue;
     }
-    BallPhysicsSim3D::BallState s = ball.state();
+    BallPhysicsSim3D::BallState s = gp.state();
 
-    const BallPhysicsSim3D::BallProperties& bp = ball.ballProperties();
-    const double ball_r = std::max(0.0, bp.radius_m);
-    const double ball_m = std::max(1e-9, bp.mass_kg);
-    const double inv_ball_m = 1.0 / ball_m;
+    const BallPhysicsSim3D::BallProperties& bp = gp.ballProperties();
+    const double gp_r = std::max(0.0, bp.radius_m);
+    const double gp_m = std::max(1e-9, bp.mass_kg);
+    const double inv_gp_m = 1.0 / gp_m;
 
     auto apply_impulse = [&](RigidBody& body, const Vector3& contact_normal) {
       Vector3 normal = contact_normal;
@@ -319,10 +319,10 @@ void PhysicsWorld::step() {
           body_mat ? body_mat->coefficient_of_restitution : 0.4;
       const double e = std::clamp(0.5 * (bp.restitution + body_restitution), 0.0, 1.0);
       const double inv_body_m = body.flags().is_kinematic ? 0.0 : body.inverseMass();
-      const double j = -(1.0 + e) * vn / (inv_ball_m + inv_body_m);
+      const double j = -(1.0 + e) * vn / (inv_gp_m + inv_body_m);
       const Vector3 impulse = normal * j;
 
-      s.velocity_mps += impulse * inv_ball_m;
+      s.velocity_mps += impulse * inv_gp_m;
       if (!body.flags().is_kinematic) {
         body.setLinearVelocity(body.linearVelocity() - impulse * inv_body_m);
       }
@@ -333,11 +333,11 @@ void PhysicsWorld::step() {
       continue;
     }
 
-    auto resolve_ball_body_collision = [&](RigidBody& body) {
+    auto resolve_gamepiece_body_collision = [&](RigidBody& body) {
       const double body_r = body_collision_radius_m(body);
       const Vector3 rel = s.position_m - body.position();
       const double dist = rel.norm();
-      const double contact_dist = ball_r + body_r;
+      const double contact_dist = gp_r + body_r;
       if (dist <= contact_dist) {
         const Vector3 normal = dist > 1e-9 ? rel / dist : Vector3::unitZ();
         s.position_m += normal * (contact_dist - dist);
@@ -346,19 +346,19 @@ void PhysicsWorld::step() {
     };
 
     for (auto& body : bodies_) {
-      resolve_ball_body_collision(body);
+      resolve_gamepiece_body_collision(body);
     }
 
     for (auto& assembly : assemblies_) {
       for (auto& body : assembly.bodies()) {
-        resolve_ball_body_collision(body);
+        resolve_gamepiece_body_collision(body);
       }
     }
 
-    ball.setState(s);
+    gp.setState(s);
   }
 
-  // Resolve ball <-> ball collisions (pairwise) so gamepieces interact with each
+  // Resolve gamepiece <-> gamepiece collisions (pairwise) so gamepieces interact with each
   // other. We only consider airborne gamepieces here to match rigid-body
   // collision handling.
   for (std::size_t i = 0; i < gamepieces_.size(); ++i) {
