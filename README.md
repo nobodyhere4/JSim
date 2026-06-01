@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/github/license/Ruthie-FRC/JSim)](LICENSE.txt)
 [![Open Issues](https://img.shields.io/github/issues/Ruthie-FRC/JSim)](https://github.com/Ruthie-FRC/JSim/issues)
 
-JSim is an open source FRC physics library for simulation.
+JSim is an open-source FRC physics library for simulation.
 
 ## Overview
 
@@ -16,7 +16,7 @@ This repository is organized as a monorepo containing the core simulation engine
 https://jsim.dev/JSim.json
 ```
 
-### Build and Test (Gradle)
+### Build and Test
 
 ```bash
 ./scripts/build-all.sh
@@ -31,9 +31,9 @@ cd vendordep
 ./gradlew test
 ```
 
-This command runs Java tests plus the standalone native verification suite in `vendordep/tests/` through Gradle.
+This runs Java tests and the native verification suites in `vendordep/tests/`.
 
-Vendordep build tooling requires Java 17.
+Vendordep tooling requires Java 17.
 
 ### Preview Docs Locally
 
@@ -47,10 +47,10 @@ mkdocs serve --config-file mkdocs/mkdocs.yml
 ### Core Libraries
 
 - `core/driver/`: C++ physics engine implementation and headers
-- `core/java/`: Java-side code and bindings
-- `core/python/`: Python-side code and bindings
-- `core/bindings-java/`: Java binding support
-- `core/gamepiece-models/`: gamepiece model definitions
+- `core/python/`: Python-side native bindings and tests
+- `cad-import/`: CAD import utilities and Python package wrapper
+- `apps/viewer-plugin/`: visualization and rendering plugin (Python wrapper available)
+- `apps/sim-runtime/`: Python runtime integration app (importable wrapper available)
 
 ### Applications
 
