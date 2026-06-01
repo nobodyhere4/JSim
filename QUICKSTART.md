@@ -1,6 +1,6 @@
-# JSim 2026.04.03.0-prerelease Quick Start
+# JSim Quick Start
 
-JSim is a physics simulation framework for FRC-style robotics. This prerelease (2026.04.03.0) includes a fully functional rigid-body dynamics engine with joint constraints, aerodynamic forces, and a complete Java API for FRC teams.
+JSim is a physics simulation framework for FRC-style robotics. The project includes a rigid-body dynamics engine with joint constraints, aerodynamic forces, and a Java API (vendordep) for integration with WPILib.
 
 ## What's Included
 
@@ -88,9 +88,9 @@ for (int i = 0; i < 100; ++i) {
 std::cout << "Position: " << body.position() << std::endl;
 ```
 
-## Known Limitations
+-## Known Limitations
 
-This v0.1.0-prerelease focuses on rigid-body dynamics and joint constraints:
+This release focuses on rigid-body dynamics and joint constraints:
 - **Collision detection**: Disabled (planned for v0.2)
 - **Soft body deformation**: Framework exists but not implemented (planned for v0.2)
 - **Field boundaries**: Structure exists but logic not wired (planned for v0.2)

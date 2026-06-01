@@ -2,6 +2,10 @@
 
 All notable changes to JSim are documented in this file.
 
+## [Unreleased]
+
+- No unreleased changes recorded.
+
 ## Versioning
 
 JSim uses date-based versioning: `YYYY.MM.DD.patch-no`
