@@ -8,11 +8,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.StringArrayPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import jsim.api.RobotID;
 import jsim.api.SimRobot;
 import jsim.api.StateManager;
@@ -25,14 +25,17 @@ import jsim.api.StateManager;
  *   <li>Robot id labels: {@code /JSim/RobotPose/robotIds}</li>
  *   <li>Robot poses as Pose3d array: {@code /JSim/RobotPose/robotPoses}</li>
  *   <li>Robot poses as flat XYtheta arrays: {@code /JSim/RobotPose/robotPose3Flat}</li>
+ *   <li>Robot poses to field2d (AdvantageScope): {@code /field2d/JSim}</li>
  * </ul>
  */
 public class RobotPosePublisher implements AutoCloseable {
   private static final String DEFAULT_BASE_TOPIC = "JSim/RobotPose";
+  private static final String FIELD2D_TOPIC = "field2d/JSim";
 
   private final StructArrayPublisher<Pose3d> robotPosesPublisher;
   private final StringArrayPublisher robotIdsPublisher;
   private final DoubleArrayPublisher robotPoseFlatPublisher;
+  private final StructPublisher<Pose2d> field2dPublisher;
 
   /**
    * Creates a new robot pose publisher under {@code /JSim/RobotPose}.
@@ -52,6 +55,9 @@ public class RobotPosePublisher implements AutoCloseable {
     this.robotPosesPublisher = table.getStructArrayTopic("robotPoses", Pose3d.struct).publish();
     this.robotIdsPublisher = table.getStringArrayTopic("robotIds").publish();
     this.robotPoseFlatPublisher = table.getDoubleArrayTopic("robotPose3Flat").publish();
+    
+    // Initialize field2d publisher for AdvantageScope visualization
+    this.field2dPublisher = ntInstance.getTopic(FIELD2D_TOPIC).publish(Pose2d.struct);
   }
 
   /**
@@ -74,6 +80,7 @@ public class RobotPosePublisher implements AutoCloseable {
     double[] flat = new double[count * 3];
 
     int index = 0;
+    Pose2d primaryPose = null;
     for (var entry : robots.entrySet()) {
       RobotID robotID = entry.getKey();
       SimRobot robot = entry.getValue();
@@ -88,12 +95,24 @@ public class RobotPosePublisher implements AutoCloseable {
       flat[base] = pose2d.getX();
       flat[base + 1] = pose2d.getY();
       flat[base + 2] = pose2d.getRotation().getRadians();
+      
+      // Capture the first robot's pose for field2d publication
+      if (index == 0) {
+        primaryPose = pose2d;
+      }
+      
       index++;
     }
 
     robotIdsPublisher.set(ids);
     robotPosesPublisher.set(poses);
     robotPoseFlatPublisher.set(flat);
+    
+    // Publish primary robot pose to field2d for AdvantageScope
+    if (primaryPose != null) {
+      field2dPublisher.set(primaryPose);
+    }
+    
     return count;
   }
 
@@ -102,5 +121,6 @@ public class RobotPosePublisher implements AutoCloseable {
     robotIdsPublisher.close();
     robotPosesPublisher.close();
     robotPoseFlatPublisher.close();
+    field2dPublisher.close();
   }
 }
