@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import jsim.api.RobotID;
 import jsim.api.SimRobot;
 import jsim.api.StateManager;
+import jsim.nt.RobotPosePublisher;
 import jsim.nt.WorldPosePublisher;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +27,7 @@ import java.util.Properties;
 public final class JSim {
   private static PhysicsWorld physicsWorld;
   private static WorldPosePublisher defaultWorldPublisher;
+  private static RobotPosePublisher defaultRobotPosePublisher;
 
   private JSim() {}
 
@@ -103,6 +105,16 @@ public final class JSim {
         // Swallow errors to avoid breaking world creation when NT isn't available.
       }
     }
+
+    if (defaultRobotPosePublisher == null) {
+      try {
+        defaultRobotPosePublisher = new RobotPosePublisher();
+        physicsWorld.addStepListener(() -> defaultRobotPosePublisher.publishFrame());
+      } catch (Throwable t) {
+        // Swallow errors to avoid breaking world creation when NT isn't available.
+      }
+    }
+
     return physicsWorld;
   }
 
