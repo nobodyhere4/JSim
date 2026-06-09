@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.StringArrayPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -57,7 +58,9 @@ public class RobotPosePublisher implements AutoCloseable {
     this.robotPoseFlatPublisher = table.getDoubleArrayTopic("robotPose3Flat").publish();
     
     // Initialize field2d publisher for AdvantageScope visualization
-    this.field2dPublisher = ntInstance.getTopic(FIELD2D_TOPIC).publish(Pose2d.struct);
+    // Use a no-arg publish and cast to the expected publisher type to match
+    // the NetworkTables Java API surface across versions.
+    this.field2dPublisher = (StructPublisher<Pose2d>) ntInstance.getTopic(FIELD2D_TOPIC).publish();
   }
 
   /**
