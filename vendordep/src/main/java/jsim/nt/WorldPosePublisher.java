@@ -19,13 +19,15 @@ import jsim.jni.JSimJNI;
  *
  * <p>Publishes both:
  * <ul>
- *   <li>Structured Pose3d array: {@code /jsim/world/bodyPoses}</li>
- *   <li>Flat full state [x,y,z,qw,qx,qy,qz,vx,vy,vz,wx,wy,wz...]: {@code /jsim/world/bodyState13Flat}</li>
- *   <li>Flat pose buffer [x,y,z,qw,qx,qy,qz...]: {@code /jsim/world/bodyPose7Flat}</li>
- *   <li>Flat velocity buffer [vx,vy,vz,wx,wy,wz...]: {@code /jsim/world/bodyVelocity6Flat}</li>
+ *   <li>Structured Pose3d array: {@code /JSim/World/bodyPoses}</li>
+ *   <li>Flat full state [x,y,z,qw,qx,qy,qz,vx,vy,vz,wx,wy,wz...]: {@code /JSim/World/bodyState13Flat}</li>
+ *   <li>Flat pose buffer [x,y,z,qw,qx,qy,qz...]: {@code /JSim/World/bodyPose7Flat}</li>
+ *   <li>Flat velocity buffer [vx,vy,vz,wx,wy,wz...]: {@code /JSim/World/bodyVelocity6Flat}</li>
  * </ul>
  */
 public class WorldPosePublisher implements AutoCloseable {
+  private static final String DEFAULT_BASE_TOPIC = "JSim/World";
+
   private final long worldHandle;
   private final int maxBodies;
 
@@ -37,13 +39,13 @@ public class WorldPosePublisher implements AutoCloseable {
   private final double[] state13Buffer;
 
   /**
-   * Creates a new world publisher under {@code /jsim/world}.
+   * Creates a new world publisher under {@code /JSim/World}.
    *
    * @param worldHandle native world handle
    * @param maxBodies maximum number of bodies to export per frame
    */
   public WorldPosePublisher(long worldHandle, int maxBodies) {
-    this(worldHandle, maxBodies, NetworkTableInstance.getDefault(), "/jsim/world");
+    this(worldHandle, maxBodies, NetworkTableInstance.getDefault(), DEFAULT_BASE_TOPIC);
   }
 
   /**

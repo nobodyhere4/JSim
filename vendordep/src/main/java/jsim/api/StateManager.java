@@ -140,6 +140,15 @@ public class StateManager {
     }
 
     /**
+     * Returns all registered SimRobot instances by RobotID.
+     *
+     * @return an immutable map of robot ids to their SimRobot instances
+     */
+    public synchronized Map<RobotID, SimRobot> getRobots() {
+        return Collections.unmodifiableMap(new EnumMap<>(robots));
+    }
+
+    /**
      * Stores the active physics world used by the simulation layer.
      *
      * @param physicsWorld the physics world to store

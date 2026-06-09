@@ -2,6 +2,8 @@
 
 This package exposes JSim physics as a WPILib vendordep with both Java and C++ entry points.
 
+JSim publishes live world pose telemetry under the NetworkTables root `JSim/World` and robot pose telemetry under `JSim/RobotPose` so AdvantageScope can display JSim robot pose state in its own tab.
+
 ## Implemented API Surface
 
 ### Java
